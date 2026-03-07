@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="manifest" href="./manifest.json" />
+  <script src="./app.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#1c74e9",
+            "background-light": "#f6f7f8",
+            "background-dark": "#111821",
+          },
+          fontFamily: {
+            "display": ["Lexend"]
+          },
+          borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+        },
+      },
+    }
+  </script>
+  <title>Teacher Attendance History</title>
+  <style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+
+<body
+  class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+  <header
+    class="sticky top-0 z-10 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+    <div class="flex items-center p-4 justify-between max-w-5xl mx-auto w-full">
+      <div class="flex items-center gap-4">
+        <button onclick="window.location.href = './dashboard.html'"
+          class="flex size-10 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+          <span class="material-symbols-outlined">arrow_back</span>
+        </button>
+        <h1 class="text-lg font-bold leading-tight tracking-tight">Attendance History</h1>
+      </div>
+      <div class="flex items-center gap-2">
+        <button
+          class="flex size-10 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+          <span class="material-symbols-outlined">calendar_today</span>
+        </button>
+        <button
+          class="flex size-10 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+          <span class="material-symbols-outlined">filter_list</span>
+        </button>
+      </div>
+    </div>
+  </header>
+  <main class="flex-1 max-w-5xl mx-auto w-full p-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div
+        class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+        <div class="flex justify-between items-start">
+          <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Present Days</p>
+          <span class="material-symbols-outlined text-green-500">check_circle</span>
+        </div>
+        <p id="presentDays" class="text-3xl font-bold leading-tight">0</p>
+      </div>
+      <div
+        class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+        <div class="flex justify-between items-start">
+          <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Late Arrivals</p>
+          <span class="material-symbols-outlined text-amber-500">schedule</span>
+        </div>
+        <p id="lateDays" class="text-3xl font-bold leading-tight">0</p>
+      </div>
+      <div
+        class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+        <div class="flex justify-between items-start">
+          <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Absences</p>
+          <span class="material-symbols-outlined text-red-500">cancel</span>
+        </div>
+        <p id="absentDays" class="text-3xl font-bold leading-tight">0</p>
+      </div>
+    </div>
+    <div class="mb-6">
+      <div class="flex border-b border-slate-200 dark:border-slate-800 gap-8 overflow-x-auto no-scrollbar">
+        <a class="flex flex-col items-center justify-center border-b-[3px] border-primary text-primary pb-3 pt-2 whitespace-nowrap"
+          href="#">
+          <p class="text-sm font-bold tracking-wide">October 2023</p>
+        </a>
+        <a class="flex flex-col items-center justify-center border-b-[3px] border-transparent text-slate-500 dark:text-slate-400 pb-3 pt-2 whitespace-nowrap"
+          href="#">
+          <p class="text-sm font-bold tracking-wide">September 2023</p>
+        </a>
+        <a class="flex flex-col items-center justify-center border-b-[3px] border-transparent text-slate-500 dark:text-slate-400 pb-3 pt-2 whitespace-nowrap"
+          href="#">
+          <p class="text-sm font-bold tracking-wide">August 2023</p>
+        </a>
+      </div>
+    </div>
+    <div
+      class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr
+              class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 uppercase text-[10px] font-bold tracking-widest">
+              <th class="px-6 py-4">Date</th>
+              <th class="px-6 py-4">Check-in</th>
+              <th class="px-6 py-4">Check-out</th>
+              <th class="px-6 py-4">Work Hours</th>
+              <th class="px-6 py-4 text-right">Status</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody" class="divide-y divide-slate-100 dark:divide-slate-800">
+            <tr>
+              <td colspan="5" class="px-6 py-4 text-center">Loading...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div
+        class="px-6 py-4 bg-slate-50 dark:bg-slate-800/30 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+        <p id="tablePagination" class="text-xs text-slate-500 dark:text-slate-400">Showing 0 records</p>
+      </div>
+    </div>
+  </main>
+  <nav
+    class="sticky bottom-0 z-10 bg-white dark:bg-background-dark border-t border-slate-200 dark:border-slate-800 pb-safe-area">
+    <div class="flex gap-2 px-4 pb-3 pt-2 max-w-5xl mx-auto">
+      <a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400 hover:text-primary transition-colors"
+        href="#">
+        <span class="material-symbols-outlined">home</span>
+        <p class="text-[10px] font-medium leading-normal">Home</p>
+      </a>
+      <a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400 hover:text-primary transition-colors"
+        href="#">
+        <span class="material-symbols-outlined">calendar_month</span>
+        <p class="text-[10px] font-medium leading-normal">Schedule</p>
+      </a>
+      <a class="flex flex-1 flex-col items-center justify-end gap-1 text-primary" href="#">
+        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">history</span>
+        <p class="text-[10px] font-bold leading-normal">Attendance</p>
+      </a>
+      <a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400 hover:text-primary transition-colors"
+        href="#">
+        <span class="material-symbols-outlined">person</span>
+        <p class="text-[10px] font-medium leading-normal">Profile</p>
+      </a>
+    </div>
+  </nav>
+  <style>
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .pb-safe-area {
+      padding-bottom: env(safe-area-inset-bottom, 0.75rem);
+    }
+  </style>
+  <script>
+    async function loadHistory() {
+      try {
+        const records = await App.fetchAPI('/attendance/my/history');
+        const tbody = document.getElementById('historyTableBody');
+
+        if (records.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center">No attendance logs found</td></tr>';
+          return;
+        }
+
+        let present = 0, late = 0, absent = 0;
+
+        tbody.innerHTML = records.map(r => {
+          if (r.status === 'Present') present++;
+          else if (r.status === 'Late') late++;
+          else absent++;
+
+          const dateObj = new Date(r.date);
+          const statusColors = {
+            'Present': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+            'Late': 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400',
+            'Absent': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+          };
+
+          return `<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                <td class="px-6 py-4">
+                    <div class="flex flex-col">
+                        <span class="font-bold">${dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                        <span class="text-xs text-slate-500">${dateObj.toLocaleDateString(undefined, { weekday: 'long' })}</span>
+                    </div>
+                </td>
+                <td class="px-6 py-4 text-sm">${r.in_time ? r.in_time.substring(0, 5) : '—'}</td>
+                <td class="px-6 py-4 text-sm">${r.out_time ? r.out_time.substring(0, 5) : '—'}</td>
+                <td class="px-6 py-4 text-sm">${r.late_minutes ? `${r.late_minutes}m late` : '—'}</td>
+                <td class="px-6 py-4 text-right">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[r.status] || 'bg-slate-100 text-slate-800'}">
+                        ${r.status}
+                    </span>
+                </td>
+            </tr>`;
+        }).join('');
+
+        document.getElementById('presentDays').innerText = present;
+        document.getElementById('lateDays').innerText = late;
+        document.getElementById('absentDays').innerText = absent;
+        document.getElementById('tablePagination').innerText = `Showing ${records.length} records`;
+
+      } catch (err) {
+        document.getElementById('historyTableBody').innerHTML = `<tr><td colspan="5" class="text-red-500 text-center py-4">Error loading records: ${err.message}</td></tr>`;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadHistory);
+  </script>
+</body>
+
+</html>

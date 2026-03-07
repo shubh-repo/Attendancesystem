@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>St GNG School - System Settings</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="manifest" href="./manifest.json" />
+    <script src="./app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1c74e9",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111821",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen pb-32">
+    <!-- Header -->
+    <header
+        class="sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-primary text-2xl">arrow_back</span>
+            <h1 class="text-xl font-bold tracking-tight">System Settings</h1>
+        </div>
+        <div class="size-10 rounded-full bg-primary/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary">school</span>
+        </div>
+    </header>
+    <main class="max-w-2xl mx-auto p-4 space-y-8">
+        <!-- Section: Attendance Rules -->
+        <section class="space-y-4">
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">event_available</span>
+                <h2 class="text-lg font-bold">Attendance Rules</h2>
+            </div>
+            <div
+                class="bg-white dark:bg-slate-900 rounded-xl p-5 shadow-sm border border-slate-200 dark:border-slate-800 space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <label class="flex flex-col gap-2">
+                        <span class="text-sm font-medium text-slate-600 dark:text-slate-400">School Reporting
+                            Time</span>
+                        <div class="relative">
+                            <input id="reportingTime"
+                                class="w-full h-12 pl-4 pr-10 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                                type="text" value="09:00 AM" />
+                            <span
+                                class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">schedule</span>
+                        </div>
+                    </label>
+                    <label class="flex flex-col gap-2">
+                        <span class="text-sm font-medium text-slate-600 dark:text-slate-400">Grace Period
+                            (minutes)</span>
+                        <input id="gracePeriod"
+                            class="w-full h-12 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                            type="number" value="15" />
+                    </label>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <span class="text-sm font-medium text-slate-600 dark:text-slate-400">Late Threshold Time</span>
+                    <div
+                        class="h-12 flex items-center px-4 rounded-lg bg-slate-100 dark:bg-slate-950 border border-dashed border-slate-300 dark:border-slate-700 text-slate-500 italic">
+                        Calculated: 09:15 AM
+                    </div>
+                </div>
+                <div class="flex gap-3 p-4 bg-primary/5 border border-primary/20 rounded-lg items-start">
+                    <span class="material-symbols-outlined text-primary mt-0.5">info</span>
+                    <p class="text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+                        If a teacher does not check in on a day, the system will automatically mark the teacher as <span
+                            class="font-bold text-red-500">ABSENT</span>.
+                    </p>
+                </div>
+            </div>
+        </section>
+        <!-- Section: GPS Location Settings -->
+        <section class="space-y-4">
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">location_on</span>
+                <h2 class="text-lg font-bold">GPS Location Settings</h2>
+            </div>
+            <div
+                class="bg-white dark:bg-slate-900 rounded-xl p-5 shadow-sm border border-slate-200 dark:border-slate-800 space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <label class="flex flex-col gap-2">
+                        <span class="text-sm font-medium text-slate-600 dark:text-slate-400">School Latitude</span>
+                        <input id="schoolLat"
+                            class="w-full h-12 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                            type="text" value="28.6139" />
+                    </label>
+                    <label class="flex flex-col gap-2">
+                        <span class="text-sm font-medium text-slate-600 dark:text-slate-400">School Longitude</span>
+                        <input id="schoolLng"
+                            class="w-full h-12 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                            type="text" value="77.2090" />
+                        <label class="flex flex-col gap-2">
+                            <span class="text-sm font-medium text-slate-600 dark:text-slate-400">Allowed Radius
+                                (meters)</span>
+                            <div class="relative">
+                                <input id="allowedRadius"
+                                    class="w-full h-12 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                                    type="number" value="100" />
+                                <span
+                                    class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 uppercase">meters</span>
+                            </div>
+                        </label>
+                        <div class="flex items-center justify-between py-2">
+                            <div class="flex flex-col">
+                                <span class="font-medium">Enable GPS Verification</span>
+                                <span class="text-xs text-slate-500">Require location access for check-ins</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input id="gpsEnabled" checked="" class="sr-only peer" type="checkbox" />
+                                <div
+                                    class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary">
+                                </div>
+                            </label>
+                        </div>
+                </div>
+        </section>
+        <!-- Save Button -->
+        <!-- Save Button -->
+        <p id="saveMsg" class="text-center font-medium mt-4"></p>
+        <button onclick="saveSettings()"
+            class="w-full py-4 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined">save</span>
+            Save System Settings
+        </button>
+    </main>
+    <!-- PWA Install Banner -->
+    <!-- Bottom Nav Bar -->
+    <nav
+        class="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-6 py-2 pb-6 z-50">
+        <div class="flex items-center justify-between max-w-md mx-auto">
+            <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors"
+                href="./admin-dashboard.html">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span class="text-[10px] font-medium uppercase tracking-wider">Dashboard</span>
+            </a>
+            <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors"
+                href="./teacher-management.html">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">group</span>
+                <span class="text-[10px] font-medium uppercase tracking-wider">Teachers</span>
+            </a>
+            <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors"
+                href="./attendance-monitoring.html">
+                <span class="material-symbols-outlined">analytics</span>
+                <span class="text-[10px] font-medium uppercase tracking-wider">Monitor</span>
+            </a>
+            <a class="flex flex-col items-center gap-1 text-primary" href="./admin-settings.html">
+                <span class="material-symbols-outlined fill-[1]">settings</span>
+                <span class="text-[10px] font-medium uppercase tracking-wider">Settings</span>
+            </a>
+        </div>
+    </nav>
+    </nav>
+    <script>
+        async function loadSettings() {
+            try {
+                const settings = await App.fetchAPI('/admin/settings');
+                if (settings) {
+                    document.getElementById('reportingTime').value = settings.reporting_time || '09:00 AM';
+                    document.getElementById('gracePeriod').value = settings.grace_period_mins || 15;
+                    document.getElementById('schoolLat').value = settings.school_lat || '';
+                    document.getElementById('schoolLng').value = settings.school_lng || '';
+                    document.getElementById('allowedRadius').value = settings.allowed_radius_meters || 100;
+                    document.getElementById('gpsEnabled').checked = settings.enforce_gps === true;
+                }
+            } catch (err) {
+                console.error('Failed to load settings', err);
+            }
+        }
+
+        async function saveSettings() {
+            const msg = document.getElementById('saveMsg');
+            msg.className = "text-center font-medium mt-4 text-slate-500";
+            msg.innerText = "Saving...";
+
+            try {
+                await App.fetchAPI('/admin/settings', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        reporting_time: document.getElementById('reportingTime').value,
+                        grace_period_mins: parseInt(document.getElementById('gracePeriod').value),
+                        school_lat: parseFloat(document.getElementById('schoolLat').value),
+                        school_lng: parseFloat(document.getElementById('schoolLng').value),
+                        allowed_radius_meters: parseInt(document.getElementById('allowedRadius').value),
+                        enforce_gps: document.getElementById('gpsEnabled').checked
+                    })
+                });
+                msg.className = "text-center font-medium mt-4 text-green-500";
+                msg.innerText = "Settings saved successfully!";
+                setTimeout(() => { msg.innerText = ''; }, 3000);
+            } catch (err) {
+                msg.className = "text-center font-medium mt-4 text-red-500";
+                msg.innerText = err.message;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadSettings);
+    </script>
+</body>
+
+</html>

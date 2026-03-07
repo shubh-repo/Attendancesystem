@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="manifest" href="./manifest.json" />
+    <script src="./app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1c74e9",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111821",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <title>Teacher Attendance - Camera</title>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
+    <div class="relative flex h-screen w-full flex-col overflow-x-hidden">
+        <!-- Top App Bar -->
+        <div
+            class="flex items-center bg-background-light dark:bg-background-dark p-4 justify-between border-b border-slate-200 dark:border-slate-800">
+            <div
+                class="text-slate-900 dark:text-slate-100 flex size-10 shrink-0 items-center justify-center cursor-pointer">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </div>
+            <h2
+                class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight flex-1 text-center">
+                Teacher Attendance</h2>
+            <div class="size-10 flex items-center justify-center">
+                <span class="material-symbols-outlined text-slate-500">help_outline</span>
+            </div>
+        </div>
+        <!-- Camera Viewfinder Section -->
+        <div class="flex-1 flex flex-col items-center justify-center p-4 relative overflow-hidden">
+            <div
+                class="w-full max-w-md aspect-[3/4] rounded-xl bg-slate-200 dark:bg-slate-800 relative flex items-center justify-center border-4 border-primary/20 shadow-xl overflow-hidden">
+                <!-- Camera Feed -->
+                <div class="absolute inset-0 bg-slate-300 dark:bg-slate-700">
+                    <video id="videoFeed" class="w-full h-full object-cover transform -scale-x-100" autoplay
+                        playsinline></video>
+                    <canvas id="photoCanvas" class="hidden"></canvas>
+                </div>
+                <!-- Scanning Overlay Guides -->
+                <div id="faceOverlay"
+                    class="absolute inset-0 border-[40px] border-black/40 pointer-events-none flex items-center justify-center transition-colors duration-300">
+                    <div class="w-[80%] h-[70%] border-2 border-primary rounded-xl relative transition-colors duration-300"
+                        id="faceFrame">
+                        <!-- Corner Accents -->
+                        <div class="absolute -top-1 -left-1 w-8 h-8 border-t-4 border-l-4 border-current"></div>
+                        <div class="absolute -top-1 -right-1 w-8 h-8 border-t-4 border-r-4 border-current"></div>
+                        <div class="absolute -bottom-1 -left-1 w-8 h-8 border-b-4 border-l-4 border-current"></div>
+                        <div class="absolute -bottom-1 -right-1 w-8 h-8 border-b-4 border-r-4 border-current"></div>
+                    </div>
+                </div>
+                <!-- Status Indicator -->
+                <div id="faceStatus"
+                    class="absolute top-8 px-4 py-1.5 bg-yellow-500/90 text-white text-xs font-bold rounded-full flex items-center gap-2 backdrop-blur-md hidden">
+                    <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+                    <span id="faceStatusText">LOCATING FACE</span>
+                </div>
+            </div>
+            <div class="mt-6 text-center">
+                <h3 class="text-slate-900 dark:text-slate-100 text-xl font-bold leading-tight">Align face for attendance
+                </h3>
+                <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Position your face within the frame</p>
+            </div>
+        </div>
+        <!-- Camera Actions -->
+        <div class="bg-background-light dark:bg-background-dark p-6 pb-10">
+            <div class="flex flex-col items-center justify-center gap-6 max-w-md mx-auto">
+                <!-- Quick Selection Icons -->
+                <div class="flex items-center justify-center gap-8 mb-2">
+                    <button
+                        class="flex shrink-0 items-center justify-center rounded-full size-12 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 shadow-md border border-slate-100 dark:border-slate-700">
+                        <span class="material-symbols-outlined">image</span>
+                    </button>
+                    <button
+                        class="flex shrink-0 items-center justify-center rounded-full size-20 bg-primary text-white shadow-lg shadow-primary/40 ring-4 ring-primary/20">
+                        <span class="material-symbols-outlined !text-4xl">photo_camera</span>
+                    </button>
+                    <button
+                        class="flex shrink-0 items-center justify-center rounded-full size-12 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 shadow-md border border-slate-100 dark:border-slate-700">
+                        <span class="material-symbols-outlined">cached</span>
+                    </button>
+                </div>
+                <!-- Primary Action Buttons -->
+                <div class="w-full flex w-full flex-col gap-3">
+                    <p id="errorMsg" class="text-red-500 text-sm text-center hidden"></p>
+                    <button id="captureBtn"
+                        class="flex w-full cursor-pointer items-center justify-center rounded-xl h-14 bg-primary text-white text-base font-bold transition-all active:scale-95 shadow-lg shadow-primary/20 opacity-50 pointer-events-none">
+                        Align Face to Capture
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Navigation Bar Spacer -->
+        <div class="h-4 bg-background-light dark:bg-background-dark"></div>
+    </div>
+    <script>
+        const type = new URLSearchParams(window.location.search).get('type') || 'in';
+        const video = document.getElementById('videoFeed');
+        const canvas = document.getElementById('photoCanvas');
+        const captureBtn = document.getElementById('captureBtn');
+        const errorMsg = document.getElementById('errorMsg');
+
+        let stream = null;
+        let gpsCoords = null;
+
+        async function initCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'user', width: { ideal: 720 } }
+                });
+                video.srcObject = stream;
+
+                // Mock Face Alignment Delay -> Enables button after 2.5 seconds
+                setTimeout(() => {
+                    document.getElementById('faceFrame').classList.replace('border-primary', 'border-green-500');
+                    document.getElementById('faceFrame').classList.add('text-green-500');
+                    document.getElementById('faceStatus').classList.remove('hidden');
+                    document.getElementById('faceStatus').classList.replace('bg-yellow-500/90', 'bg-emerald-500/90');
+                    document.getElementById('faceStatusText').innerText = "FACE ALIGNED";
+                    captureBtn.classList.remove('opacity-50', 'pointer-events-none');
+                    captureBtn.innerText = `Confirm ${type.toUpperCase()}`;
+                }, 2500);
+
+                // Fetch GPS coordinates
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        pos => {
+                            gpsCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                        },
+                        err => console.warn('GPS Error', err),
+                        { enableHighAccuracy: true }
+                    );
+                }
+
+            } catch (err) {
+                errorMsg.innerText = "Camera access denied or unavailable";
+                errorMsg.classList.remove('hidden');
+            }
+        }
+
+        captureBtn.onclick = async () => {
+            captureBtn.innerText = "Processing...";
+            captureBtn.classList.add('opacity-50', 'pointer-events-none');
+
+            // Take Photo
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            // Handle mirroring
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            canvas.toBlob(async (blob) => {
+                const formData = new FormData();
+                formData.append('photo', blob, 'capture.jpg');
+                if (gpsCoords) {
+                    formData.append('lat', gpsCoords.lat);
+                    formData.append('lng', gpsCoords.lng);
+                }
+                formData.append('device', navigator.userAgent.substring(0, 50));
+
+                try {
+                    const endpoint = type === 'out' ? '/attendance/checkout' : '/attendance/checkin';
+                    const res = await App.fetchAPI(endpoint, {
+                        method: 'POST',
+                        body: formData // DO NOT ADD Content-Type header on FormData via App.fetchAPI
+                    });
+
+                    // Stop camera
+                    if (stream) stream.getTracks().forEach(t => t.stop());
+
+                    // Redirect on success
+                    window.location.href = `/status-screen.html?status=success&msg=${encodeURIComponent(res.message)}`;
+
+                } catch (err) {
+                    captureBtn.innerText = "Try Again";
+                    captureBtn.classList.remove('opacity-50', 'pointer-events-none');
+                    errorMsg.innerText = err.message || 'Verification Failed';
+                    errorMsg.classList.remove('hidden');
+                }
+            }, 'image/jpeg', 0.8);
+        };
+
+        window.onload = initCamera;
+    </script>
+</body>
+
+</html>

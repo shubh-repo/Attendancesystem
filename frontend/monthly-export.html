@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Admin Attendance Export</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="manifest" href="./manifest.json" />
+    <script src="./app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1c74e9",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111821",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+    <div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+        <header
+            class="flex items-center bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-4 sticky top-0 z-10">
+            <div
+                class="text-slate-900 dark:text-slate-100 flex size-10 shrink-0 items-center justify-center cursor-pointer">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </div>
+            <h1 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight flex-1 ml-2">
+                Attendance Reports</h1>
+            <div class="flex items-center gap-2">
+                <button
+                    class="flex size-10 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <span class="material-symbols-outlined text-slate-600 dark:text-slate-400">notifications</span>
+                </button>
+                <a href="#" onclick="App.logout()"
+                    class="size-10 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 transition-colors hover:bg-red-100 hover:text-red-500 hover:border-red-200">
+                    <span class="material-symbols-outlined text-primary">logout</span>
+                </a>
+            </div>
+        </header>
+        <main class="flex-1 max-w-4xl mx-auto w-full px-4 py-6">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Export Data</h2>
+                <p class="text-slate-500 dark:text-slate-400 text-sm">Download detailed attendance records for payroll
+                    and administrative review.</p>
+            </div>
+            <nav class="flex border-b border-slate-200 dark:border-slate-800 mb-8 overflow-x-auto scrollbar-hide">
+                <a class="flex items-center gap-2 px-6 py-4 border-b-2 border-primary text-primary font-semibold whitespace-nowrap"
+                    href="#">
+                    <span class="material-symbols-outlined text-sm">calendar_month</span>
+                    Monthly
+                </a>
+                <a class="flex items-center gap-2 px-6 py-4 border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 font-medium whitespace-nowrap"
+                    href="#">
+                    <span class="material-symbols-outlined text-sm">date_range</span>
+                    Weekly
+                </a>
+                <a class="flex items-center gap-2 px-6 py-4 border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 font-medium whitespace-nowrap"
+                    href="#">
+                    <span class="material-symbols-outlined text-sm">today</span>
+                    Daily
+                </a>
+            </nav>
+            <section
+                class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm mb-8">
+                <h3 class="text-base font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">filter_alt</span>
+                    Report Parameters
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex flex-col gap-2">
+                        <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Select Month</label>
+                        <select id="monthSelect"
+                            class="w-full h-12 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
+                        </select>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Department (Coming
+                            Soon)</label>
+                        <select disabled
+                            class="w-full h-12 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all opacity-50 cursor-not-allowed">
+                            <option value="all">All Departments</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 relative">
+                    <p id="exportStatus" class="absolute -top-6 left-0 text-sm font-medium text-emerald-500 hidden">
+                        Export generated successfully!</p>
+                    <div class="flex flex-col gap-4">
+                        <button onclick="downloadCSV()"
+                            class="flex items-center justify-between w-full h-16 px-6 bg-primary text-white rounded-xl hover:bg-primary/90 transition-all shadow-md group">
+                            <div class="flex items-center gap-4">
+                                <div class="size-10 rounded-lg bg-white/20 flex items-center justify-center">
+                                    <span class="material-symbols-outlined">table_chart</span>
+                                </div>
+                                <div class="text-left">
+                                    <p class="font-bold text-base leading-none">Export to CSV</p>
+                                    <p class="text-white/70 text-xs mt-1">Detailed spreadsheet with daily logs</p>
+                                </div>
+                            </div>
+                            <span
+                                class="material-symbols-outlined group-hover:translate-x-1 transition-transform">download</span>
+                        </button>
+                        <button onclick="alert('PDF Export is a premium feature.')"
+                            class="flex items-center justify-between w-full h-16 px-6 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all border border-slate-200 dark:border-slate-700 group">
+                            <div class="flex items-center gap-4">
+                                <div
+                                    class="size-10 rounded-lg bg-red-500/10 dark:bg-red-500/20 flex items-center justify-center">
+                                    <span
+                                        class="material-symbols-outlined text-red-600 dark:text-red-400">picture_as_pdf</span>
+                                </div>
+                                <div class="text-left">
+                                    <p class="font-bold text-base leading-none">Export to PDF</p>
+                                    <p class="text-slate-500 dark:text-slate-400 text-xs mt-1">Premium plan needed</p>
+                                </div>
+                            </div>
+                            <span
+                                class="material-symbols-outlined group-hover:translate-x-1 transition-transform">lock</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+            <section class="mb-20">
+                <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4">Recent Exports</h3>
+                <div class="space-y-3">
+                    <div
+                        class="flex items-center justify-between p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-slate-400">history</span>
+                            <div>
+                                <p class="text-sm font-medium text-slate-900 dark:text-white">
+                                    September_Attendance_Science.xlsx</p>
+                                <p class="text-xs text-slate-500">Generated 2 days ago • 452 KB</p>
+                            </div>
+                        </div>
+                        <button class="text-primary text-sm font-semibold hover:underline">Download</button>
+                    </div>
+                    <div
+                        class="flex items-center justify-between p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-slate-400">history</span>
+                            <div>
+                                <p class="text-sm font-medium text-slate-900 dark:text-white">August_Summary_All.pdf</p>
+                                <p class="text-xs text-slate-500">Generated 1 week ago • 1.2 MB</p>
+                            </div>
+                        </div>
+                        <button class="text-primary text-sm font-semibold hover:underline">Download</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <nav
+            class="fixed bottom-0 left-0 right-0 border-t border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-4 pb-4 pt-2 z-20">
+            <div class="flex gap-2 max-w-4xl mx-auto">
+                <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors"
+                    href="./admin-dashboard.html">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span class="text-[10px] font-medium uppercase tracking-wider">Dashboard</span>
+                </a>
+                <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors"
+                    href="./teacher-management.html">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">group</span>
+                    <span class="text-[10px] font-medium uppercase tracking-wider">Teachers</span>
+                </a>
+                <a class="flex flex-col items-center gap-1 text-primary" href="./monthly-export.html">
+                    <span class="material-symbols-outlined">analytics</span>
+                    <span class="text-[10px] font-medium uppercase tracking-wider">Monitor</span>
+                </a>
+                <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors"
+                    href="./admin-settings.html">
+                    <span class="material-symbols-outlined fill-[1]">settings</span>
+                    <span class="text-[10px] font-medium uppercase tracking-wider">Settings</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+    </nav>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const select = document.getElementById('monthSelect');
+            const now = new Date();
+            for (let i = 0; i < 6; i++) {
+                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                const m = d.getMonth() + 1;
+                const y = d.getFullYear();
+                const option = document.createElement('option');
+                option.value = `${m}-${y}`;
+                option.text = d.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+                select.appendChild(option);
+            }
+        });
+
+        async function downloadCSV() {
+            const status = document.getElementById('exportStatus');
+            status.className = 'absolute -top-6 left-0 text-sm font-medium text-slate-500 block';
+            status.innerText = 'Generating CSV...';
+
+            const [month, year] = document.getElementById('monthSelect').value.split('-');
+            try {
+                const data = await App.fetchAPI(`/admin/attendance/export?month=${month}&year=${year}`);
+                if (!data || data.length === 0) {
+                    status.className = 'absolute -top-6 left-0 text-sm font-medium text-amber-500 block';
+                    status.innerText = 'No records found for the selected month.';
+                    setTimeout(() => { status.className = 'hidden'; }, 3000);
+                    return;
+                }
+
+                // Convert array of JSON to CSV string
+                const headers = ['Date', 'Teacher Name', 'Status', 'In Time', 'Out Time', 'Late Minutes'];
+                const rows = data.map(d => [
+                    d.date,
+                    d.teachers?.name || 'Unknown',
+                    d.status,
+                    d.in_time || '--',
+                    d.out_time || '--',
+                    d.late_minutes || '0'
+                ]);
+
+                const csvContent = "data:text/csv;charset=utf-8,"
+                    + headers.join(',') + '\n'
+                    + rows.map(r => r.join(',')).join('\n');
+
+                const blob = new Blob([headers.join(',') + '\n' + rows.map(r => r.join(',')).join('\n')], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Attendance_Export_${month}_${year}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+
+                status.className = 'absolute -top-6 left-0 text-sm font-medium text-emerald-500 block';
+                status.innerText = 'Export generated and downloaded successfully!';
+                setTimeout(() => { status.className = 'hidden'; }, 3000);
+            } catch (err) {
+                status.className = 'absolute -top-6 left-0 text-sm font-medium text-red-500 block';
+                status.innerText = err.message;
+            }
+        }
+    </script>
+</body>
+
+</html>

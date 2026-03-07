@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="manifest" href="./manifest.json" />
+  <script src="./app.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#1c74e9",
+            "background-light": "#f6f7f8",
+            "background-dark": "#111821",
+          },
+          fontFamily: {
+            "display": ["Lexend"]
+          },
+          borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+        },
+      },
+    }
+  </script>
+  <title>Attendance Monitoring Admin</title>
+  <style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+
+<body
+  class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+  <!-- Top Navigation / Header -->
+  <header class="sticky top-0 z-10 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+    <div class="flex items-center p-4 justify-between max-w-7xl mx-auto w-full">
+      <div class="flex items-center gap-3">
+        <div class="bg-primary text-white p-2 rounded-lg flex items-center justify-center">
+          <span class="material-symbols-outlined">analytics</span>
+        </div>
+        <h2 class="text-xl font-bold leading-tight tracking-tight">Attendance Monitoring</h2>
+      </div>
+      <div class="flex items-center gap-2">
+        <button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+          <span class="material-symbols-outlined text-slate-600 dark:text-slate-400">search</span>
+        </button>
+        <button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors relative">
+          <span class="material-symbols-outlined text-slate-600 dark:text-slate-400">notifications</span>
+          <span class="absolute top-2 right-2 flex h-2 w-2 rounded-full bg-red-500"></span>
+        </button>
+      </div>
+    </div>
+    <!-- Tab Navigation -->
+    <div class="max-w-7xl mx-auto w-full px-4">
+      <div class="flex gap-8 overflow-x-auto no-scrollbar">
+        <a class="flex flex-col items-center justify-center border-b-2 border-primary text-primary pb-3 pt-4 whitespace-nowrap"
+          href="#">
+          <p class="text-sm font-bold">Real-time Logs</p>
+        </a>
+        <a class="flex flex-col items-center justify-center border-b-2 border-transparent text-slate-500 dark:text-slate-400 hover:text-primary pb-3 pt-4 whitespace-nowrap"
+          href="#">
+          <p class="text-sm font-medium">Daily Summary</p>
+        </a>
+        <a class="flex flex-col items-center justify-center border-b-2 border-transparent text-slate-500 dark:text-slate-400 hover:text-primary pb-3 pt-4 whitespace-nowrap"
+          href="#">
+          <p class="text-sm font-medium">Monthly Reports</p>
+        </a>
+        <a class="flex flex-col items-center justify-center border-b-2 border-transparent text-slate-500 dark:text-slate-400 hover:text-primary pb-3 pt-4 whitespace-nowrap"
+          href="#">
+          <p class="text-sm font-medium">Staff Management</p>
+        </a>
+      </div>
+    </div>
+  </header>
+  <main class="flex-1 max-w-7xl mx-auto w-full p-4 lg:p-6 space-y-6">
+    <!-- Summary Dashboard Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div
+        class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center gap-4">
+        <div class="bg-primary/10 text-primary p-3 rounded-full">
+          <span class="material-symbols-outlined">groups</span>
+        </div>
+        <div>
+          <p class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Present Today</p>
+          <p class="text-2xl font-bold">142 / 150</p>
+        </div>
+      </div>
+      <div
+        class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center gap-4">
+        <div class="bg-green-100 text-green-600 p-3 rounded-full">
+          <span class="material-symbols-outlined">schedule</span>
+        </div>
+        <div>
+          <p class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">On Time</p>
+          <p class="text-2xl font-bold">128</p>
+        </div>
+      </div>
+      <div
+        class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center gap-4">
+        <div class="bg-amber-100 text-amber-600 p-3 rounded-full">
+          <span class="material-symbols-outlined">timer</span>
+        </div>
+        <div>
+          <p class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Late Entry</p>
+          <p class="text-2xl font-bold">14</p>
+        </div>
+      </div>
+    </div>
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <h3 id="tableTitle" class="text-lg font-bold leading-tight tracking-tight">Live Attendance Log</h3>
+      <div class="flex gap-2">
+        <button
+          class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+          <span class="material-symbols-outlined text-sm">filter_list</span>
+          <span>Filter</span>
+        </button>
+        <button
+          class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors">
+          <span class="material-symbols-outlined text-sm">download</span>
+          <span>Export CSV</span>
+        </button>
+      </div>
+    </div>
+    <!-- Real-time Log Table/List -->
+    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
+              <th class="p-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Teacher</th>
+              <th class="p-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Department
+              </th>
+              <th class="p-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Status</th>
+              <th class="p-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Check-in
+                Time</th>
+              <th class="p-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right">
+                Verification</th>
+            </tr>
+          </thead>
+          <tbody id="attendanceTableBody" class="divide-y divide-slate-100 dark:divide-slate-800">
+            <tr>
+              <td colspan="5" class="p-4 text-center">Loading...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- Pagination Footer -->
+      <div
+        class="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-between">
+        <p id="tablePagination" class="text-sm text-slate-500 dark:text-slate-400">Showing 0 entries</p>
+        <div class="flex gap-2">
+          <button
+            class="p-2 border border-slate-200 dark:border-slate-800 rounded-lg hover:bg-white dark:hover:bg-slate-700 transition-colors disabled:opacity-50"
+            disabled="">
+            <span class="material-symbols-outlined text-sm">chevron_left</span>
+          </button>
+          <button
+            class="p-2 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors">
+            <span class="material-symbols-outlined text-sm">chevron_right</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+  <!-- Bottom Navigation Bar -->
+  <nav
+    class="sticky bottom-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 w-full lg:hidden">
+    <div class="flex gap-2 px-4 pb-3 pt-2">
+      <a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-500 dark:text-slate-400" href="#">
+        <span class="material-symbols-outlined">dashboard</span>
+        <p class="text-[10px] font-medium leading-normal tracking-[0.015em]">Dashboard</p>
+      </a>
+      <a class="flex flex-1 flex-col items-center justify-end gap-1 text-primary" href="#">
+        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">schedule</span>
+        <p class="text-[10px] font-medium leading-normal tracking-[0.015em]">Attendance</p>
+      </a>
+      <a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-500 dark:text-slate-400" href="#">
+        <span class="material-symbols-outlined">school</span>
+        <p class="text-[10px] font-medium leading-normal tracking-[0.015em]">Staff</p>
+      </a>
+      <a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-500 dark:text-slate-400" href="#">
+        <span class="material-symbols-outlined">settings</span>
+        <p class="text-[10px] font-medium leading-normal tracking-[0.015em]">Settings</p>
+      </a>
+    </div>
+  </nav>
+  <!-- Desktop Sidebar Overlay (Mocked context) -->
+  <div class="hidden lg:block fixed left-0 top-0 h-full w-20 bg-primary z-20">
+    <div class="flex flex-col items-center py-6 gap-8">
+      <div class="text-white">
+        <span class="material-symbols-outlined text-3xl">school</span>
+      </div>
+      <div class="flex flex-col gap-6">
+        <a class="text-white/70 hover:text-white transition-colors" href="#">
+          <span class="material-symbols-outlined">dashboard</span>
+        </a>
+        <a class="text-white bg-white/20 p-2 rounded-xl" href="#">
+          <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">history</span>
+        </a>
+        <a class="text-white/70 hover:text-white transition-colors" href="#">
+          <span class="material-symbols-outlined">groups</span>
+        </a>
+        <a class="text-white/70 hover:text-white transition-colors" href="#">
+          <span class="material-symbols-outlined">description</span>
+        </a>
+      </div>
+      <div class="mt-auto">
+        <a class="text-white/70 hover:text-white transition-colors" href="#" onclick="App.logout()">
+          <span class="material-symbols-outlined">logout</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  </div>
+  <script>
+    async function loadAttendance() {
+      document.getElementById('tableTitle').innerText = `Live Attendance Log - ${new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`;
+
+      try {
+        const records = await App.fetchAPI('/admin/attendance/today');
+        const tbody = document.getElementById('attendanceTableBody');
+
+        if (records.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center">No attendance logs found for today</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = records.map(r => {
+          const statusColors = {
+            'Present': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+            'Late': 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400',
+            'Absent': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+          };
+
+          const photoBtn = r.photo_url ? `<a href="${r.photo_url}" target="_blank" class="inline-flex items-center justify-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-primary/10 text-primary hover:bg-primary/20 transition-colors">View Photo</a>` : `<span class="text-xs text-slate-400">No Photo</span>`;
+
+          return `<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                    <td class="p-4">
+                        <div class="flex items-center gap-3">
+                            <div>
+                                <p class="font-semibold text-sm">${r.teachers?.name || 'Unknown'}</p>
+                                <p class="text-xs text-slate-500">ID: ${r.teacher_id}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-4 text-sm">${r.teachers?.designation || 'Staff'}</td>
+                    <td class="p-4">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[r.status] || 'bg-slate-100 text-slate-800'}">
+                            ${r.status}
+                        </span>
+                    </td>
+                    <td class="p-4">
+                        <p class="text-sm font-medium">${r.in_time ? r.in_time.substring(0, 5) : '--:--'}</p>
+                        ${r.late_minutes ? `<p class="text-[10px] text-red-400">${r.late_minutes} mins late</p>` : ''}
+                    </td>
+                    <td class="p-4 text-right">
+                        ${photoBtn}
+                    </td>
+                </tr>`;
+        }).join('');
+
+        document.getElementById('tablePagination').innerText = `Showing ${records.length} entries`;
+
+      } catch (err) {
+        document.getElementById('attendanceTableBody').innerHTML = `<tr><td colspan="5" class="text-red-500 text-center py-4">Error loading records: ${err.message}</td></tr>`;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadAttendance);
+  </script>
+</body>
+
+</html>

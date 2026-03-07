@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <link rel="manifest" href="./manifest.json" />
+    <script src="./app.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1c74e9",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111821",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <title>Teacher Attendance Dashboard</title>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+    <!-- Header / Top Bar -->
+    <header
+        class="flex items-center bg-white dark:bg-slate-900 p-4 sticky top-0 z-10 border-b border-slate-200 dark:border-slate-800">
+        <div class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <span class="material-symbols-outlined">menu</span>
+        </div>
+        <h1 class="text-lg font-bold leading-tight flex-1 text-center pr-10">Attendance Dashboard</h1>
+    </header>
+    <main class="flex-1 overflow-y-auto pb-24">
+        <!-- Teacher Profile Section -->
+        <section class="flex p-6 @container">
+            <div class="flex w-full flex-col gap-4 items-center">
+                <div class="flex gap-4 flex-col items-center">
+                    <img id="profilePic" src="https://ui-avatars.com/api/?name=Teacher&background=random"
+                        class="rounded-full ring-4 ring-primary/10 min-h-32 w-32 shadow-lg" alt="Profile" />
+                    <div class="flex flex-col items-center justify-center text-center">
+                        <p id="teacherName" class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                            Loading...</p>
+                        <p id="teacherDesignation" class="text-slate-500 dark:text-slate-400 font-medium">...</p>
+                        <div id="statusBadge"
+                            class="mt-2 flex items-center gap-2 bg-slate-100 text-slate-500 px-3 py-1 rounded-full text-sm font-semibold">
+                            <span class="material-symbols-outlined text-sm">schedule</span>
+                            <span>Unmarked</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Current Date & Time Display -->
+        <section class="px-6 mb-8 text-center">
+            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wider mb-2">Current
+                System Time</p>
+            <div class="flex gap-3 justify-center mb-2">
+                <div
+                    class="flex flex-col items-center gap-1 bg-white dark:bg-slate-800 p-3 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 w-20">
+                    <p id="timeHours" class="text-2xl font-bold text-primary">00</p>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase">Hours</p>
+                </div>
+                <div
+                    class="flex flex-col items-center gap-1 bg-white dark:bg-slate-800 p-3 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 w-20">
+                    <p id="timeMins" class="text-2xl font-bold text-primary">00</p>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase">Minutes</p>
+                </div>
+                <div
+                    class="flex flex-col items-center gap-1 bg-white dark:bg-slate-800 p-3 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 w-20">
+                    <p id="timeSecs" class="text-2xl font-bold text-primary">00</p>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase">Seconds</p>
+                </div>
+            </div>
+            <p id="currentDate"
+                class="text-slate-600 dark:text-slate-400 font-medium flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-base">calendar_today</span>
+                Loading date...
+            </p>
+        </section>
+        <!-- Main Action Buttons -->
+        <section class="px-6 grid grid-cols-1 gap-4 mb-8">
+            <button onclick="window.location.href = './camera-screen.html?type=in'" id="checkInBtn"
+                class="flex items-center justify-between w-full bg-primary text-white p-6 rounded-2xl shadow-lg shadow-primary/20 active:scale-95 transition-transform">
+                <div class="flex items-center gap-4">
+                    <div class="bg-white/20 p-3 rounded-xl">
+                        <span class="material-symbols-outlined text-3xl">login</span>
+                    </div>
+                    <div class="text-left">
+                        <p class="text-xl font-bold">Check In</p>
+                        <p class="text-primary-100 text-sm opacity-80" id="inTimeText">Start your work day</p>
+                    </div>
+                </div>
+                <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+            <button onclick="window.location.href = './camera-screen.html?type=out'" id="checkOutBtn"
+                class="flex items-center justify-between w-full bg-white dark:bg-slate-800 border-2 border-primary/20 p-6 rounded-2xl shadow-sm active:scale-95 transition-transform opacity-50 pointer-events-none">
+                <div class="flex items-center gap-4">
+                    <div class="bg-primary/10 text-primary p-3 rounded-xl">
+                        <span class="material-symbols-outlined text-3xl">logout</span>
+                    </div>
+                    <div class="text-left">
+                        <p class="text-xl font-bold text-slate-800 dark:text-white">Check Out</p>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm" id="outTimeText">Finish your shift</p>
+                    </div>
+                </div>
+                <span class="material-symbols-outlined text-slate-400">chevron_right</span>
+            </button>
+        </section>
+        <!-- Quick Stats / Recent History -->
+        <section class="px-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-bold text-slate-800 dark:text-white">Weekly Summary</h3>
+                <a class="text-primary text-sm font-semibold" href="#">View All</a>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700">
+                    <p class="text-slate-400 text-xs font-bold uppercase mb-1">Total Hours</p>
+                    <p class="text-xl font-bold text-slate-800 dark:text-white">38.5h</p>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700">
+                    <p class="text-slate-400 text-xs font-bold uppercase mb-1">Punctuality</p>
+                    <p class="text-xl font-bold text-emerald-500">98%</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    <!-- Bottom Navigation Bar -->
+    <nav
+        class="fixed bottom-0 w-full bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-4 pb-6 pt-2 flex justify-around items-center">
+        <a class="flex flex-col items-center gap-1 text-primary" href="#">
+            <span class="material-symbols-outlined fill-[1]">home</span>
+            <p class="text-[10px] font-bold uppercase">Home</p>
+        </a>
+        <a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+            <span class="material-symbols-outlined">history</span>
+            <p class="text-[10px] font-bold uppercase">History</p>
+        </a>
+        <a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+            <span class="material-symbols-outlined">class</span>
+            <p class="text-[10px] font-bold uppercase">Classes</p>
+        </a>
+        <a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#" onclick="App.logout()">
+            <span class="material-symbols-outlined">logout</span>
+            <p class="text-[10px] font-bold uppercase">Logout</p>
+        </a>
+    </nav>
+    <script>
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('timeHours').innerText = String(now.getHours()).padStart(2, '0');
+            document.getElementById('timeMins').innerText = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('timeSecs').innerText = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('currentDate').innerHTML = `<span class="material-symbols-outlined text-base">calendar_today</span> ${now.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`;
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        async function loadDashboard() {
+            if (!App.user) return;
+
+            document.getElementById('teacherName').innerText = App.user.name || 'Teacher';
+            document.getElementById('teacherDesignation').innerText = App.user.designation || 'Staff';
+            document.getElementById('profilePic').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(App.user.name)}&background=random`;
+
+            try {
+                const response = await App.fetchAPI('/attendance/my/today');
+                const record = response.attendance;
+
+                if (record) {
+                    // Checked In
+                    if (record.in_time) {
+                        document.getElementById('checkInBtn').classList.add('opacity-50', 'pointer-events-none');
+                        document.getElementById('inTimeText').innerText = `Checked in at ${record.in_time}`;
+
+                        document.getElementById('checkOutBtn').classList.remove('opacity-50', 'pointer-events-none');
+
+                        document.getElementById('statusBadge').innerHTML = `
+                    <span class="material-symbols-outlined text-sm">verified</span>
+                    <span>${record.status} Today</span>
+                `;
+                        document.getElementById('statusBadge').className = 'mt-2 flex items-center gap-2 bg-emerald-100 text-emerald-600 px-3 py-1 rounded-full text-sm font-semibold';
+                    }
+
+                    // Checked Out
+                    if (record.out_time) {
+                        document.getElementById('checkOutBtn').classList.add('opacity-50', 'pointer-events-none');
+                        document.getElementById('outTimeText').innerText = `Checked out at ${record.out_time}`;
+                        document.getElementById('statusBadge').innerHTML = `
+                    <span class="material-symbols-outlined text-sm">task_alt</span>
+                    <span>Shift Completed</span>
+                `;
+                        document.getElementById('statusBadge').className = 'mt-2 flex items-center gap-2 bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm font-semibold';
+                    }
+                }
+            } catch (err) {
+                console.error('Error loading attendance', err);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadDashboard);
+    </script>
+</body>
+
+</html>
