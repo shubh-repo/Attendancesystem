@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Admin Dashboard – EduAttend</title>
+    <title>Admin Dashboard – St. GNG School</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link rel="manifest" href="./manifest.json" />
     <script src="./app.js"></script>
@@ -52,7 +52,7 @@
             <div class="bg-primary p-2 rounded-lg text-white">
                 <span class="material-symbols-outlined block">school</span>
             </div>
-            <h1 class="text-lg font-bold tracking-tight">EduAttend</h1>
+            <h1 class="text-lg font-bold tracking-tight">St. GNG School</h1>
         </div>
         <a href="./admin-profile.html"
             class="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30 hover:bg-primary/30 transition-colors">
@@ -192,16 +192,18 @@
 
                 document.getElementById('weeklyChart').innerHTML = results.map((records, i) => {
                     const d = new Date(days[i] + 'T00:00:00');
+                    const dayOfWeek = d.getDay();
+                    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
                     const present = records.filter(r => r.status === 'Present' || r.status === 'Late').length;
                     const pct = Math.round((present / totalTeachers) * 100);
                     const isToday = i === 6;
                     return `<div class="flex flex-col items-center flex-1 gap-1.5">
-                        <span class="text-[9px] font-bold text-slate-400" style="min-height:12px">${pct > 0 ? pct + '%' : ''}</span>
-                        <div class="w-full rounded-t-lg relative overflow-hidden flex-1" style="height:100%; background: ${isToday ? 'rgba(28,116,233,0.15)' : 'rgba(100,116,139,0.1)'}">
+                        <span class="text-[9px] font-bold text-slate-400" style="min-height:12px">${(!isWeekend && pct > 0) ? pct + '%' : ''}</span>
+                        <div class="w-full rounded-t-lg relative overflow-hidden flex-1" style="height:100%; background: ${isToday ? 'rgba(28,116,233,0.15)' : isWeekend ? 'rgba(100,116,139,0.05)' : 'rgba(100,116,139,0.1)'}">
                             <div class="absolute bottom-0 w-full rounded-t transition-all duration-700"
-                                style="height:${Math.max(pct, 4)}%; background:${isToday ? '#1c74e9' : 'rgba(28,116,233,0.45)'}"></div>
+                                style="height:${isWeekend ? 0 : Math.max(pct, pct > 0 ? 4 : 0)}%; background:${isToday ? '#1c74e9' : isWeekend ? 'rgba(100,116,139,0.2)' : 'rgba(28,116,233,0.45)'}"></div>
                         </div>
-                        <span class="text-[10px] font-bold ${isToday ? 'text-primary' : 'text-slate-400'} uppercase">${DAYS[d.getDay()]}</span>
+                        <span class="text-[10px] font-bold ${isToday ? 'text-primary' : isWeekend ? 'text-slate-300 dark:text-slate-600' : 'text-slate-400'} uppercase">${DAYS[d.getDay()]}</span>
                     </div>`;
                 }).join('');
             } catch (err) { console.error('Failed weekly chart', err); }

@@ -158,19 +158,64 @@
                 });
                 video.srcObject = stream;
 
-                // Mock Face Alignment Delay -> Enables button after 2.5 seconds
-                setTimeout(() => {
-                    document.getElementById('faceFrame').classList.replace('border-primary', 'border-green-500');
-                    document.getElementById('faceFrame').classList.add('text-green-500');
-                    document.getElementById('faceStatus').classList.remove('hidden');
-                    document.getElementById('faceStatus').classList.replace('bg-yellow-500/90', 'bg-emerald-500/90');
-                    document.getElementById('faceStatusText').innerText = "FACE ALIGNED";
-                    // Make both buttons clickable
-                    captureBtn.classList.remove('opacity-50', 'pointer-events-none');
-                    document.getElementById('iconCaptureBtn').classList.remove('opacity-50', 'pointer-events-none');
-                    document.getElementById('iconCaptureBtn').onclick = () => captureBtn.click();
-                    captureBtn.innerText = `Confirm ${type.toUpperCase()}`;
-                }, 2500);
+                // Real face detection via canvas pixel sampling every 500ms
+                let faceDetectTimer = null;
+                let faceConsecutiveFrames = 0;
+                const REQUIRED_FRAMES = 4; // need 4 consecutive "face detected" frames
+
+                function checkFacePresence() {
+                    if (!stream || !video.videoWidth) return;
+                    try {
+                        const tmpCanvas = document.createElement('canvas');
+                        tmpCanvas.width = 80; tmpCanvas.height = 100;
+                        const tmpCtx = tmpCanvas.getContext('2d');
+                        // Sample center region (where face oval is)
+                        const srcX = video.videoWidth * 0.25;
+                        const srcY = video.videoHeight * 0.1;
+                        const srcW = video.videoWidth * 0.5;
+                        const srcH = video.videoHeight * 0.7;
+                        tmpCtx.drawImage(video, srcX, srcY, srcW, srcH, 0, 0, 80, 100);
+                        const pixelData = tmpCtx.getImageData(0, 0, 80, 100).data;
+                        let totalBrightness = 0;
+                        let minB = 255, maxB = 0;
+                        for (let i = 0; i < pixelData.length; i += 4) {
+                            const b = (pixelData[i] * 0.299 + pixelData[i + 1] * 0.587 + pixelData[i + 2] * 0.114);
+                            totalBrightness += b;
+                            if (b < minB) minB = b;
+                            if (b > maxB) maxB = b;
+                        }
+                        const avgBrightness = totalBrightness / (80 * 100);
+                        const contrast = maxB - minB;
+                        // Face detected: avg brightness in skin-tone range & good contrast
+                        const faceDetected = avgBrightness > 55 && avgBrightness < 220 && contrast > 40;
+                        if (faceDetected) {
+                            faceConsecutiveFrames++;
+                        } else {
+                            faceConsecutiveFrames = Math.max(0, faceConsecutiveFrames - 1);
+                        }
+                        if (faceConsecutiveFrames >= REQUIRED_FRAMES) {
+                            // Face confirmed!
+                            document.getElementById('faceFrame').style.borderColor = '#22c55e';
+                            document.getElementById('faceStatus').classList.remove('hidden');
+                            document.getElementById('faceStatus').style.background = 'rgba(34,197,94,0.9)';
+                            document.getElementById('faceStatusText').innerText = 'FACE ALIGNED';
+                            captureBtn.classList.remove('opacity-50', 'pointer-events-none');
+                            document.getElementById('iconCaptureBtn').classList.remove('opacity-50', 'pointer-events-none');
+                            document.getElementById('iconCaptureBtn').onclick = () => captureBtn.click();
+                            captureBtn.innerText = `Confirm ${type.toUpperCase()}`;
+                        } else if (faceConsecutiveFrames === 0) {
+                            document.getElementById('faceFrame').style.borderColor = '#1c74e9';
+                            document.getElementById('faceStatus').classList.remove('hidden');
+                            document.getElementById('faceStatus').style.background = 'rgba(234,179,8,0.9)';
+                            document.getElementById('faceStatusText').innerText = 'ALIGN FACE';
+                            captureBtn.classList.add('opacity-50', 'pointer-events-none');
+                            document.getElementById('iconCaptureBtn').classList.add('opacity-50', 'pointer-events-none');
+                            captureBtn.innerText = `Align Face to Capture`;
+                        }
+                    } catch (e) { /* ignore canvas errors */ }
+                }
+
+                faceDetectTimer = setInterval(checkFacePresence, 500);
 
                 // Fetch GPS coordinates
                 if (navigator.geolocation) {
