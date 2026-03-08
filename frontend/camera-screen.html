@@ -158,43 +158,61 @@
                 });
                 video.srcObject = stream;
 
-                // Real face detection via canvas pixel sampling every 500ms
+                // Real face detection: skin-tone hue + center-vs-edge contrast every 600ms
                 let faceDetectTimer = null;
                 let faceConsecutiveFrames = 0;
-                const REQUIRED_FRAMES = 4; // need 4 consecutive "face detected" frames
+                const REQUIRED_FRAMES = 5;
+                let faceConfirmed = false;
+
+                function sampleRegion(ctx, vidW, vidH, cx, cy, sw, sh, outW, outH) {
+                    const tmp = document.createElement('canvas');
+                    tmp.width = outW; tmp.height = outH;
+                    tmp.getContext('2d').drawImage(video, cx, cy, sw, sh, 0, 0, outW, outH);
+                    return tmp.getContext('2d').getImageData(0, 0, outW, outH).data;
+                }
+
+                function avgRGB(pixelData) {
+                    let r = 0, g = 0, b = 0, n = pixelData.length / 4;
+                    for (let i = 0; i < pixelData.length; i += 4) { r += pixelData[i]; g += pixelData[i + 1]; b += pixelData[i + 2]; }
+                    return { r: r / n, g: g / n, b: b / n };
+                }
+
+                function isSkinTone(r, g, b) {
+                    // Skin tone: R is largest, R-G > 10, R-B > 20, not too dark, not too bright
+                    return r > 60 && r < 240 && r > g && r > b && (r - g) > 8 && (r - b) > 15;
+                }
 
                 function checkFacePresence() {
-                    if (!stream || !video.videoWidth) return;
+                    if (!stream || !video.videoWidth || !video.videoHeight) return;
                     try {
-                        const tmpCanvas = document.createElement('canvas');
-                        tmpCanvas.width = 80; tmpCanvas.height = 100;
-                        const tmpCtx = tmpCanvas.getContext('2d');
-                        // Sample center region (where face oval is)
-                        const srcX = video.videoWidth * 0.25;
-                        const srcY = video.videoHeight * 0.1;
-                        const srcW = video.videoWidth * 0.5;
-                        const srcH = video.videoHeight * 0.7;
-                        tmpCtx.drawImage(video, srcX, srcY, srcW, srcH, 0, 0, 80, 100);
-                        const pixelData = tmpCtx.getImageData(0, 0, 80, 100).data;
-                        let totalBrightness = 0;
-                        let minB = 255, maxB = 0;
-                        for (let i = 0; i < pixelData.length; i += 4) {
-                            const b = (pixelData[i] * 0.299 + pixelData[i + 1] * 0.587 + pixelData[i + 2] * 0.114);
-                            totalBrightness += b;
-                            if (b < minB) minB = b;
-                            if (b > maxB) maxB = b;
-                        }
-                        const avgBrightness = totalBrightness / (80 * 100);
-                        const contrast = maxB - minB;
-                        // Face detected: avg brightness in skin-tone range & good contrast
-                        const faceDetected = avgBrightness > 55 && avgBrightness < 220 && contrast > 40;
+                        const vW = video.videoWidth, vH = video.videoHeight;
+                        // Sample center oval zone (face area)
+                        const centerData = sampleRegion(
+                            null, vW, vH,
+                            vW * 0.3, vH * 0.15, vW * 0.4, vH * 0.65, 40, 60
+                        );
+                        // Sample top-left corner (background reference)
+                        const cornerData = sampleRegion(
+                            null, vW, vH,
+                            0, 0, vW * 0.2, vH * 0.2, 20, 20
+                        );
+                        const c = avgRGB(centerData);
+                        const bg = avgRGB(cornerData);
+
+                        // Skin tone in center AND center is significantly warmer/different from background
+                        const centerIsSkin = isSkinTone(c.r, c.g, c.b);
+                        const centerDiffFromBg = Math.abs(c.r - bg.r) + Math.abs(c.g - bg.g) + Math.abs(c.b - bg.b);
+
+                        const faceDetected = centerIsSkin && centerDiffFromBg > 20;
+
                         if (faceDetected) {
-                            faceConsecutiveFrames++;
+                            faceConsecutiveFrames = Math.min(faceConsecutiveFrames + 1, REQUIRED_FRAMES + 2);
                         } else {
-                            faceConsecutiveFrames = Math.max(0, faceConsecutiveFrames - 1);
+                            faceConsecutiveFrames = Math.max(0, faceConsecutiveFrames - 2);
                         }
-                        if (faceConsecutiveFrames >= REQUIRED_FRAMES) {
-                            // Face confirmed!
+
+                        if (faceConsecutiveFrames >= REQUIRED_FRAMES && !faceConfirmed) {
+                            faceConfirmed = true;
                             document.getElementById('faceFrame').style.borderColor = '#22c55e';
                             document.getElementById('faceStatus').classList.remove('hidden');
                             document.getElementById('faceStatus').style.background = 'rgba(34,197,94,0.9)';
@@ -203,19 +221,21 @@
                             document.getElementById('iconCaptureBtn').classList.remove('opacity-50', 'pointer-events-none');
                             document.getElementById('iconCaptureBtn').onclick = () => captureBtn.click();
                             captureBtn.innerText = `Confirm ${type.toUpperCase()}`;
-                        } else if (faceConsecutiveFrames === 0) {
+                        } else if (faceConsecutiveFrames === 0 && faceConfirmed) {
+                            faceConfirmed = false;
                             document.getElementById('faceFrame').style.borderColor = '#1c74e9';
-                            document.getElementById('faceStatus').classList.remove('hidden');
                             document.getElementById('faceStatus').style.background = 'rgba(234,179,8,0.9)';
                             document.getElementById('faceStatusText').innerText = 'ALIGN FACE';
                             captureBtn.classList.add('opacity-50', 'pointer-events-none');
                             document.getElementById('iconCaptureBtn').classList.add('opacity-50', 'pointer-events-none');
                             captureBtn.innerText = `Align Face to Capture`;
                         }
-                    } catch (e) { /* ignore canvas errors */ }
+
+                    } catch (e) { console.warn('face detect err', e.message); }
                 }
 
-                faceDetectTimer = setInterval(checkFacePresence, 500);
+                faceDetectTimer = setInterval(checkFacePresence, 600);
+
 
                 // Fetch GPS coordinates
                 if (navigator.geolocation) {

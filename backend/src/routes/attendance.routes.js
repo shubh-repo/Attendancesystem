@@ -49,27 +49,30 @@ router.post('/checkin', verifyToken, upload.single('photo'), async (req, res) =>
             return res.status(400).json({ error: 'Check-In already recorded for today' });
         }
 
-        // 2. Load System Settings
-        const { data: settings, error: setErr } = await supabase.from('system_settings').select('*').eq('id', 1).single();
-        if (setErr) throw setErr;
+        // 2. Load System Settings (graceful fallback if table/row missing)
+        const { data: settings } = await supabase.from('system_settings').select('*').eq('id', 1).single().catch(() => ({ data: null }));
+        const cfg = settings || {};
+        const gpsEnabled = cfg.gps_enabled !== false; // default: enabled
+        const schoolLat = parseFloat(cfg.gps_latitude) || null;
+        const schoolLng = parseFloat(cfg.gps_longitude) || null;
+        const allowedRadius = parseInt(cfg.allowed_radius_meters) || 1000;
+        const schoolStartTime = cfg.school_start_time || '08:00:00';
+        const gracePeriodMins = parseInt(cfg.grace_period_minutes) ?? 15;
 
         // 3. GPS Validation
-        if (settings.gps_enabled) {
-            if (!lat || !lng) return res.status(400).json({ error: 'GPS coordinates are required' });
-
-            if (settings.gps_latitude !== null && settings.gps_longitude !== null) {
+        if (gpsEnabled && schoolLat !== null && schoolLng !== null) {
+            if (lat && lng) {
                 const distance = getDistanceFromLatLonInMeters(
-                    parseFloat(lat), parseFloat(lng),
-                    settings.gps_latitude, settings.gps_longitude
+                    parseFloat(lat), parseFloat(lng), schoolLat, schoolLng
                 );
-
-                // TEMPORARY BYPASS FOR TESTING
-                // if (distance > settings.allowed_radius_meters) {
-                //     return res.status(403).json({
-                //         error: `You are outside the school campus (${Math.round(distance)}m away). Attendance cannot be recorded.`
-                //     });
-                // }
-                console.log(`[TESTING] GPS distance was ${Math.round(distance)}m away from target. Check bypassed.`);
+                console.log(`GPS check: ${Math.round(distance)}m from school (allowed: ${allowedRadius}m)`);
+                if (distance > allowedRadius) {
+                    return res.status(403).json({
+                        error: `You are outside the school campus (${Math.round(distance)}m away, allowed ${allowedRadius}m). Please check in from the school premises.`
+                    });
+                }
+            } else {
+                console.warn('GPS coords missing – skipping GPS check for this check-in');
             }
         }
 
@@ -92,9 +95,9 @@ router.post('/checkin', verifyToken, upload.single('photo'), async (req, res) =>
         const in_photo_url = publicUrlData.publicUrl;
 
         // 5. Late Calculation
-        const startParts = settings.school_start_time.split(':');
+        const startParts = schoolStartTime.split(':');
         const schoolStartMin = parseInt(startParts[0]) * 60 + parseInt(startParts[1]);
-        const thresholdMin = schoolStartMin + settings.grace_period_minutes;
+        const thresholdMin = schoolStartMin + gracePeriodMins;
 
         const currentParts = currentTime.split(':');
         const currentMin = parseInt(currentParts[0]) * 60 + parseInt(currentParts[1]);
