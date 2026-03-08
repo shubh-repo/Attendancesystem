@@ -165,9 +165,10 @@ router.post('/checkout', verifyToken, upload.single('photo'), async (req, res) =
             return res.status(400).json({ error: 'Check-Out already recorded for today' });
         }
 
-        // 2. Load System Settings for GPS Validation
+        // 2. Load System Settings for GPS Validation & Early Leave
         const { data: settings } = await supabase.from('system_settings').select('*').eq('id', 1).maybeSingle();
         const cfg = settings || {};
+        const schoolEndTime = cfg.school_end_time || '13:00:00';
         const gpsEnabled = cfg.gps_enabled !== false; // default: enabled
         const schoolLat = parseFloat(cfg.gps_latitude) || null;
         const schoolLng = parseFloat(cfg.gps_longitude) || null;
@@ -208,9 +209,15 @@ router.post('/checkout', verifyToken, upload.single('photo'), async (req, res) =
         const out_photo_url = publicUrlData.publicUrl;
 
         // 3. Update Record
+        let finalStatus = existing.status;
+        if (currentTime < schoolEndTime) {
+            finalStatus = 'Early Leave';
+            console.log(`User checked out at ${currentTime} before ${schoolEndTime}, marked as Early Leave`);
+        }
+
         const { data, error: updateError } = await supabase
             .from('attendance')
-            .update({ out_time: currentTime, out_photo_url })
+            .update({ out_time: currentTime, out_photo_url, status: finalStatus })
             .eq('id', existing.id)
             .select()
             .single();

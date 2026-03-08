@@ -7,7 +7,14 @@ import cron from 'node-cron';
 cron.schedule('59 23 * * *', async () => {
     console.log('Running midnight cron job for missing attendance...');
     try {
-        const today = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Kolkata" }).split(' ')[0];
+        const todayDateStr = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Kolkata" });
+        const [today] = todayDateStr.split(' ');
+
+        // Exclude Sundays (getDay() === 0 means Sunday)
+        if (new Date(todayDateStr).getDay() === 0) {
+            console.log('Today is Sunday. No automated absent marks will be placed.');
+            return;
+        }
 
         // Get all teachers
         const { data: teachers, error: teacherError } = await supabase

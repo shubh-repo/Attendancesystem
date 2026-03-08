@@ -281,9 +281,11 @@
             try {
                 const s = await App.fetchAPI('/admin/settings');
                 if (!s) return;
-                // School time — stored as "HH:MM:SS" in DB
                 if (s.school_start_time) {
                     document.getElementById('schoolStartTime').value = s.school_start_time.substring(0, 5);
+                }
+                if (s.school_end_time) {
+                    document.getElementById('schoolEndTime').value = s.school_end_time.substring(0, 5);
                 }
                 if (s.grace_period_minutes !== undefined && s.grace_period_minutes !== null) {
                     document.getElementById('gracePeriod').value = s.grace_period_minutes;
@@ -312,6 +314,7 @@
             status.classList.add('hidden');
 
             const startTime = document.getElementById('schoolStartTime').value; // "HH:MM"
+            const endTime = document.getElementById('schoolEndTime').value || '13:00'; // "HH:MM"
             const grace = parseInt(document.getElementById('gracePeriod').value) || 0;
             const lat = parseFloat(document.getElementById('schoolLat').value) || null;
             const lng = parseFloat(document.getElementById('schoolLng').value) || null;
@@ -323,6 +326,7 @@
                     method: 'PUT',
                     body: JSON.stringify({
                         school_start_time: startTime + ':00', // store as "HH:MM:SS"
+                        school_end_time: endTime + ':00',
                         grace_period_minutes: grace,
                         gps_latitude: lat,
                         gps_longitude: lng,

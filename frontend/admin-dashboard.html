@@ -194,12 +194,14 @@
                     const d = new Date(days[i] + 'T00:00:00');
                     const dayOfWeek = d.getDay();
                     const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-                    const present = records.filter(r => r.status === 'Present' || r.status === 'Late').length;
+                    // Safely check if records is an array, defaults to [] on API failure
+                    const validRecords = Array.isArray(records) ? records : [];
+                    const present = validRecords.filter(r => r.status === 'Present' || r.status === 'Late' || r.status === 'Early Leave').length;
                     const pct = Math.round((present / totalTeachers) * 100);
                     const isToday = i === 6;
                     return `<div class="flex flex-col items-center flex-1 gap-1.5">
                         <span class="text-[9px] font-bold text-slate-400" style="min-height:12px">${(!isWeekend && pct > 0) ? pct + '%' : ''}</span>
-                        <div class="w-full rounded-t-lg relative overflow-hidden flex-1" style="height:100%; background: ${isToday ? 'rgba(28,116,233,0.15)' : isWeekend ? 'rgba(100,116,139,0.05)' : 'rgba(100,116,139,0.1)'}">
+                        <div class="w-full rounded-t-lg relative overflow-hidden flex-1" style="height:100%; min-height:60px; background: ${isToday ? 'rgba(28,116,233,0.15)' : isWeekend ? 'rgba(100,116,139,0.05)' : 'rgba(100,116,139,0.1)'}">
                             <div class="absolute bottom-0 w-full rounded-t transition-all duration-700"
                                 style="height:${isWeekend ? 0 : Math.max(pct, pct > 0 ? 4 : 0)}%; background:${isToday ? '#1c74e9' : isWeekend ? 'rgba(100,116,139,0.2)' : 'rgba(28,116,233,0.45)'}"></div>
                         </div>
@@ -212,7 +214,8 @@
             try {
                 const records = await App.fetchAPI('/admin/attendance/daily');
                 const alertsEl = document.getElementById('alertsList');
-                const flagged = records.filter(r => r.status === 'Late' || r.status === 'Absent');
+                // Sort to show latest checked-in flagged users first
+                const flagged = records.filter(r => r.status === 'Late' || r.status === 'Absent').reverse();
                 if (flagged.length === 0) {
                     alertsEl.innerHTML = `<div class="flex items-center gap-3 bg-green-50 dark:bg-green-900/20 p-4 rounded-xl border border-green-100 dark:border-green-800">
                         <span class="material-symbols-outlined text-green-500">check_circle</span>
@@ -241,15 +244,15 @@
 
         document.addEventListener('DOMContentLoaded', loadAdminDashboard);
     </script>
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/service-worker.js')
-        .then(r => console.log('[SW] Registered:', r.scope))
-        .catch(e => console.warn('[SW] Registration failed:', e));
-    });
-  }
-</script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(r => console.log('[SW] Registered:', r.scope))
+                    .catch(e => console.warn('[SW] Registration failed:', e));
+            });
+        }
+    </script>
 </body>
 
 </html>

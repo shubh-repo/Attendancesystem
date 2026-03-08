@@ -97,11 +97,20 @@
     <!-- View Tabs -->
     <div class="flex gap-1.5 px-4 pb-3">
       <button id="tabDaily" onclick="switchTab('daily')"
-        class="tab-active flex-1 py-2 rounded-xl text-xs font-bold transition-all">📅 Daily</button>
+        class="tab-active flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 py-2 px-1 rounded-xl transition-all">
+        <span class="material-symbols-outlined text-lg">calendar_month</span><span
+          class="text-[11px] sm:text-xs font-bold truncate">Daily</span>
+      </button>
       <button id="tabRange" onclick="switchTab('range')"
-        class="tab-inactive flex-1 py-2 rounded-xl text-xs font-bold transition-all">📊 Range</button>
+        class="tab-inactive flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 py-2 px-1 rounded-xl transition-all">
+        <span class="material-symbols-outlined text-lg">bar_chart</span><span
+          class="text-[11px] sm:text-xs font-bold truncate">Range</span>
+      </button>
       <button id="tabTeacher" onclick="switchTab('teacher')"
-        class="tab-inactive flex-1 py-2 rounded-xl text-xs font-bold transition-all">👤 Teacher</button>
+        class="tab-inactive flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 py-2 px-1 rounded-xl transition-all">
+        <span class="material-symbols-outlined text-lg">person</span><span
+          class="text-[11px] sm:text-xs font-bold truncate">Teacher</span>
+      </button>
     </div>
   </header>
 
@@ -287,7 +296,7 @@
       <p class="text-[10px] font-bold uppercase">Teachers</p>
     </a>
     <a class="flex flex-col items-center flex-1 gap-1 text-primary" href="./attendance-monitoring.html">
-      <span class="material-symbols-outlined">analytics</span>
+      <span class="material-symbols-outlined fill-[1]">analytics</span>
       <p class="text-[10px] font-bold uppercase">Monitor</p>
     </a>
     <a class="flex flex-col items-center flex-1 gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors"
@@ -340,11 +349,13 @@
     function switchTab(tab) {
       currentTab = tab;
       ['daily', 'range', 'teacher'].forEach(t => {
-        document.getElementById('view' + t.charAt(0).toUpperCase() + t.slice(1)).classList.add('hidden');
-        document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)).className = 'tab-inactive flex-1 py-2 rounded-xl text-xs font-bold transition-all';
+        const view = document.getElementById('view' + t.charAt(0).toUpperCase() + t.slice(1));
+        const btn = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1));
+        view.classList.add('hidden');
+        btn.className = 'tab-inactive flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 py-2 px-1 rounded-xl transition-all';
       });
       document.getElementById('view' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.remove('hidden');
-      document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).className = 'tab-active flex-1 py-2 rounded-xl text-xs font-bold transition-all';
+      document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).className = 'tab-active flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 py-2 px-1 rounded-xl transition-all';
     }
 
     // ── Daily View ──
@@ -620,15 +631,15 @@
       loadDailyView();
     });
   </script>
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/service-worker.js')
-        .then(r => console.log('[SW] Registered:', r.scope))
-        .catch(e => console.warn('[SW] Registration failed:', e));
-    });
-  }
-</script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(r => console.log('[SW] Registered:', r.scope))
+          .catch(e => console.warn('[SW] Registration failed:', e));
+      });
+    }
+  </script>
 </body>
 
 </html>

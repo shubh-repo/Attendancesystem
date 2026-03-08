@@ -21,6 +21,7 @@ router.get('/settings', async (req, res) => {
     res.json(data || {
         id: 1,
         school_start_time: '08:00:00',
+        school_end_time: '13:00:00',
         grace_period_minutes: 15,
         gps_enabled: true,
         gps_latitude: null,
@@ -33,6 +34,7 @@ router.get('/settings', async (req, res) => {
 router.put('/settings', async (req, res) => {
     const {
         school_start_time,
+        school_end_time,
         grace_period_minutes,
         gps_latitude,
         gps_longitude,
@@ -45,6 +47,7 @@ router.put('/settings', async (req, res) => {
         .upsert({
             id: 1,
             school_start_time,
+            school_end_time,
             grace_period_minutes,
             gps_latitude,
             gps_longitude,
