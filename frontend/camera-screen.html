@@ -118,9 +118,9 @@
             <div class="flex flex-col items-center justify-center gap-6 max-w-md mx-auto">
                 <!-- Quick Selection Icons (Removed Gallery) -->
                 <div class="flex items-center justify-center gap-8 mb-2">
-                    <button onclick="initCamera()" title="Refresh Camera"
+                    <button onclick="switchCamera()" title="Switch Camera"
                         class="flex shrink-0 items-center justify-center rounded-full size-12 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 shadow-md border border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
-                        <span class="material-symbols-outlined">cached</span>
+                        <span class="material-symbols-outlined">flip_camera_ios</span>
                     </button>
                     <button id="iconCaptureBtn"
                         class="flex shrink-0 items-center justify-center rounded-full size-20 bg-primary text-white shadow-lg shadow-primary/40 ring-4 ring-primary/20 opacity-50 pointer-events-none active:scale-95 transition">
@@ -150,13 +150,26 @@
 
         let stream = null;
         let gpsCoords = null;
+        let currentFacingMode = 'user'; // default front
+
+        function switchCamera() {
+            currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
+            initCamera();
+        }
 
         async function initCamera() {
+            if (stream) stream.getTracks().forEach(t => t.stop());
             try {
                 stream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: 'user', width: { ideal: 720 } }
+                    video: { facingMode: currentFacingMode, width: { ideal: 720 } }
                 });
                 video.srcObject = stream;
+
+                if (currentFacingMode === 'user') {
+                    video.classList.add('-scale-x-100');
+                } else {
+                    video.classList.remove('-scale-x-100');
+                }
 
                 // Real face detection: skin-tone hue + center-vs-edge contrast every 600ms
                 let faceDetectTimer = null;
@@ -411,15 +424,15 @@
             <p class="text-[10px] font-bold uppercase">Profile</p>
         </a>
     </nav>
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/service-worker.js')
-        .then(r => console.log('[SW] Registered:', r.scope))
-        .catch(e => console.warn('[SW] Registration failed:', e));
-    });
-  }
-</script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(r => console.log('[SW] Registered:', r.scope))
+                    .catch(e => console.warn('[SW] Registration failed:', e));
+            });
+        }
+    </script>
 </body>
 
 </html>

@@ -108,9 +108,11 @@ router.post('/admin/change-password', async (req, res) => {
 
         // Verify current password — check DB first, fallback to env
         let currentValid = false;
-        const { data: creds } = await supabase.from('admin_credentials').select('password').eq('id', 1).single().catch(() => ({ data: null }));
+        const { data: creds } = await supabase.from('admin_credentials').select('password').eq('id', 1).maybeSingle();
         if (creds?.password) {
-            currentValid = current_password === creds.password || await bcrypt.compare(current_password, creds.password).catch(() => false);
+            try {
+                currentValid = current_password === creds.password || await bcrypt.compare(current_password, creds.password);
+            } catch (e) { currentValid = false; }
         }
         if (!currentValid) {
             const envPass = process.env.ADMIN_PASSWORD || 'admin123';
@@ -146,7 +148,9 @@ router.post('/admin/change-password', async (req, res) => {
         }
 
         // 3. Also try DB (bonus persistence)
-        await supabase.from('admin_credentials').upsert({ id: 1, password: new_password, updated_at: new Date() }, { onConflict: 'id' }).catch(() => { });
+        try {
+            await supabase.from('admin_credentials').upsert({ id: 1, password: new_password, updated_at: new Date() }, { onConflict: 'id' });
+        } catch (e) { }
 
         res.json({ message: 'Admin password changed successfully' });
     } catch (err) {

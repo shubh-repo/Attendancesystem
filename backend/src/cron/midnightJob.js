@@ -7,7 +7,7 @@ import cron from 'node-cron';
 cron.schedule('59 23 * * *', async () => {
     console.log('Running midnight cron job for missing attendance...');
     try {
-        const today = new Date().toISOString().split('T')[0];
+        const today = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Kolkata" }).split(' ')[0];
 
         // Get all teachers
         const { data: teachers, error: teacherError } = await supabase

@@ -117,7 +117,7 @@ router.delete('/teachers/:id', async (req, res) => {
 
 // Get Dashboard Stats (Today)
 router.get('/dashboard/stats', async (req, res) => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Kolkata" }).split(' ')[0];
     try {
         const { data: teachers, error: tError } = await supabase.from('teachers').select('id', { count: 'exact' });
         if (tError) throw tError;
@@ -148,7 +148,7 @@ router.get('/dashboard/stats', async (req, res) => {
 
 // Get Daily Attendance List
 router.get('/attendance/daily', async (req, res) => {
-    const date = req.query.date || new Date().toISOString().split('T')[0];
+    const date = req.query.date || new Date().toLocaleString("sv-SE", { timeZone: "Asia/Kolkata" }).split(' ')[0];
     const { data, error } = await supabase
         .from('attendance')
         .select(`

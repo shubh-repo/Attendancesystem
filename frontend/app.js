@@ -1,5 +1,17 @@
 const API_BASE = '/api';
 
+// Global styles for page transition animations
+const globalStyles = document.createElement('style');
+globalStyles.textContent = `
+    body { animation: pageFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+    @keyframes pageFadeIn { 
+        0% { opacity: 0; transform: translateY(4px); } 
+        100% { opacity: 1; transform: translateY(0); } 
+    }
+    button, a { transition: all 0.2s ease-in-out; }
+    button:active, a:active { transform: scale(0.96); }
+`;
+document.head.appendChild(globalStyles);
 const App = {
     token: localStorage.getItem('token'),
     user: JSON.parse(localStorage.getItem('user') || 'null'),

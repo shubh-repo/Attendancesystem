@@ -30,7 +30,7 @@
             max-width: 480px !important;
             margin: 0 auto !important;
             box-shadow: 0 0 40px rgba(0, 0, 0, 0.1) !important;
-            background-color: #f1f5f9;
+            background-color: #f8fafc;
             font-family: 'Lexend', sans-serif;
             min-height: 100dvh;
         }
@@ -351,15 +351,15 @@
             updateLatePreview();
         });
     </script>
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/service-worker.js')
-        .then(r => console.log('[SW] Registered:', r.scope))
-        .catch(e => console.warn('[SW] Registration failed:', e));
-    });
-  }
-</script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(r => console.log('[SW] Registered:', r.scope))
+                    .catch(e => console.warn('[SW] Registration failed:', e));
+            });
+        }
+    </script>
 </body>
 
 </html>

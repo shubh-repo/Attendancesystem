@@ -34,8 +34,8 @@ router.post('/checkin', verifyToken, upload.single('photo'), async (req, res) =>
 
         if (!photo) return res.status(400).json({ error: 'Photo is required' });
 
-        const today = new Date().toISOString().split('T')[0];
-        const currentTime = new Date().toTimeString().split(' ')[0];
+        const kolkataTimeStr = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Kolkata" });
+        const [today, currentTime] = kolkataTimeStr.split(' ');
 
         // 1. Check if already checked-in
         const { data: existing, error: existError } = await supabase
@@ -61,18 +61,17 @@ router.post('/checkin', verifyToken, upload.single('photo'), async (req, res) =>
 
         // 3. GPS Validation
         if (gpsEnabled && schoolLat !== null && schoolLng !== null) {
-            if (lat && lng) {
-                const distance = getDistanceFromLatLonInMeters(
-                    parseFloat(lat), parseFloat(lng), schoolLat, schoolLng
-                );
-                console.log(`GPS check: ${Math.round(distance)}m from school (allowed: ${allowedRadius}m)`);
-                if (distance > allowedRadius) {
-                    return res.status(403).json({
-                        error: `You are outside the school campus (${Math.round(distance)}m away, allowed ${allowedRadius}m). Please check in from the school premises.`
-                    });
-                }
-            } else {
-                console.warn('GPS coords missing – skipping GPS check for this check-in');
+            if (!lat || !lng) {
+                return res.status(403).json({ error: 'GPS location access is strictly required to check in. Please allow location permissions in your browser.' });
+            }
+            const distance = getDistanceFromLatLonInMeters(
+                parseFloat(lat), parseFloat(lng), schoolLat, schoolLng
+            );
+            console.log(`GPS check: ${Math.round(distance)}m from school (allowed: ${allowedRadius}m)`);
+            if (distance > allowedRadius) {
+                return res.status(403).json({
+                    error: `You are outside the school campus (${Math.round(distance)}m away, allowed ${allowedRadius}m). Please check in from the school premises.`
+                });
             }
         }
 
@@ -144,11 +143,12 @@ router.post('/checkout', verifyToken, upload.single('photo'), async (req, res) =
     try {
         const teacher_id = req.user.id;
         const photo = req.file;
+        const { lat, lng, device } = req.body;
 
         if (!photo) return res.status(400).json({ error: 'Photo is required' });
 
-        const today = new Date().toISOString().split('T')[0];
-        const currentTime = new Date().toTimeString().split(' ')[0];
+        const kolkataTimeStr = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Kolkata" });
+        const [today, currentTime] = kolkataTimeStr.split(' ');
 
         // 1. Ensure Check-In exists
         const { data: existing, error: existError } = await supabase
@@ -165,7 +165,31 @@ router.post('/checkout', verifyToken, upload.single('photo'), async (req, res) =
             return res.status(400).json({ error: 'Check-Out already recorded for today' });
         }
 
-        // 2. Image Compression & Upload
+        // 2. Load System Settings for GPS Validation
+        const { data: settings } = await supabase.from('system_settings').select('*').eq('id', 1).maybeSingle();
+        const cfg = settings || {};
+        const gpsEnabled = cfg.gps_enabled !== false; // default: enabled
+        const schoolLat = parseFloat(cfg.gps_latitude) || null;
+        const schoolLng = parseFloat(cfg.gps_longitude) || null;
+        const allowedRadius = parseInt(cfg.allowed_radius_meters) || 1000;
+
+        // 3. GPS Validation
+        if (gpsEnabled && schoolLat !== null && schoolLng !== null) {
+            if (!lat || !lng) {
+                return res.status(403).json({ error: 'GPS location access is strictly required to check out. Please allow location permissions in your browser.' });
+            }
+            const distance = getDistanceFromLatLonInMeters(
+                parseFloat(lat), parseFloat(lng), schoolLat, schoolLng
+            );
+            console.log(`GPS check out: ${Math.round(distance)}m from school (allowed: ${allowedRadius}m)`);
+            if (distance > allowedRadius) {
+                return res.status(403).json({
+                    error: `You are outside the school campus (${Math.round(distance)}m away, allowed ${allowedRadius}m). Please check out from the school premises.`
+                });
+            }
+        }
+
+        // 4. Image Compression & Upload
         const compressedImageBuffer = await sharp(photo.buffer)
             .resize({ width: 720 })
             .jpeg({ quality: 80 })
