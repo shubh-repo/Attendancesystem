@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <link rel="manifest" href="./manifest.json" />
+    <script src="./app.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: { "primary": "#1c74e9", "background-light": "#f6f7f8", "background-dark": "#111821" },
+                    fontFamily: { "display": ["Lexend"] }
+                },
+            },
+        }
+    </script>
+    <title>My Profile</title>
+    <style>
+        body {
+            max-width: 480px !important;
+            margin: 0 auto !important;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.1) !important;
+            background-color: #f8fafc;
+            font-family: 'Lexend', sans-serif;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #0f172a;
+                box-shadow: 0 0 40px rgba(0, 0, 0, 0.4) !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+    <!-- Header -->
+    <header
+        class="flex items-center bg-white dark:bg-slate-900 p-4 sticky top-0 z-10 border-b border-slate-200 dark:border-slate-800">
+        <button onclick="App.toggleSidebar()"
+            class="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+            <span class="material-symbols-outlined">menu</span>
+        </button>
+        <h1 class="text-lg font-bold flex-1 text-center pr-10">My Profile</h1>
+    </header>
+
+    <main class="flex-1 overflow-y-auto pb-28 p-5 space-y-4">
+        <!-- Avatar + Name Card -->
+        <div
+            class="flex flex-col items-center bg-gradient-to-br from-primary to-blue-700 p-8 rounded-2xl shadow-md text-center text-white">
+            <img id="profileAvatar" src="https://ui-avatars.com/api/?name=T&background=ffffff22&color=fff&size=128"
+                class="rounded-full h-24 w-24 mb-4 ring-4 ring-white/30" alt="Avatar">
+            <h2 id="profileName" class="text-2xl font-bold">Loading...</h2>
+            <p id="profileDesignation" class="text-white/80 font-medium mt-1 text-sm">...</p>
+            <span
+                class="mt-2 inline-flex items-center gap-1 bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full">
+                <span class="material-symbols-outlined text-xs">verified</span> Teacher
+            </span>
+        </div>
+
+        <!-- Info Card -->
+        <div
+            class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+            <div class="p-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary">phone</span>
+                    <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Mobile / ID</span>
+                </div>
+                <span id="profileMobile" class="text-sm font-bold text-slate-900 dark:text-white">N/A</span>
+            </div>
+            <div class="p-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary">badge</span>
+                    <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Role</span>
+                </div>
+                <span id="profileRole"
+                    class="text-sm font-bold text-slate-900 dark:text-white capitalize">Teacher</span>
+            </div>
+            <div class="p-4 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary">calendar_month</span>
+                    <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Joined On</span>
+                </div>
+                <span id="profileJoined" class="text-sm font-bold text-slate-900 dark:text-white">N/A</span>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="space-y-3">
+            <button onclick="openChangePassword()"
+                class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center gap-3 p-4 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                    <span class="material-symbols-outlined text-primary">lock</span>
+                </div>
+                <div class="text-left">
+                    <p class="font-semibold text-sm">Change Password</p>
+                    <p class="text-xs text-slate-400">Update your login password</p>
+                </div>
+                <span class="material-symbols-outlined text-slate-400 ml-auto">chevron_right</span>
+            </button>
+
+            <button onclick="App.logout()"
+                class="w-full bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 rounded-xl flex items-center gap-3 p-4 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors">
+                <div class="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+                    <span class="material-symbols-outlined text-red-500">logout</span>
+                </div>
+                <div class="text-left">
+                    <p class="font-semibold text-sm text-red-600">Sign Out</p>
+                    <p class="text-xs text-red-400">Logout from this device</p>
+                </div>
+            </button>
+        </div>
+    </main>
+
+    <!-- Bottom Nav -->
+    <nav
+        class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-3 pb-8 pt-2 flex justify-around items-center max-w-[480px] mx-auto w-full">
+        <a class="flex flex-col items-center flex-1 gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors"
+            href="./dashboard.html">
+            <span class="material-symbols-outlined">home</span>
+            <p class="text-[10px] font-bold uppercase">Home</p>
+        </a>
+        <a class="flex flex-col items-center flex-1 gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors"
+            href="./attendance-history.html">
+            <span class="material-symbols-outlined">history</span>
+            <p class="text-[10px] font-bold uppercase">History</p>
+        </a>
+        <a class="flex flex-col items-center flex-1 gap-1 text-primary" href="./profile.html">
+            <span class="material-symbols-outlined filled">person</span>
+            <p class="text-[10px] font-bold uppercase">Profile</p>
+        </a>
+    </nav>
+
+    <!-- CHANGE PASSWORD MODAL -->
+    <div id="changePasswordModal"
+        class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-sm p-6 shadow-2xl">
+            <div class="flex items-center justify-between mb-5">
+                <h3 class="text-lg font-bold">Change Password</h3>
+                <button onclick="closeChangePassword()"
+                    class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <p id="pwdMsg" class="text-sm text-red-500 mb-3 hidden"></p>
+            <p id="pwdSuccess" class="text-sm text-green-600 mb-3 hidden"></p>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Current Password</label>
+                    <input id="curPwdTeacher" type="password" placeholder="Your current password"
+                        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary outline-none text-sm" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">New Password</label>
+                    <input id="newPwd" type="password" placeholder="Min 6 chars, letter+number+symbol"
+                        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary outline-none text-sm" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Confirm New Password</label>
+                    <input id="confirmPwd" type="password" placeholder="Repeat password"
+                        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary outline-none text-sm" />
+                </div>
+                <div class="flex gap-3 pt-2">
+                    <button onclick="closeChangePassword()"
+                        class="flex-1 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl font-semibold text-sm">Cancel</button>
+                    <button onclick="doChangePassword()"
+                        class="flex-1 py-3 bg-primary text-white rounded-xl font-semibold text-sm">Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openChangePassword() {
+            document.getElementById('changePasswordModal').classList.remove('hidden');
+            document.getElementById('pwdMsg').classList.add('hidden');
+            document.getElementById('pwdSuccess').classList.add('hidden');
+            document.getElementById('curPwdTeacher').value = '';
+            document.getElementById('newPwd').value = '';
+            document.getElementById('confirmPwd').value = '';
+        }
+        function closeChangePassword() {
+            document.getElementById('changePasswordModal').classList.add('hidden');
+        }
+        async function doChangePassword() {
+            const curPwd = document.getElementById('curPwdTeacher').value.trim();
+            const newPwd = document.getElementById('newPwd').value.trim();
+            const confirmPwd = document.getElementById('confirmPwd').value.trim();
+            const msg = document.getElementById('pwdMsg');
+            const success = document.getElementById('pwdSuccess');
+            msg.classList.add('hidden');
+            success.classList.add('hidden');
+
+            if (!curPwd) {
+                msg.innerText = 'Please enter your current password';
+                msg.classList.remove('hidden'); return;
+            }
+            if (!newPwd || newPwd.length < 6) {
+                msg.innerText = 'Password must be at least 6 characters';
+                msg.classList.remove('hidden'); return;
+            }
+            if (!/[A-Za-z]/.test(newPwd)) {
+                msg.innerText = 'Password must include at least one letter';
+                msg.classList.remove('hidden'); return;
+            }
+            if (!/[0-9]/.test(newPwd)) {
+                msg.innerText = 'Password must include at least one number';
+                msg.classList.remove('hidden'); return;
+            }
+            if (!/[^A-Za-z0-9]/.test(newPwd)) {
+                msg.innerText = 'Password must include at least one symbol (e.g. @, #, !)';
+                msg.classList.remove('hidden'); return;
+            }
+            if (newPwd !== confirmPwd) {
+                msg.innerText = 'Passwords do not match';
+                msg.classList.remove('hidden'); return;
+            }
+            try {
+                await App.fetchAPI('/auth/change-password', { method: 'POST', body: JSON.stringify({ current_password: curPwd, new_password: newPwd }) });
+                success.innerText = '✅ Password changed successfully!';
+                success.classList.remove('hidden');
+                setTimeout(closeChangePassword, 2000);
+            } catch (e) {
+                msg.innerText = e.message || 'Failed to change password';
+                msg.classList.remove('hidden');
+            }
+        }
+
+        async function loadProfile() {
+            if (!App.user) { window.location.replace('./index.html'); return; }
+            // Show from localStorage immediately
+            document.getElementById('profileName').innerText = App.user.name || 'Loading...';
+            document.getElementById('profileDesignation').innerText = App.user.designation || '';
+            document.getElementById('profileAvatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(App.user.name || 'T')}&background=ffffff22&color=fff&size=128`;
+
+            // Then fetch fresh data from API
+            try {
+                const data = await App.fetchAPI('/attendance/me');
+                document.getElementById('profileName').innerText = data.name || 'Unknown';
+                document.getElementById('profileDesignation').innerText = data.designation || 'Teacher';
+                document.getElementById('profileMobile').innerText = data.mobile || 'N/A';
+                document.getElementById('profileRole').innerText = 'Teacher';
+                document.getElementById('profileJoined').innerText = data.joining_date
+                    ? new Date(data.joining_date + 'T00:00:00').toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
+                    : 'N/A';
+                document.getElementById('profileAvatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name || 'T')}&background=3b82f6&color=fff&size=128`;
+                // Update localStorage with latest data
+                const updatedUser = { ...App.user, ...data };
+                localStorage.setItem('user', JSON.stringify(updatedUser));
+            } catch (e) {
+                console.warn('Could not fetch fresh profile:', e.message);
+                // Fall back to localStorage
+                document.getElementById('profileMobile').innerText = App.user.mobile || 'N/A';
+                document.getElementById('profileJoined').innerText = App.user.joining_date
+                    ? new Date(App.user.joining_date + 'T00:00:00').toLocaleDateString() : 'N/A';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadProfile);
+    </script>
+</body>
+
+</html>

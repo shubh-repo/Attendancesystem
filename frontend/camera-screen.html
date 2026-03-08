@@ -10,10 +10,11 @@
     <script src="./app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
         rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
         rel="stylesheet" />
     <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
         rel="stylesheet" />
     <script id="tailwind-config">
         tailwind.config = {
@@ -39,23 +40,42 @@
             min-height: max(884px, 100dvh);
         }
     </style>
+
+    <style>
+        body {
+            max-width: 480px !important;
+            margin: 0 auto !important;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.1) !important;
+            position: relative;
+            background-color: #f8fafc;
+            /* To make the container stand out on PC */
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #0f172a;
+                box-shadow: 0 0 40px rgba(0, 0, 0, 0.4) !important;
+            }
+        }
+    </style>
 </head>
 
 <body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
-    <div class="relative flex h-screen w-full flex-col overflow-x-hidden">
+    <div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
         <!-- Top App Bar -->
         <div
             class="flex items-center bg-background-light dark:bg-background-dark p-4 justify-between border-b border-slate-200 dark:border-slate-800">
-            <div
-                class="text-slate-900 dark:text-slate-100 flex size-10 shrink-0 items-center justify-center cursor-pointer">
+            <a href="./dashboard.html"
+                class="text-slate-900 dark:text-slate-100 flex size-10 shrink-0 items-center justify-center cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full transition-colors">
                 <span class="material-symbols-outlined">arrow_back</span>
-            </div>
+            </a>
             <h2
                 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight flex-1 text-center">
                 Teacher Attendance</h2>
-            <div class="size-10 flex items-center justify-center">
-                <span class="material-symbols-outlined text-slate-500">help_outline</span>
-            </div>
+            <button onclick="showGuide()"
+                class="size-10 flex items-center justify-center rounded-full bg-blue-600/20 text-primary hover:bg-blue-600/30 transition-colors cursor-pointer">
+                <span class="material-symbols-outlined text-xl">help_outline</span>
+            </button>
         </div>
         <!-- Camera Viewfinder Section -->
         <div class="flex-1 flex flex-col items-center justify-center p-4 relative overflow-hidden">
@@ -67,16 +87,17 @@
                         playsinline></video>
                     <canvas id="photoCanvas" class="hidden"></canvas>
                 </div>
-                <!-- Scanning Overlay Guides -->
-                <div id="faceOverlay"
-                    class="absolute inset-0 border-[40px] border-black/40 pointer-events-none flex items-center justify-center transition-colors duration-300">
-                    <div class="w-[80%] h-[70%] border-2 border-primary rounded-xl relative transition-colors duration-300"
-                        id="faceFrame">
-                        <!-- Corner Accents -->
-                        <div class="absolute -top-1 -left-1 w-8 h-8 border-t-4 border-l-4 border-current"></div>
-                        <div class="absolute -top-1 -right-1 w-8 h-8 border-t-4 border-r-4 border-current"></div>
-                        <div class="absolute -bottom-1 -left-1 w-8 h-8 border-b-4 border-l-4 border-current"></div>
-                        <div class="absolute -bottom-1 -right-1 w-8 h-8 border-b-4 border-r-4 border-current"></div>
+                <div id="faceOverlay" class="absolute inset-0 pointer-events-none flex items-center justify-center"
+                    style="background: rgba(0,0,0,0.5)">
+                    <!-- Face-shaped oval cutout -->
+                    <div id="faceFrame" style="
+                            width: 200px;
+                            height: 260px;
+                            border: 2.5px solid #1c74e9;
+                            border-radius: 50% 50% 45% 45% / 40% 40% 60% 60%;
+                            box-shadow: 0 0 0 9999px rgba(0,0,0,0.52);
+                            background: transparent;
+                        ">
                     </div>
                 </div>
                 <!-- Status Indicator -->
@@ -93,22 +114,20 @@
             </div>
         </div>
         <!-- Camera Actions -->
-        <div class="bg-background-light dark:bg-background-dark p-6 pb-10">
+        <div class="bg-background-light dark:bg-background-dark p-6 pb-32">
             <div class="flex flex-col items-center justify-center gap-6 max-w-md mx-auto">
-                <!-- Quick Selection Icons -->
+                <!-- Quick Selection Icons (Removed Gallery) -->
                 <div class="flex items-center justify-center gap-8 mb-2">
-                    <button
-                        class="flex shrink-0 items-center justify-center rounded-full size-12 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 shadow-md border border-slate-100 dark:border-slate-700">
-                        <span class="material-symbols-outlined">image</span>
-                    </button>
-                    <button
-                        class="flex shrink-0 items-center justify-center rounded-full size-20 bg-primary text-white shadow-lg shadow-primary/40 ring-4 ring-primary/20">
-                        <span class="material-symbols-outlined !text-4xl">photo_camera</span>
-                    </button>
-                    <button
-                        class="flex shrink-0 items-center justify-center rounded-full size-12 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 shadow-md border border-slate-100 dark:border-slate-700">
+                    <button onclick="initCamera()" title="Refresh Camera"
+                        class="flex shrink-0 items-center justify-center rounded-full size-12 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 shadow-md border border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
                         <span class="material-symbols-outlined">cached</span>
                     </button>
+                    <button id="iconCaptureBtn"
+                        class="flex shrink-0 items-center justify-center rounded-full size-20 bg-primary text-white shadow-lg shadow-primary/40 ring-4 ring-primary/20 opacity-50 pointer-events-none active:scale-95 transition">
+                        <span class="material-symbols-outlined !text-4xl">photo_camera</span>
+                    </button>
+                    <!-- Empty 12px div to balance flex spacing -->
+                    <div class="size-12"></div>
                 </div>
                 <!-- Primary Action Buttons -->
                 <div class="w-full flex w-full flex-col gap-3">
@@ -120,8 +139,7 @@
                 </div>
             </div>
         </div>
-        <!-- Navigation Bar Spacer -->
-        <div class="h-4 bg-background-light dark:bg-background-dark"></div>
+
     </div>
     <script>
         const type = new URLSearchParams(window.location.search).get('type') || 'in';
@@ -147,7 +165,10 @@
                     document.getElementById('faceStatus').classList.remove('hidden');
                     document.getElementById('faceStatus').classList.replace('bg-yellow-500/90', 'bg-emerald-500/90');
                     document.getElementById('faceStatusText').innerText = "FACE ALIGNED";
+                    // Make both buttons clickable
                     captureBtn.classList.remove('opacity-50', 'pointer-events-none');
+                    document.getElementById('iconCaptureBtn').classList.remove('opacity-50', 'pointer-events-none');
+                    document.getElementById('iconCaptureBtn').onclick = () => captureBtn.click();
                     captureBtn.innerText = `Confirm ${type.toUpperCase()}`;
                 }, 2500);
 
@@ -212,8 +233,119 @@
             }, 'image/jpeg', 0.8);
         };
 
+        function showGuide() {
+            const m = document.getElementById('guideModal');
+            m.classList.remove('hidden');
+        }
+        function closeGuide() {
+            const m = document.getElementById('guideModal');
+            m.classList.add('hidden');
+        }
+
         window.onload = initCamera;
     </script>
+
+    <!-- ATTENDANCE GUIDE MODAL -->
+    <div id="guideModal" class="hidden fixed inset-0 z-[200] flex items-end justify-center bg-black/60 backdrop-blur-sm"
+        onclick="if(event.target===this) closeGuide()">
+        <div class="bg-white dark:bg-slate-900 rounded-t-3xl w-full max-w-[480px] p-6 pb-10 shadow-2xl"
+            style="animation: slideUp 0.3s cubic-bezier(0.34,1.2,0.64,1) both;">
+            <div class="flex items-center justify-between mb-5">
+                <h3 class="text-lg font-bold">📋 Attendance Guide</h3>
+                <button onclick="closeGuide()" class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div class="flex gap-3 items-start">
+                    <div
+                        class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 font-bold flex items-center justify-center flex-shrink-0 text-sm">
+                        1</div>
+                    <div>
+                        <p class="font-semibold text-sm">Allow Camera Access</p>
+                        <p class="text-xs text-slate-500 mt-0.5">When prompted, tap "Allow" to give camera permission.
+                            This is required to record attendance.</p>
+                    </div>
+                </div>
+                <div class="flex gap-3 items-start">
+                    <div
+                        class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 font-bold flex items-center justify-center flex-shrink-0 text-sm">
+                        2</div>
+                    <div>
+                        <p class="font-semibold text-sm">Align Your Face</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Position your face inside the oval frame. Keep your
+                            face centered and well-lit.</p>
+                    </div>
+                </div>
+                <div class="flex gap-3 items-start">
+                    <div
+                        class="w-8 h-8 rounded-full bg-green-100 text-green-600 font-bold flex items-center justify-center flex-shrink-0 text-sm">
+                        3</div>
+                    <div>
+                        <p class="font-semibold text-sm">Frame Turns Green → Tap Capture</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Once the oval turns green, the camera button activates.
+                            Tap the blue camera icon to take your photo.</p>
+                    </div>
+                </div>
+                <div class="flex gap-3 items-start">
+                    <div
+                        class="w-8 h-8 rounded-full bg-amber-100 text-amber-600 font-bold flex items-center justify-center flex-shrink-0 text-sm">
+                        4</div>
+                    <div>
+                        <p class="font-semibold text-sm">Allow Location</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Location is checked to verify you're on school
+                            premises. You must be within the allowed area.</p>
+                    </div>
+                </div>
+                <div class="flex gap-3 items-start">
+                    <div
+                        class="w-8 h-8 rounded-full bg-purple-100 text-purple-600 font-bold flex items-center justify-center flex-shrink-0 text-sm">
+                        5</div>
+                    <div>
+                        <p class="font-semibold text-sm">Check In &amp; Check Out</p>
+                        <p class="text-xs text-slate-500 mt-0.5">First tap = Check In (morning). Come back at the end of
+                            the day and tap again for Check Out.</p>
+                    </div>
+                </div>
+            </div>
+            <button onclick="closeGuide()" class="mt-6 w-full py-3 bg-primary text-white font-bold rounded-xl">Got
+                it!</button>
+        </div>
+    </div>
+
+    <style>
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+
+    <!-- Bottom Navigation Bar -->
+    <nav
+        class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-3 pb-8 pt-2 flex justify-around items-center max-w-[480px] mx-auto w-full">
+        <a class="flex flex-col items-center flex-1 gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors"
+            href="./dashboard.html">
+            <span class="material-symbols-outlined">home</span>
+            <p class="text-[10px] font-bold uppercase">Home</p>
+        </a>
+        <a class="flex flex-col items-center flex-1 gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors"
+            href="./attendance-history.html">
+            <span class="material-symbols-outlined">history</span>
+            <p class="text-[10px] font-bold uppercase">History</p>
+        </a>
+        <a class="flex flex-col items-center flex-1 gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors"
+            href="./profile.html">
+            <span class="material-symbols-outlined">person</span>
+            <p class="text-[10px] font-bold uppercase">Profile</p>
+        </a>
+    </nav>
 </body>
 
 </html>

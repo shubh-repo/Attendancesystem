@@ -1,4 +1,4 @@
-const CACHE_NAME = 'stgng-attendance-v1';
+const CACHE_NAME = 'stgng-attendance-v8';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
@@ -46,8 +46,7 @@ self.addEventListener('fetch', (event) => {
                 // Cache dynamic UI files on the fly if needed (optional)
                 return networkResponse;
             }).catch(() => {
-                // Fallback for offline if page is requested
-                if (event.request.headers.get('accept').includes('text/html')) {
+                if (event.request.headers.get('accept') && event.request.headers.get('accept').includes('text/html')) {
                     return caches.match('/index.html');
                 }
             });

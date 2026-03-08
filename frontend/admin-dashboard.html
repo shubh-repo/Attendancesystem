@@ -1,34 +1,25 @@
 <!DOCTYPE html>
-
-<html class="light" lang="en">
+<html lang="en">
 
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>School Attendance Admin Dashboard</title>
+    <title>Admin Dashboard – EduAttend</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link rel="manifest" href="./manifest.json" />
     <script src="./app.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
-        rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap"
         rel="stylesheet" />
     <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
         rel="stylesheet" />
-    <script id="tailwind-config">
+    <script>
         tailwind.config = {
             darkMode: "class",
             theme: {
                 extend: {
-                    colors: {
-                        "primary": "#1c74e9",
-                        "background-light": "#f6f7f8",
-                        "background-dark": "#111821",
-                    },
-                    fontFamily: {
-                        "display": ["Lexend"]
-                    },
+                    colors: { "primary": "#1c74e9", "background-light": "#f6f7f8", "background-dark": "#111821" },
+                    fontFamily: { "display": ["Lexend"] },
                     borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
                 },
             },
@@ -36,57 +27,56 @@
     </script>
     <style>
         body {
+            max-width: 480px !important;
+            margin: 0 auto !important;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.1) !important;
+            background-color: #f8fafc;
             font-family: 'Lexend', sans-serif;
         }
 
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-    </style>
-    <style>
-        body {
-            min-height: max(884px, 100dvh);
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #0f172a;
+                box-shadow: 0 0 40px rgba(0, 0, 0, 0.4) !important;
+            }
         }
     </style>
 </head>
 
 <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+
     <!-- Header -->
     <header
-        class="sticky top-0 z-50 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3 flex items-center justify-between">
+        class="sticky top-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3 flex items-center justify-between">
         <div class="flex items-center gap-3">
             <div class="bg-primary p-2 rounded-lg text-white">
                 <span class="material-symbols-outlined block">school</span>
             </div>
             <h1 class="text-lg font-bold tracking-tight">EduAttend</h1>
         </div>
-        <div class="flex items-center gap-3">
-            <button class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full">
-                <span class="material-symbols-outlined">notifications</span>
-            </button>
-            <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
-                <span class="text-xs font-bold text-primary">AD</span>
-            </div>
-        </div>
+        <a href="./admin-profile.html"
+            class="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30 hover:bg-primary/30 transition-colors">
+            <span class="text-xs font-bold text-primary">AD</span>
+        </a>
     </header>
+
     <!-- Main Content -->
-    <main class="flex-1 p-4 pb-24 max-w-md mx-auto w-full">
+    <main class="flex-1 p-4 pb-28 max-w-md mx-auto w-full">
         <!-- Date & Welcome -->
         <div class="mb-6">
-            <p id="currentDate" class="text-slate-500 text-sm font-medium">Monday, Oct 24</p>
+            <p id="currentDate" class="text-slate-500 text-sm font-medium"></p>
             <h2 class="text-2xl font-bold">Attendance Overview</h2>
         </div>
+
         <!-- Stats Grid -->
-        <div class="grid grid-cols-2 gap-4 mb-8">
+        <div class="grid grid-cols-2 gap-4 mb-6">
             <div
                 class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
                 <div class="flex items-center gap-2 mb-2">
                     <span class="material-symbols-outlined text-primary text-xl">groups</span>
                     <span class="text-xs font-medium text-slate-500 uppercase tracking-wider">Teachers</span>
                 </div>
-                <div class="flex items-baseline gap-2">
-                    <p id="statTeachers" class="text-2xl font-bold">0</p>
-                </div>
+                <p id="statTeachers" class="text-2xl font-bold">—</p>
             </div>
             <div
                 class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
@@ -94,9 +84,7 @@
                     <span class="material-symbols-outlined text-green-500 text-xl">check_circle</span>
                     <span class="text-xs font-medium text-slate-500 uppercase tracking-wider">Present</span>
                 </div>
-                <div class="flex items-baseline gap-2">
-                    <p id="statPresent" class="text-2xl font-bold">0</p>
-                </div>
+                <p id="statPresent" class="text-2xl font-bold">—</p>
             </div>
             <div
                 class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
@@ -104,9 +92,7 @@
                     <span class="material-symbols-outlined text-red-500 text-xl">cancel</span>
                     <span class="text-xs font-medium text-slate-500 uppercase tracking-wider">Absent</span>
                 </div>
-                <div class="flex items-baseline gap-2">
-                    <p id="statAbsent" class="text-2xl font-bold">0</p>
-                </div>
+                <p id="statAbsent" class="text-2xl font-bold">—</p>
             </div>
             <div
                 class="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
@@ -114,147 +100,137 @@
                     <span class="material-symbols-outlined text-amber-500 text-xl">schedule</span>
                     <span class="text-xs font-medium text-slate-500 uppercase tracking-wider">Late</span>
                 </div>
-                <div class="flex items-baseline gap-2">
-                    <p id="statLate" class="text-2xl font-bold">0</p>
-                </div>
+                <p id="statLate" class="text-2xl font-bold">—</p>
             </div>
         </div>
+
         <!-- Weekly Chart -->
         <div
-            class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 mb-6">
-            <div class="flex items-center justify-between mb-6">
-                <h3 class="font-bold">Weekly Performance</h3>
-                <span class="text-xs text-primary font-semibold bg-primary/10 px-2 py-1 rounded">Last 7 Days</span>
+            class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 mb-6">
+            <div class="flex items-center justify-between mb-5">
+                <h3 class="font-bold">Weekly Attendance</h3>
+                <span class="text-xs text-primary font-semibold bg-primary/10 px-2 py-1 rounded-full">Last 7 Days</span>
             </div>
-            <div class="flex items-end justify-between h-32 gap-2 px-1">
-                <div class="flex flex-col items-center flex-1 gap-2">
-                    <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-t-lg relative overflow-hidden"
-                        style="height: 70%;">
-                        <div class="absolute bottom-0 w-full bg-primary/40 h-full"></div>
-                    </div>
-                    <span class="text-[10px] font-bold text-slate-400 uppercase">Mon</span>
-                </div>
-                <div class="flex flex-col items-center flex-1 gap-2">
-                    <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-t-lg relative overflow-hidden"
-                        style="height: 85%;">
-                        <div class="absolute bottom-0 w-full bg-primary/40 h-full"></div>
-                    </div>
-                    <span class="text-[10px] font-bold text-slate-400 uppercase">Tue</span>
-                </div>
-                <div class="flex flex-col items-center flex-1 gap-2">
-                    <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-t-lg relative overflow-hidden"
-                        style="height: 95%;">
-                        <div class="absolute bottom-0 w-full bg-primary h-full"></div>
-                    </div>
-                    <span class="text-[10px] font-bold text-primary uppercase">Wed</span>
-                </div>
-                <div class="flex flex-col items-center flex-1 gap-2">
-                    <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-t-lg relative overflow-hidden"
-                        style="height: 60%;">
-                        <div class="absolute bottom-0 w-full bg-primary/40 h-full"></div>
-                    </div>
-                    <span class="text-[10px] font-bold text-slate-400 uppercase">Thu</span>
-                </div>
-                <div class="flex flex-col items-center flex-1 gap-2">
-                    <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-t-lg relative overflow-hidden"
-                        style="height: 80%;">
-                        <div class="absolute bottom-0 w-full bg-primary/40 h-full"></div>
-                    </div>
-                    <span class="text-[10px] font-bold text-slate-400 uppercase">Fri</span>
-                </div>
-                <div class="flex flex-col items-center flex-1 gap-2">
-                    <div class="w-full bg-slate-100 dark:bg-slate-700 rounded-t-lg relative overflow-hidden"
-                        style="height: 40%;">
-                        <div class="absolute bottom-0 w-full bg-primary/40 h-full"></div>
-                    </div>
-                    <span class="text-[10px] font-bold text-slate-400 uppercase">Sat</span>
-                </div>
+            <div id="weeklyChart" class="flex items-end justify-between h-28 gap-2 px-1">
+                <div class="text-xs text-slate-400 text-center w-full animate-pulse">Loading...</div>
             </div>
         </div>
-        <!-- Recent Activity / Staff Alerts -->
+
+        <!-- Today's Alerts -->
         <div class="mb-6">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="font-bold">Recent Alerts</h3>
-                <a class="text-xs font-bold text-primary hover:underline" href="#">View All</a>
+                <h3 class="font-bold">Today's Alerts</h3>
+                <a class="text-xs font-bold text-primary hover:underline" href="./attendance-monitoring.html">View
+                    All</a>
             </div>
-            <div class="space-y-3">
-                <div
-                    class="flex items-center gap-4 bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-100 dark:border-slate-700">
-                    <div
-                        class="size-10 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-600">
-                        <span class="material-symbols-outlined text-xl">warning</span>
-                    </div>
-                    <div class="flex-1">
-                        <p class="text-sm font-bold">Johnathan Smith</p>
-                        <p class="text-xs text-slate-500">Late by 15 mins • Dept: Science</p>
-                    </div>
-                    <span class="text-[10px] text-slate-400 font-medium">8:15 AM</span>
-                </div>
-                <div
-                    class="flex items-center gap-4 bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-100 dark:border-slate-700">
-                    <div
-                        class="size-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600">
-                        <span class="material-symbols-outlined text-xl">event_busy</span>
-                    </div>
-                    <div class="flex-1">
-                        <p class="text-sm font-bold">Sarah Connor</p>
-                        <p class="text-xs text-slate-500">Unexcused Absence • Dept: Math</p>
-                    </div>
-                    <span class="text-[10px] text-slate-400 font-medium">7:30 AM</span>
-                </div>
-                <div
-                    class="flex items-center gap-4 bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-100 dark:border-slate-700">
-                    <div
-                        class="size-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600">
-                        <span class="material-symbols-outlined text-xl">person_add</span>
-                    </div>
-                    <div class="flex-1">
-                        <p class="text-sm font-bold">New Staff Registered</p>
-                        <p class="text-xs text-slate-500">Prof. Elena Gilbert • History</p>
-                    </div>
-                    <span class="text-[10px] text-slate-400 font-medium">Yesterday</span>
-                </div>
+            <div id="alertsList" class="space-y-2">
+                <div class="text-center text-slate-400 text-sm py-4 animate-pulse">Loading...</div>
             </div>
         </div>
     </main>
-    <!-- Bottom Navigation Bar -->
-    <nav
-        class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-background-dark border-t border-slate-200 dark:border-slate-800 pb-safe shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
-        <div class="flex justify-around items-center px-4 h-16 max-w-md mx-auto">
-            <a class="flex flex-col items-center justify-center gap-0.5 text-primary" href="./admin-dashboard.html">
-                <span class="material-symbols-outlined font-variation-fill">grid_view</span>
-                <span class="text-[10px] font-bold">Dashboard</span>
-            </a>
-            <a class="flex flex-col items-center justify-center gap-0.5 text-slate-400"
-                href="./attendance-monitoring.html">
-                <span class="material-symbols-outlined">analytics</span>
-                <span class="text-[10px] font-bold">Monitor</span>
-            </a>
-            <a class="flex flex-col items-center justify-center gap-0.5 text-slate-400" href="./teacher-management.html">
-                <span class="material-symbols-outlined">groups</span>
-                <span class="text-[10px] font-bold">Staff</span>
-            </a>
-            <a class="flex flex-col items-center justify-center gap-0.5 text-slate-400 text-white/70 hover:text-white transition-colors"
-                href="#" onclick="App.logout()">
-                <span class="material-symbols-outlined">logout</span>
-                <span class="text-[10px] font-bold">Logout</span>
-            </a>
-        </div>
-    </nav>
-    <script>
-        async function loadAdminDashboard() {
-            document.getElementById('currentDate').innerText = new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
 
+    <!-- Admin Bottom Navigation Bar -->
+    <nav
+        class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-3 pb-8 pt-2 flex justify-around items-center max-w-[480px] mx-auto w-full">
+        <a class="flex flex-col items-center flex-1 gap-1 text-primary" href="./admin-dashboard.html">
+            <span class="material-symbols-outlined">dashboard</span>
+            <p class="text-[10px] font-bold uppercase">Home</p>
+        </a>
+        <a class="flex flex-col items-center flex-1 gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors"
+            href="./teacher-management.html">
+            <span class="material-symbols-outlined">group</span>
+            <p class="text-[10px] font-bold uppercase">Teachers</p>
+        </a>
+        <a class="flex flex-col items-center flex-1 gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors"
+            href="./attendance-monitoring.html">
+            <span class="material-symbols-outlined">analytics</span>
+            <p class="text-[10px] font-bold uppercase">Monitor</p>
+        </a>
+        <a class="flex flex-col items-center flex-1 gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors"
+            href="./admin-profile.html">
+            <span class="material-symbols-outlined">person</span>
+            <p class="text-[10px] font-bold uppercase">Profile</p>
+        </a>
+    </nav>
+
+    <script>
+        const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+        async function loadAdminDashboard() {
+            document.getElementById('currentDate').innerText = new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+
+            // Load stats
             try {
-                const stats = await App.fetchAPI('/admin/dashboard');
-                document.getElementById('statTeachers').innerText = stats.totalTeachers || 0;
-                document.getElementById('statPresent').innerText = stats.presentToday || 0;
-                document.getElementById('statAbsent').innerText = stats.absentToday || 0;
-                document.getElementById('statLate').innerText = stats.lateToday || 0;
-            } catch (err) {
-                console.error("Failed to load dashboard stats", err);
-            }
+                const stats = await App.fetchAPI('/admin/dashboard/stats');
+                document.getElementById('statTeachers').innerText = stats.total_teachers ?? 0;
+                document.getElementById('statPresent').innerText = ((stats.present_today ?? 0) + (stats.late_today ?? 0));
+                document.getElementById('statAbsent').innerText = stats.absent_today ?? 0;
+                document.getElementById('statLate').innerText = stats.late_today ?? 0;
+            } catch (err) { console.error('Failed stats', err); }
+
+            // Load weekly chart
+            try {
+                const today = new Date();
+                const days = [];
+                for (let i = 6; i >= 0; i--) {
+                    const d = new Date(today);
+                    d.setDate(today.getDate() - i);
+                    days.push(d.toISOString().split('T')[0]);
+                }
+
+                const [statsData, ...results] = await Promise.all([
+                    App.fetchAPI('/admin/dashboard/stats'),
+                    ...days.map(date => App.fetchAPI(`/admin/attendance/daily?date=${date}`).catch(() => []))
+                ]);
+                const totalTeachers = statsData.total_teachers || 1;
+
+                document.getElementById('weeklyChart').innerHTML = results.map((records, i) => {
+                    const d = new Date(days[i] + 'T00:00:00');
+                    const present = records.filter(r => r.status === 'Present' || r.status === 'Late').length;
+                    const pct = Math.round((present / totalTeachers) * 100);
+                    const isToday = i === 6;
+                    return `<div class="flex flex-col items-center flex-1 gap-1.5">
+                        <span class="text-[9px] font-bold text-slate-400" style="min-height:12px">${pct > 0 ? pct + '%' : ''}</span>
+                        <div class="w-full rounded-t-lg relative overflow-hidden flex-1" style="height:100%; background: ${isToday ? 'rgba(28,116,233,0.15)' : 'rgba(100,116,139,0.1)'}">
+                            <div class="absolute bottom-0 w-full rounded-t transition-all duration-700"
+                                style="height:${Math.max(pct, 4)}%; background:${isToday ? '#1c74e9' : 'rgba(28,116,233,0.45)'}"></div>
+                        </div>
+                        <span class="text-[10px] font-bold ${isToday ? 'text-primary' : 'text-slate-400'} uppercase">${DAYS[d.getDay()]}</span>
+                    </div>`;
+                }).join('');
+            } catch (err) { console.error('Failed weekly chart', err); }
+
+            // Load today's alerts
+            try {
+                const records = await App.fetchAPI('/admin/attendance/daily');
+                const alertsEl = document.getElementById('alertsList');
+                const flagged = records.filter(r => r.status === 'Late' || r.status === 'Absent');
+                if (flagged.length === 0) {
+                    alertsEl.innerHTML = `<div class="flex items-center gap-3 bg-green-50 dark:bg-green-900/20 p-4 rounded-xl border border-green-100 dark:border-green-800">
+                        <span class="material-symbols-outlined text-green-500">check_circle</span>
+                        <p class="text-sm font-medium text-green-700 dark:text-green-300">All teachers are on time today! 🎉</p>
+                    </div>`;
+                    return;
+                }
+                alertsEl.innerHTML = flagged.slice(0, 6).map(r => {
+                    const isLate = r.status === 'Late';
+                    const bg = isLate ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-100 dark:border-amber-800' : 'bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-800';
+                    const iconColor = isLate ? 'text-amber-500' : 'text-red-500';
+                    const icon = isLate ? 'schedule' : 'event_busy';
+                    const detail = isLate ? `Late by ${r.late_minutes || '?'} min` : 'Absent';
+                    const time = r.in_time ? r.in_time.substring(0, 5) : '—';
+                    return `<div class="flex items-center gap-3 bg-white dark:bg-slate-800 p-3 rounded-xl border ${bg}">
+                        <span class="material-symbols-outlined ${iconColor} text-2xl">${icon}</span>
+                        <div class="flex-1">
+                            <p class="text-sm font-bold">${r.teacher_name || 'Unknown'}</p>
+                            <p class="text-xs text-slate-500">${detail} • ${r.designation || ''}</p>
+                        </div>
+                        <span class="text-[10px] text-slate-400">${time}</span>
+                    </div>`;
+                }).join('');
+            } catch (err) { document.getElementById('alertsList').innerHTML = '<p class="text-sm text-slate-400 text-center py-4">Could not load alerts.</p>'; }
         }
+
         document.addEventListener('DOMContentLoaded', loadAdminDashboard);
     </script>
 </body>

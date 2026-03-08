@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
@@ -8,159 +7,40 @@
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <link rel="manifest" href="./manifest.json" />
   <script src="./app.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
-    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-    rel="stylesheet" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
     rel="stylesheet" />
   <script id="tailwind-config">
     tailwind.config = {
       darkMode: "class",
       theme: {
         extend: {
-          colors: {
-            "primary": "#1c74e9",
-            "background-light": "#f6f7f8",
-            "background-dark": "#111821",
-          },
-          fontFamily: {
-            "display": ["Lexend"]
-          },
+          colors: { "primary": "#1c74e9", "background-light": "#f6f7f8", "background-dark": "#111821" },
+          fontFamily: { "display": ["Lexend"] },
           borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
         },
       },
     }
   </script>
-  <title>Teacher Attendance History</title>
+  <title>Attendance History</title>
   <style>
     body {
-      min-height: max(884px, 100dvh);
+      max-width: 480px !important;
+      margin: 0 auto !important;
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.1) !important;
+      position: relative;
+      background-color: #f8fafc;
+      font-family: 'Lexend', sans-serif;
     }
-  </style>
-</head>
 
-<body
-  class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
-  <header
-    class="sticky top-0 z-10 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
-    <div class="flex items-center p-4 justify-between max-w-5xl mx-auto w-full">
-      <div class="flex items-center gap-4">
-        <button onclick="window.location.href = './dashboard.html'"
-          class="flex size-10 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-          <span class="material-symbols-outlined">arrow_back</span>
-        </button>
-        <h1 class="text-lg font-bold leading-tight tracking-tight">Attendance History</h1>
-      </div>
-      <div class="flex items-center gap-2">
-        <button
-          class="flex size-10 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-          <span class="material-symbols-outlined">calendar_today</span>
-        </button>
-        <button
-          class="flex size-10 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-          <span class="material-symbols-outlined">filter_list</span>
-        </button>
-      </div>
-    </div>
-  </header>
-  <main class="flex-1 max-w-5xl mx-auto w-full p-4">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-      <div
-        class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
-        <div class="flex justify-between items-start">
-          <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Present Days</p>
-          <span class="material-symbols-outlined text-green-500">check_circle</span>
-        </div>
-        <p id="presentDays" class="text-3xl font-bold leading-tight">0</p>
-      </div>
-      <div
-        class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
-        <div class="flex justify-between items-start">
-          <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Late Arrivals</p>
-          <span class="material-symbols-outlined text-amber-500">schedule</span>
-        </div>
-        <p id="lateDays" class="text-3xl font-bold leading-tight">0</p>
-      </div>
-      <div
-        class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
-        <div class="flex justify-between items-start">
-          <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Absences</p>
-          <span class="material-symbols-outlined text-red-500">cancel</span>
-        </div>
-        <p id="absentDays" class="text-3xl font-bold leading-tight">0</p>
-      </div>
-    </div>
-    <div class="mb-6">
-      <div class="flex border-b border-slate-200 dark:border-slate-800 gap-8 overflow-x-auto no-scrollbar">
-        <a class="flex flex-col items-center justify-center border-b-[3px] border-primary text-primary pb-3 pt-2 whitespace-nowrap"
-          href="#">
-          <p class="text-sm font-bold tracking-wide">October 2023</p>
-        </a>
-        <a class="flex flex-col items-center justify-center border-b-[3px] border-transparent text-slate-500 dark:text-slate-400 pb-3 pt-2 whitespace-nowrap"
-          href="#">
-          <p class="text-sm font-bold tracking-wide">September 2023</p>
-        </a>
-        <a class="flex flex-col items-center justify-center border-b-[3px] border-transparent text-slate-500 dark:text-slate-400 pb-3 pt-2 whitespace-nowrap"
-          href="#">
-          <p class="text-sm font-bold tracking-wide">August 2023</p>
-        </a>
-      </div>
-    </div>
-    <div
-      class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
-      <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-          <thead>
-            <tr
-              class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 uppercase text-[10px] font-bold tracking-widest">
-              <th class="px-6 py-4">Date</th>
-              <th class="px-6 py-4">Check-in</th>
-              <th class="px-6 py-4">Check-out</th>
-              <th class="px-6 py-4">Work Hours</th>
-              <th class="px-6 py-4 text-right">Status</th>
-            </tr>
-          </thead>
-          <tbody id="historyTableBody" class="divide-y divide-slate-100 dark:divide-slate-800">
-            <tr>
-              <td colspan="5" class="px-6 py-4 text-center">Loading...</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div
-        class="px-6 py-4 bg-slate-50 dark:bg-slate-800/30 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-        <p id="tablePagination" class="text-xs text-slate-500 dark:text-slate-400">Showing 0 records</p>
-      </div>
-    </div>
-  </main>
-  <nav
-    class="sticky bottom-0 z-10 bg-white dark:bg-background-dark border-t border-slate-200 dark:border-slate-800 pb-safe-area">
-    <div class="flex gap-2 px-4 pb-3 pt-2 max-w-5xl mx-auto">
-      <a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400 hover:text-primary transition-colors"
-        href="#">
-        <span class="material-symbols-outlined">home</span>
-        <p class="text-[10px] font-medium leading-normal">Home</p>
-      </a>
-      <a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400 hover:text-primary transition-colors"
-        href="#">
-        <span class="material-symbols-outlined">calendar_month</span>
-        <p class="text-[10px] font-medium leading-normal">Schedule</p>
-      </a>
-      <a class="flex flex-1 flex-col items-center justify-end gap-1 text-primary" href="#">
-        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">history</span>
-        <p class="text-[10px] font-bold leading-normal">Attendance</p>
-      </a>
-      <a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400 hover:text-primary transition-colors"
-        href="#">
-        <span class="material-symbols-outlined">person</span>
-        <p class="text-[10px] font-medium leading-normal">Profile</p>
-      </a>
-    </div>
-  </nav>
-  <style>
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #0f172a;
+        box-shadow: 0 0 40px rgba(0, 0, 0, 0.4) !important;
+      }
+    }
+
     .no-scrollbar::-webkit-scrollbar {
       display: none;
     }
@@ -170,60 +50,338 @@
       scrollbar-width: none;
     }
 
-    .pb-safe-area {
-      padding-bottom: env(safe-area-inset-bottom, 0.75rem);
+    .cal-day {
+      cursor: pointer;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin: auto;
+    }
+
+    .cal-present {
+      background: #22c55e;
+      /* green-500 */
+      color: #fff;
+    }
+
+    .cal-late {
+      background: #f59e0b;
+      /* amber-500 */
+      color: #fff;
+    }
+
+    .cal-absent {
+      background: #ef4444;
+      /* red-500 */
+      color: #fff;
+    }
+
+    .cal-today {
+      box-shadow: 0 0 0 2.5px #1c74e9;
+      font-weight: 800;
+    }
+
+    /* Today with no attendance */
+    .cal-today:not(.cal-present):not(.cal-late):not(.cal-absent) {
+      background: #1c74e9;
+      color: white;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .cal-present {
+        background: #16a34a;
+        color: #fff;
+      }
+
+      .cal-late {
+        background: #d97706;
+        color: #fff;
+      }
+
+      .cal-absent {
+        background: #dc2626;
+        color: #fff;
+      }
     }
   </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+  <!-- Header -->
+  <header class="sticky top-0 z-10 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+    <div class="flex items-center p-4 justify-between">
+      <div class="flex items-center gap-3">
+        <button onclick="history.back()"
+          class="flex size-10 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+          <span class="material-symbols-outlined">arrow_back</span>
+        </button>
+        <h1 class="text-lg font-bold">Attendance History</h1>
+      </div>
+      <div class="flex items-center gap-1">
+        <button onclick="toggleView('calendar')" id="btnCalView"
+          class="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors"
+          title="Calendar View">
+          <span class="material-symbols-outlined">calendar_month</span>
+        </button>
+        <button onclick="toggleView('list')" id="btnListView"
+          class="flex size-10 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          title="List View">
+          <span class="material-symbols-outlined">list</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 pb-28 p-4 space-y-4">
+    <!-- Summary Stats -->
+    <div class="grid grid-cols-3 gap-3">
+      <div
+        class="flex flex-col gap-1 rounded-xl p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm text-center">
+        <p class="text-slate-500 text-xs font-medium uppercase">Present</p>
+        <p id="presentDays" class="text-2xl font-bold text-green-600">0</p>
+      </div>
+      <div
+        class="flex flex-col gap-1 rounded-xl p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm text-center">
+        <p class="text-slate-500 text-xs font-medium uppercase">Late</p>
+        <p id="lateDays" class="text-2xl font-bold text-amber-500">0</p>
+      </div>
+      <div
+        class="flex flex-col gap-1 rounded-xl p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm text-center">
+        <p class="text-slate-500 text-xs font-medium uppercase">Absent</p>
+        <p id="absentDays" class="text-2xl font-bold text-red-500">0</p>
+      </div>
+    </div>
+
+    <!-- Filter Row -->
+    <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+      <button onclick="applyFilter('All')" id="filter-All"
+        class="filter-btn flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium bg-primary text-white">All</button>
+      <button onclick="applyFilter('Present')" id="filter-Present"
+        class="filter-btn flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">Present</button>
+      <button onclick="applyFilter('Late')" id="filter-Late"
+        class="filter-btn flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">Late</button>
+      <button onclick="applyFilter('Absent')" id="filter-Absent"
+        class="filter-btn flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">Absent</button>
+    </div>
+
+    <!-- CALENDAR VIEW -->
+    <div id="calendarView"
+      class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+      <!-- Month navigation -->
+      <div class="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800">
+        <button onclick="changeMonth(-1)"
+          class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+          <span class="material-symbols-outlined text-sm">chevron_left</span>
+        </button>
+        <h3 id="calMonthLabel" class="font-bold text-slate-900 dark:text-white"></h3>
+        <button onclick="changeMonth(1)"
+          class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+          <span class="material-symbols-outlined text-sm">chevron_right</span>
+        </button>
+      </div>
+      <!-- Weekday labels -->
+      <div class="grid grid-cols-7 text-center py-2 px-2">
+        <span class="text-[10px] font-bold text-slate-400 uppercase">S</span>
+        <span class="text-[10px] font-bold text-slate-400 uppercase">M</span>
+        <span class="text-[10px] font-bold text-slate-400 uppercase">T</span>
+        <span class="text-[10px] font-bold text-slate-400 uppercase">W</span>
+        <span class="text-[10px] font-bold text-slate-400 uppercase">T</span>
+        <span class="text-[10px] font-bold text-slate-400 uppercase">F</span>
+        <span class="text-[10px] font-bold text-slate-400 uppercase">S</span>
+      </div>
+      <!-- Day cells -->
+      <div id="calendarGrid" class="grid grid-cols-7 gap-y-2 p-2 pb-4"></div>
+      <!-- Legend -->
+      <div class="flex items-center justify-center gap-4 pb-4 flex-wrap text-xs">
+        <span class="flex items-center gap-1.5"><span
+            class="w-3 h-3 rounded-full bg-green-200 inline-block"></span>Present</span>
+        <span class="flex items-center gap-1.5"><span
+            class="w-3 h-3 rounded-full bg-amber-200 inline-block"></span>Late</span>
+        <span class="flex items-center gap-1.5"><span
+            class="w-3 h-3 rounded-full bg-red-200 inline-block"></span>Absent</span>
+      </div>
+    </div>
+
+    <!-- LIST VIEW -->
+    <div id="listView"
+      class="hidden bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-sm">
+          <thead>
+            <tr
+              class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 text-slate-500 text-[10px] font-bold uppercase tracking-wider">
+              <th class="px-4 py-3">Date</th>
+              <th class="px-4 py-3">In</th>
+              <th class="px-4 py-3">Out</th>
+              <th class="px-4 py-3 text-right">Status</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody" class="divide-y divide-slate-100 dark:divide-slate-800">
+            <tr>
+              <td colspan="4" class="px-4 py-4 text-center text-slate-400">Loading...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="px-4 py-3 bg-slate-50 dark:bg-slate-800/30 border-t border-slate-100 dark:border-slate-800">
+        <p id="tablePagination" class="text-xs text-slate-500">Showing 0 records</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bottom Navigation Bar -->
+  <nav
+    class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-3 pb-8 pt-2 flex justify-around items-center max-w-[480px] mx-auto w-full">
+    <a class="flex flex-col items-center flex-1 gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors"
+      href="./dashboard.html">
+      <span class="material-symbols-outlined">home</span>
+      <p class="text-[10px] font-bold uppercase">Home</p>
+    </a>
+    <a class="flex flex-col items-center flex-1 gap-1 text-primary" href="./attendance-history.html">
+      <span class="material-symbols-outlined filled">history</span>
+      <p class="text-[10px] font-bold uppercase">History</p>
+    </a>
+    <a class="flex flex-col items-center flex-1 gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors"
+      href="./profile.html">
+      <span class="material-symbols-outlined">person</span>
+      <p class="text-[10px] font-bold uppercase">Profile</p>
+    </a>
+  </nav>
+
   <script>
+    let allRecords = [];
+    let activeFilter = 'All';
+    let calendarMonth = new Date().getMonth();
+    let calendarYear = new Date().getFullYear();
+    let currentView = 'calendar';
+
+    function toggleView(view) {
+      currentView = view;
+      document.getElementById('calendarView').classList.toggle('hidden', view !== 'calendar');
+      document.getElementById('listView').classList.toggle('hidden', view !== 'list');
+      document.getElementById('btnCalView').className = 'flex size-10 items-center justify-center rounded-full transition-colors ' +
+        (view === 'calendar' ? 'bg-primary/10 text-primary' : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500');
+      document.getElementById('btnListView').className = 'flex size-10 items-center justify-center rounded-full transition-colors ' +
+        (view === 'list' ? 'bg-primary/10 text-primary' : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500');
+      renderCalendar();
+      renderList();
+    }
+
+    function applyFilter(status) {
+      activeFilter = status;
+      document.querySelectorAll('.filter-btn').forEach(b => {
+        b.className = 'filter-btn flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300';
+      });
+      const active = document.getElementById('filter-' + status);
+      if (active) active.className = 'filter-btn flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium bg-primary text-white';
+      renderCalendar();
+      renderList();
+    }
+
+    function changeMonth(delta) {
+      calendarMonth += delta;
+      if (calendarMonth > 11) { calendarMonth = 0; calendarYear++; }
+      if (calendarMonth < 0) { calendarMonth = 11; calendarYear--; }
+      renderCalendar();
+    }
+
+    function renderCalendar() {
+      const year = calendarYear;
+      const month = calendarMonth;
+      document.getElementById('calMonthLabel').innerText = new Date(year, month, 1).toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+
+      // Build map: date string -> status
+      const dateMap = {};
+      const filtered = activeFilter === 'All' ? allRecords : allRecords.filter(r => r.status === activeFilter);
+      filtered.forEach(r => { dateMap[r.date] = r.status; });
+
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const today = new Date().toISOString().split('T')[0];
+
+      let html = '';
+      for (let i = 0; i < firstDay; i++) html += '<div></div>';
+      for (let d = 1; d <= daysInMonth; d++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        const status = dateMap[dateStr];
+        const isToday = dateStr === today;
+        let cls = 'cal-day';
+        if (status === 'Present') cls += ' cal-present';
+        else if (status === 'Late') cls += ' cal-late';
+        else if (status === 'Absent') cls += ' cal-absent';
+        else cls += ' text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
+        if (isToday) cls += ' cal-today';
+        html += `<div class="${cls}" title="${status ? status : ''}">${d}</div>`;
+      }
+
+      document.getElementById('calendarGrid').innerHTML = html;
+    }
+
+    function renderList() {
+      const tbody = document.getElementById('historyTableBody');
+      const filtered = activeFilter === 'All' ? allRecords : allRecords.filter(r => r.status === activeFilter);
+      const monthFiltered = filtered.filter(r => {
+        const d = new Date(r.date);
+        return d.getMonth() === calendarMonth && d.getFullYear() === calendarYear;
+      });
+
+      if (monthFiltered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="px-4 py-4 text-center text-slate-400">No ${activeFilter !== 'All' ? activeFilter + ' ' : ''}records found for this month</td></tr>`;
+        document.getElementById('tablePagination').innerText = 'Showing 0 records';
+        return;
+      }
+
+      const statusColors = {
+        'Present': 'bg-green-100 text-green-800',
+        'Late': 'bg-amber-100 text-amber-800',
+        'Absent': 'bg-red-100 text-red-800'
+      };
+
+      tbody.innerHTML = monthFiltered.map(r => {
+        const dateObj = new Date(r.date + 'T00:00:00');
+        return `<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+          <td class="px-4 py-3">
+            <p class="font-semibold">${dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</p>
+            <p class="text-xs text-slate-400">${dateObj.toLocaleDateString(undefined, { weekday: 'short' })}</p>
+          </td>
+          <td class="px-4 py-3 text-sm">${r.in_time ? r.in_time.substring(0, 5) : '—'}</td>
+          <td class="px-4 py-3 text-sm">${r.out_time ? r.out_time.substring(0, 5) : '—'}</td>
+          <td class="px-4 py-3 text-right">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${statusColors[r.status] || 'bg-slate-100 text-slate-700'}">${r.status}</span>
+            ${r.late_minutes ? `<p class="text-[10px] text-red-400 mt-0.5">${r.late_minutes}m late</p>` : ''}
+          </td>
+        </tr>`;
+      }).join('');
+
+      document.getElementById('tablePagination').innerText = `Showing ${monthFiltered.length} records`;
+    }
+
     async function loadHistory() {
       try {
         const records = await App.fetchAPI('/attendance/my/history');
-        const tbody = document.getElementById('historyTableBody');
-
-        if (records.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center">No attendance logs found</td></tr>';
-          return;
-        }
+        allRecords = records;
 
         let present = 0, late = 0, absent = 0;
-
-        tbody.innerHTML = records.map(r => {
+        records.forEach(r => {
           if (r.status === 'Present') present++;
           else if (r.status === 'Late') late++;
           else absent++;
-
-          const dateObj = new Date(r.date);
-          const statusColors = {
-            'Present': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-            'Late': 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400',
-            'Absent': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
-          };
-
-          return `<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
-                <td class="px-6 py-4">
-                    <div class="flex flex-col">
-                        <span class="font-bold">${dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                        <span class="text-xs text-slate-500">${dateObj.toLocaleDateString(undefined, { weekday: 'long' })}</span>
-                    </div>
-                </td>
-                <td class="px-6 py-4 text-sm">${r.in_time ? r.in_time.substring(0, 5) : '—'}</td>
-                <td class="px-6 py-4 text-sm">${r.out_time ? r.out_time.substring(0, 5) : '—'}</td>
-                <td class="px-6 py-4 text-sm">${r.late_minutes ? `${r.late_minutes}m late` : '—'}</td>
-                <td class="px-6 py-4 text-right">
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[r.status] || 'bg-slate-100 text-slate-800'}">
-                        ${r.status}
-                    </span>
-                </td>
-            </tr>`;
-        }).join('');
+        });
 
         document.getElementById('presentDays').innerText = present;
         document.getElementById('lateDays').innerText = late;
         document.getElementById('absentDays').innerText = absent;
-        document.getElementById('tablePagination').innerText = `Showing ${records.length} records`;
 
+        renderCalendar();
+        renderList();
       } catch (err) {
-        document.getElementById('historyTableBody').innerHTML = `<tr><td colspan="5" class="text-red-500 text-center py-4">Error loading records: ${err.message}</td></tr>`;
+        document.getElementById('historyTableBody').innerHTML = `<tr><td colspan="4" class="text-red-500 text-center py-4 text-sm">Error: ${err.message}</td></tr>`;
+        document.getElementById('calendarGrid').innerHTML = '';
       }
     }
 

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <link rel="manifest" href="./manifest.json" />
+    <script src="./app.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: { extend: { colors: { "primary": "#1c74e9" }, fontFamily: { "display": ["Lexend"] } } }
+        }
+    </script>
+    <title>Admin Profile</title>
+    <style>
+        body {
+            max-width: 480px !important;
+            margin: 0 auto !important;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.1) !important;
+            background-color: #f1f5f9;
+            font-family: 'Lexend', sans-serif;
+            min-height: 100dvh;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #0f172a;
+                box-shadow: 0 0 40px rgba(0, 0, 0, 0.4) !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+
+    <header
+        class="flex items-center bg-white dark:bg-slate-900 p-4 sticky top-0 z-10 border-b border-slate-200 dark:border-slate-800">
+        <a href="./admin-dashboard.html"
+            class="flex size-10 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+            <span class="material-symbols-outlined">arrow_back</span>
+        </a>
+        <h1 class="text-lg font-bold flex-1 text-center pr-10">Admin Profile</h1>
+    </header>
+
+    <main class="pb-28 p-5 space-y-4">
+        <!-- Avatar + Name Card -->
+        <div
+            class="flex flex-col items-center bg-gradient-to-br from-slate-700 to-slate-900 p-8 rounded-2xl shadow-md text-center text-white">
+            <div
+                class="w-20 h-20 rounded-full bg-primary flex items-center justify-center text-3xl font-bold ring-4 ring-white/20 mb-4">
+                <span class="material-symbols-outlined text-4xl">admin_panel_settings</span>
+            </div>
+            <h2 class="text-2xl font-bold">Administrator</h2>
+            <p class="text-white/70 text-sm mt-1">School Attendance System</p>
+            <span
+                class="mt-2 inline-flex items-center gap-1 bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full">
+                <span class="material-symbols-outlined text-xs">verified_user</span> Admin
+            </span>
+        </div>
+
+        <!-- Info Card -->
+        <div
+            class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+            <div class="p-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary">badge</span>
+                    <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Role</span>
+                </div>
+                <span class="text-sm font-bold">Super Administrator</span>
+            </div>
+            <div class="p-4 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary">settings</span>
+                    <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Access Level</span>
+                </div>
+                <span class="text-sm font-bold text-primary">Full Access</span>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="space-y-3">
+            <button onclick="openChangePwd()"
+                class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center gap-3 p-4 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                    <span class="material-symbols-outlined text-primary">lock</span>
+                </div>
+                <div class="text-left">
+                    <p class="font-semibold text-sm">Change Admin Password</p>
+                    <p class="text-xs text-slate-400">Update your admin login credentials</p>
+                </div>
+                <span class="material-symbols-outlined text-slate-400 ml-auto">chevron_right</span>
+            </button>
+
+            <a href="./teacher-management.html"
+                class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center gap-3 p-4 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                <div class="w-10 h-10 bg-blue-50 dark:bg-blue-900/20 rounded-full flex items-center justify-center">
+                    <span class="material-symbols-outlined text-blue-600">group</span>
+                </div>
+                <div class="text-left">
+                    <p class="font-semibold text-sm">Manage Teachers</p>
+                    <p class="text-xs text-slate-400">Add, edit, or reset teacher passwords</p>
+                </div>
+                <span class="material-symbols-outlined text-slate-400 ml-auto">chevron_right</span>
+            </a>
+
+            <button onclick="App.logout()"
+                class="w-full bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 rounded-xl flex items-center gap-3 p-4 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors">
+                <div class="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+                    <span class="material-symbols-outlined text-red-500">logout</span>
+                </div>
+                <div class="text-left">
+                    <p class="font-semibold text-sm text-red-600">Sign Out</p>
+                    <p class="text-xs text-red-400">Logout from admin account</p>
+                </div>
+            </button>
+        </div>
+    </main>
+
+    <!-- Admin Bottom Nav -->
+    <nav
+        class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-3 pb-8 pt-2 flex justify-around items-center max-w-[480px] mx-auto w-full">
+        <a class="flex flex-col items-center flex-1 gap-1 text-slate-400 hover:text-primary transition-colors"
+            href="./admin-dashboard.html">
+            <span class="material-symbols-outlined">dashboard</span>
+            <p class="text-[10px] font-bold uppercase">Home</p>
+        </a>
+        <a class="flex flex-col items-center flex-1 gap-1 text-slate-400 hover:text-primary transition-colors"
+            href="./teacher-management.html">
+            <span class="material-symbols-outlined">group</span>
+            <p class="text-[10px] font-bold uppercase">Teachers</p>
+        </a>
+        <a class="flex flex-col items-center flex-1 gap-1 text-slate-400 hover:text-primary transition-colors"
+            href="./attendance-monitoring.html">
+            <span class="material-symbols-outlined">analytics</span>
+            <p class="text-[10px] font-bold uppercase">Monitor</p>
+        </a>
+        <a class="flex flex-col items-center flex-1 gap-1 text-primary" href="./admin-profile.html">
+            <span class="material-symbols-outlined filled">person</span>
+            <p class="text-[10px] font-bold uppercase">Profile</p>
+        </a>
+    </nav>
+
+    <!-- CHANGE PASSWORD MODAL -->
+    <div id="changePwdModal"
+        class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-sm p-6 shadow-2xl">
+            <div class="flex items-center justify-between mb-5">
+                <h3 class="text-lg font-bold">Change Admin Password</h3>
+                <button onclick="closeChangePwd()"
+                    class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <p id="adminPwdMsg" class="text-sm text-red-500 mb-3 hidden"></p>
+            <p id="adminPwdOk" class="text-sm text-green-600 mb-3 hidden"></p>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Current Password</label>
+                    <input id="curPwd" type="password" placeholder="Your current password"
+                        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary outline-none text-sm" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">New Password</label>
+                    <input id="newAdminPwd" type="password" placeholder="At least 4 characters"
+                        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary outline-none text-sm" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Confirm New Password</label>
+                    <input id="confirmAdminPwd" type="password" placeholder="Repeat new password"
+                        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary outline-none text-sm" />
+                </div>
+                <div class="flex gap-3 pt-2">
+                    <button onclick="closeChangePwd()"
+                        class="flex-1 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl font-semibold text-sm">Cancel</button>
+                    <button onclick="doAdminChangePwd()"
+                        class="flex-1 py-3 bg-primary text-white rounded-xl font-semibold text-sm">Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openChangePwd() {
+            ['curPwd', 'newAdminPwd', 'confirmAdminPwd'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('adminPwdMsg').classList.add('hidden');
+            document.getElementById('adminPwdOk').classList.add('hidden');
+            document.getElementById('changePwdModal').classList.remove('hidden');
+        }
+        function closeChangePwd() { document.getElementById('changePwdModal').classList.add('hidden'); }
+
+        async function doAdminChangePwd() {
+            const cur = document.getElementById('curPwd').value.trim();
+            const newPwd = document.getElementById('newAdminPwd').value.trim();
+            const confirmPwd = document.getElementById('confirmAdminPwd').value.trim();
+            const msg = document.getElementById('adminPwdMsg');
+            const ok = document.getElementById('adminPwdOk');
+            msg.classList.add('hidden');
+            ok.classList.add('hidden');
+
+            if (!cur) { msg.innerText = 'Enter your current password'; msg.classList.remove('hidden'); return; }
+            if (!newPwd || newPwd.length < 6) { msg.innerText = 'New password must be at least 6 characters'; msg.classList.remove('hidden'); return; }
+            if (!/[A-Za-z]/.test(newPwd)) { msg.innerText = 'Password must include at least one letter'; msg.classList.remove('hidden'); return; }
+            if (!/[0-9]/.test(newPwd)) { msg.innerText = 'Password must include at least one number'; msg.classList.remove('hidden'); return; }
+            if (!/[^A-Za-z0-9]/.test(newPwd)) { msg.innerText = 'Password must include at least one symbol (@, #, !, etc.)'; msg.classList.remove('hidden'); return; }
+            if (newPwd !== confirmPwd) { msg.innerText = 'Passwords do not match'; msg.classList.remove('hidden'); return; }
+
+            try {
+                await App.fetchAPI('/auth/admin/change-password', { method: 'POST', body: JSON.stringify({ current_password: cur, new_password: newPwd }) });
+                ok.innerText = '✅ Password changed successfully!';
+                ok.classList.remove('hidden');
+                setTimeout(closeChangePwd, 2500);
+            } catch (e) {
+                msg.innerText = e.message || 'Failed to change password';
+                msg.classList.remove('hidden');
+            }
+        }
+    </script>
+</body>
+
+</html>

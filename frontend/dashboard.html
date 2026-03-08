@@ -10,10 +10,11 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
         rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
         rel="stylesheet" />
     <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
         rel="stylesheet" />
     <script id="tailwind-config">
         tailwind.config = {
@@ -39,16 +40,35 @@
             min-height: max(884px, 100dvh);
         }
     </style>
+
+    <style>
+        body {
+            max-width: 480px !important;
+            margin: 0 auto !important;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.1) !important;
+            position: relative;
+            background-color: #f8fafc;
+            /* To make the container stand out on PC */
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #0f172a;
+                box-shadow: 0 0 40px rgba(0, 0, 0, 0.4) !important;
+            }
+        }
+    </style>
 </head>
 
 <body
     class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
     <!-- Header / Top Bar -->
     <header
-        class="flex items-center bg-white dark:bg-slate-900 p-4 sticky top-0 z-10 border-b border-slate-200 dark:border-slate-800">
-        <div class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+        class="flex items-center bg-white dark:bg-slate-900 p-4 sticky top-0 z-10 border-b border-slate-200 dark:border-slate-800 max-w-[480px] mx-auto w-full">
+        <button onclick="App.toggleSidebar()"
+            class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
             <span class="material-symbols-outlined">menu</span>
-        </div>
+        </button>
         <h1 class="text-lg font-bold leading-tight flex-1 text-center pr-10">Attendance Dashboard</h1>
     </header>
     <main class="flex-1 overflow-y-auto pb-24">
@@ -127,42 +147,47 @@
                 <span class="material-symbols-outlined text-slate-400">chevron_right</span>
             </button>
         </section>
-        <!-- Quick Stats / Recent History -->
+        <!-- Quick Stats / Weekly Summary -->
         <section class="px-6">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="font-bold text-slate-800 dark:text-white">Weekly Summary</h3>
-                <a class="text-primary text-sm font-semibold" href="#">View All</a>
+                <h3 class="font-bold text-slate-800 dark:text-white">This Week</h3>
+                <a class="text-primary text-sm font-semibold" href="./attendance-history.html">View All</a>
             </div>
-            <div class="grid grid-cols-2 gap-3">
-                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700">
-                    <p class="text-slate-400 text-xs font-bold uppercase mb-1">Total Hours</p>
-                    <p class="text-xl font-bold text-slate-800 dark:text-white">38.5h</p>
+            <div class="grid grid-cols-3 gap-3">
+                <div
+                    class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700 text-center">
+                    <p class="text-slate-400 text-xs font-bold uppercase mb-1">Present</p>
+                    <p id="weekPresent" class="text-xl font-bold text-green-600">—</p>
                 </div>
-                <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700">
-                    <p class="text-slate-400 text-xs font-bold uppercase mb-1">Punctuality</p>
-                    <p class="text-xl font-bold text-emerald-500">98%</p>
+                <div
+                    class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700 text-center">
+                    <p class="text-slate-400 text-xs font-bold uppercase mb-1">Late</p>
+                    <p id="weekLate" class="text-xl font-bold text-amber-500">—</p>
+                </div>
+                <div
+                    class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700 text-center">
+                    <p class="text-slate-400 text-xs font-bold uppercase mb-1">Absent</p>
+                    <p id="weekAbsent" class="text-xl font-bold text-red-500">—</p>
                 </div>
             </div>
         </section>
     </main>
     <!-- Bottom Navigation Bar -->
     <nav
-        class="fixed bottom-0 w-full bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-4 pb-6 pt-2 flex justify-around items-center">
-        <a class="flex flex-col items-center gap-1 text-primary" href="#">
-            <span class="material-symbols-outlined fill-[1]">home</span>
+        class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-3 pb-8 pt-2 flex justify-around items-center max-w-[480px] mx-auto w-full">
+        <a class="flex flex-col items-center flex-1 gap-1 text-primary" href="./dashboard.html">
+            <span class="material-symbols-outlined filled">home</span>
             <p class="text-[10px] font-bold uppercase">Home</p>
         </a>
-        <a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#">
-            <span class="material-symbols-outlined">history</span>
+        <a class="flex flex-col items-center flex-1 gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors"
+            href="./attendance-history.html">
+            <span class="material-symbols-outlined ">history</span>
             <p class="text-[10px] font-bold uppercase">History</p>
         </a>
-        <a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#">
-            <span class="material-symbols-outlined">class</span>
-            <p class="text-[10px] font-bold uppercase">Classes</p>
-        </a>
-        <a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#" onclick="App.logout()">
-            <span class="material-symbols-outlined">logout</span>
-            <p class="text-[10px] font-bold uppercase">Logout</p>
+        <a class="flex flex-col items-center flex-1 gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors"
+            href="./profile.html">
+            <span class="material-symbols-outlined ">person</span>
+            <p class="text-[10px] font-bold uppercase">Profile</p>
         </a>
     </nav>
     <script>
@@ -189,21 +214,16 @@
                 const record = response.attendance;
 
                 if (record) {
-                    // Checked In
                     if (record.in_time) {
                         document.getElementById('checkInBtn').classList.add('opacity-50', 'pointer-events-none');
                         document.getElementById('inTimeText').innerText = `Checked in at ${record.in_time}`;
-
                         document.getElementById('checkOutBtn').classList.remove('opacity-50', 'pointer-events-none');
-
                         document.getElementById('statusBadge').innerHTML = `
                     <span class="material-symbols-outlined text-sm">verified</span>
                     <span>${record.status} Today</span>
                 `;
                         document.getElementById('statusBadge').className = 'mt-2 flex items-center gap-2 bg-emerald-100 text-emerald-600 px-3 py-1 rounded-full text-sm font-semibold';
                     }
-
-                    // Checked Out
                     if (record.out_time) {
                         document.getElementById('checkOutBtn').classList.add('opacity-50', 'pointer-events-none');
                         document.getElementById('outTimeText').innerText = `Checked out at ${record.out_time}`;
@@ -216,6 +236,18 @@
                 }
             } catch (err) {
                 console.error('Error loading attendance', err);
+            }
+
+            // Load weekly stats (real data)
+            try {
+                const stats = await App.fetchAPI('/attendance/my/weekly-stats');
+                document.getElementById('weekPresent').innerText = stats.present ?? 0;
+                document.getElementById('weekLate').innerText = stats.late ?? 0;
+                document.getElementById('weekAbsent').innerText = stats.absent ?? 0;
+            } catch (e) {
+                document.getElementById('weekPresent').innerText = '0';
+                document.getElementById('weekLate').innerText = '0';
+                document.getElementById('weekAbsent').innerText = '0';
             }
         }
 

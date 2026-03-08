@@ -1,18 +1,18 @@
+import dotenv from 'dotenv';
+dotenv.config(); // MUST be first so env vars are available when route files load
+
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import './src/cron/midnightJob.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 import authRoutes from './src/routes/auth.routes.js';
 import adminRoutes from './src/routes/admin.routes.js';
 import attendanceRoutes from './src/routes/attendance.routes.js';
+import './src/cron/midnightJob.js';
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
