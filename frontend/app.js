@@ -3,7 +3,7 @@ const API_BASE = '/api';
 // Global styles for page transition animations (no transform on body to preserve 'fixed' positioning)
 const globalStyles = document.createElement('style');
 globalStyles.textContent = `
-    body { animation: pageFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+    body { animation: pageFadeIn 0.1s ease-out forwards; }
     @keyframes pageFadeIn { 
         0% { opacity: 0; } 
         100% { opacity: 1; } 

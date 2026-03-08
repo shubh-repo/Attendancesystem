@@ -48,7 +48,7 @@ self.addEventListener('activate', event => {
     );
 });
 
-// ── Fetch: Network-first, fallback to cache ──
+// ── Fetch: Stale-While-Revalidate for UI Speed ──
 self.addEventListener('fetch', event => {
     const url = new URL(event.request.url);
 
@@ -59,24 +59,25 @@ self.addEventListener('fetch', event => {
     if (!url.origin.includes(self.location.origin)) return;
 
     event.respondWith(
-        fetch(event.request)
-            .then(response => {
-                // Cache fresh copy
-                if (response.ok) {
-                    const clone = response.clone();
-                    caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+        caches.match(event.request).then(cachedResponse => {
+            const fetchPromise = fetch(event.request).then(networkResponse => {
+                // Update the cache with the fresh fetched version
+                if (networkResponse.ok) {
+                    caches.open(CACHE_NAME).then(cache => {
+                        cache.put(event.request, networkResponse.clone());
+                    });
                 }
-                return response;
-            })
-            .catch(() => {
-                // Offline fallback — return cached version
-                return caches.match(event.request).then(cached => {
-                    if (cached) return cached;
-                    // Fallback to login page for HTML requests
-                    if (event.request.headers.get('Accept')?.includes('text/html')) {
-                        return caches.match('/login.html');
-                    }
-                });
-            })
+                return networkResponse;
+            }).catch(() => {
+                // Offline fallback — return cached version if no network response
+                if (!cachedResponse && event.request.headers.get('Accept')?.includes('text/html')) {
+                    // Fallback to login page for HTML requests when fully offline & un-cached
+                    return caches.match('/index.html');
+                }
+            });
+
+            // INSTANT SPEED trick: Return cached immediately if available, while fetching in background!
+            return cachedResponse || fetchPromise;
+        })
     );
 });
