@@ -82,7 +82,7 @@
             <div class="@[480px]:px-4 @[480px]:py-3">
                 <div class="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end overflow-hidden bg-slate-200 dark:bg-slate-800 @[480px]:rounded-xl min-h-[280px]"
                     data-alt="Modern high school building exterior with blue sky"
-                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBsgtexYAChWcRR6gYf7KyKRX9mo6B6n2i8CdYjjnrSbwy3a_VJtqEXRo_QJyYYhGRP8m0zNPMeyNv4Ldzg45U4T0BNYgMUcbdpp7hS4wlmdzeQPbqd4GOI2sqiHbm84qifMpH8dfEp7FtPBe3kML6irSNYUAKhHRjxH-91sM8aq7v1n7fQsTKSQMqQccWHR9gUs5Fc-0w7qMKsY2az0b7-kv_VTwWdih3omQgN8g1YyBDlKZIUmVoHIfNeqi_HmUD_xIiTR0fxzVre");'>
+                    style='background-image: url("./school-building.jpg");'>
                 </div>
             </div>
         </div>
@@ -195,15 +195,15 @@
             if (e.key === 'Enter') document.getElementById('loginBtn').click();
         });
     </script>
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/service-worker.js')
-        .then(r => console.log('[SW] Registered:', r.scope))
-        .catch(e => console.warn('[SW] Registration failed:', e));
-    });
-  }
-</script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(r => console.log('[SW] Registered:', r.scope))
+                    .catch(e => console.warn('[SW] Registration failed:', e));
+            });
+        }
+    </script>
 </body>
 
 </html>

@@ -50,7 +50,7 @@ router.post('/checkin', verifyToken, upload.single('photo'), async (req, res) =>
         }
 
         // 2. Load System Settings (graceful fallback if table/row missing)
-        const { data: settings } = await supabase.from('system_settings').select('*').eq('id', 1).single().catch(() => ({ data: null }));
+        const { data: settings } = await supabase.from('system_settings').select('*').eq('id', 1).maybeSingle();
         const cfg = settings || {};
         const gpsEnabled = cfg.gps_enabled !== false; // default: enabled
         const schoolLat = parseFloat(cfg.gps_latitude) || null;

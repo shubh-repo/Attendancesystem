@@ -16,9 +16,17 @@ router.use(verifyToken, verifyAdmin);
 
 // Get System Settings
 router.get('/settings', async (req, res) => {
-    const { data, error } = await supabase.from('system_settings').select('*').eq('id', 1).single();
-    if (error) return res.status(500).json({ error: error.message });
-    res.json(data);
+    const { data } = await supabase.from('system_settings').select('*').eq('id', 1).maybeSingle();
+    // Return data or default settings if row doesn't exist yet
+    res.json(data || {
+        id: 1,
+        school_start_time: '08:00:00',
+        grace_period_minutes: 15,
+        gps_enabled: true,
+        gps_latitude: null,
+        gps_longitude: null,
+        allowed_radius_meters: 1000
+    });
 });
 
 // Update System Settings
@@ -34,7 +42,8 @@ router.put('/settings', async (req, res) => {
 
     const { data, error } = await supabase
         .from('system_settings')
-        .update({
+        .upsert({
+            id: 1,
             school_start_time,
             grace_period_minutes,
             gps_latitude,
@@ -42,8 +51,7 @@ router.put('/settings', async (req, res) => {
             allowed_radius_meters,
             gps_enabled,
             updated_at: new Date()
-        })
-        .eq('id', 1)
+        }, { onConflict: 'id' })
         .select()
         .single();
 

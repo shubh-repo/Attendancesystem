@@ -10,6 +10,7 @@ const STATIC_FILES = [
     '/manifest.json',
     '/icon-192.png',
     '/icon-512.png',
+    '/school-building.jpg',
     '/camera-screen.html',
     '/dashboard.html',
     '/attendance-history.html',
