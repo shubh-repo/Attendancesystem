@@ -1,55 +1,81 @@
-const CACHE_NAME = 'stgng-attendance-v8';
-const ASSETS_TO_CACHE = [
+// St. GNG School Attendance — Service Worker
+const CACHE_NAME = 'stgng-attendance-v1';
+
+// All static files to pre-cache
+const STATIC_FILES = [
     '/',
     '/index.html',
-    '/dashboard.html',
-    '/camera-screen.html',
-    '/status-screen.html',
-    '/attendance-history.html',
+    '/login.html',
     '/app.js',
-    '/manifest.json'
+    '/manifest.json',
+    '/icon-192.png',
+    '/icon-512.png',
+    '/camera-screen.html',
+    '/dashboard.html',
+    '/attendance-history.html',
+    '/profile.html',
+    '/status-screen.html',
+    '/admin-dashboard.html',
+    '/admin-profile.html',
+    '/admin-settings.html',
+    '/attendance-monitoring.html',
+    '/teacher-management.html',
 ];
 
-self.addEventListener('install', (event) => {
+// ── Install: pre-cache static files ──
+self.addEventListener('install', event => {
+    console.log('[SW] Installing...');
     event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll(ASSETS_TO_CACHE);
-        })
-    );
-    self.skipWaiting();
-});
-
-self.addEventListener('activate', (event) => {
-    event.waitUntil(
-        caches.keys().then((cacheNames) => {
-            return Promise.all(
-                cacheNames.map((name) => {
-                    if (name !== CACHE_NAME) {
-                        return caches.delete(name);
-                    }
-                })
+        caches.open(CACHE_NAME).then(cache => {
+            // Cache what we can — ignore errors for missing files
+            return Promise.allSettled(
+                STATIC_FILES.map(url => cache.add(url).catch(() => { }))
             );
-        })
+        }).then(() => self.skipWaiting())
     );
-    self.clients.claim();
 });
 
-self.addEventListener('fetch', (event) => {
+// ── Activate: clean old caches ──
+self.addEventListener('activate', event => {
+    console.log('[SW] Activating...');
+    event.waitUntil(
+        caches.keys().then(keys =>
+            Promise.all(
+                keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+            )
+        ).then(() => self.clients.claim())
+    );
+});
+
+// ── Fetch: Network-first, fallback to cache ──
+self.addEventListener('fetch', event => {
+    const url = new URL(event.request.url);
+
+    // Skip non-GET, API calls, and cross-origin requests
     if (event.request.method !== 'GET') return;
+    if (url.pathname.startsWith('/api/')) return;
+    if (url.pathname.startsWith('/attendance/')) return;
+    if (!url.origin.includes(self.location.origin)) return;
 
     event.respondWith(
-        caches.match(event.request).then((cachedResponse) => {
-            if (cachedResponse) {
-                return cachedResponse;
-            }
-            return fetch(event.request).then((networkResponse) => {
-                // Cache dynamic UI files on the fly if needed (optional)
-                return networkResponse;
-            }).catch(() => {
-                if (event.request.headers.get('accept') && event.request.headers.get('accept').includes('text/html')) {
-                    return caches.match('/index.html');
+        fetch(event.request)
+            .then(response => {
+                // Cache fresh copy
+                if (response.ok) {
+                    const clone = response.clone();
+                    caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
                 }
-            });
-        })
+                return response;
+            })
+            .catch(() => {
+                // Offline fallback — return cached version
+                return caches.match(event.request).then(cached => {
+                    if (cached) return cached;
+                    // Fallback to login page for HTML requests
+                    if (event.request.headers.get('Accept')?.includes('text/html')) {
+                        return caches.match('/login.html');
+                    }
+                });
+            })
     );
 });

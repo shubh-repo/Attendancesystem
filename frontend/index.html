@@ -209,6 +209,15 @@
             if (e.key === 'Enter') document.getElementById('loginBtn').click();
         });
     </script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/service-worker.js')
+        .then(r => console.log('[SW] Registered:', r.scope))
+        .catch(e => console.warn('[SW] Registration failed:', e));
+    });
+  }
+</script>
 </body>
 
 </html>
