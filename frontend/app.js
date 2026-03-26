@@ -1,17 +1,15 @@
 const API_BASE = '/api';
 
-// Global styles for page transition animations (no transform on body to preserve 'fixed' positioning)
+// Micro-interaction styles only — no page fade
 const globalStyles = document.createElement('style');
 globalStyles.textContent = `
-    body { animation: pageFadeIn 0.1s ease-out forwards; }
-    @keyframes pageFadeIn { 
-        0% { opacity: 0; } 
-        100% { opacity: 1; } 
-    }
-    button, a { transition: all 0.2s ease-in-out; }
+    button, a { transition: all 0.15s ease-in-out; }
     button:active, a:active { transform: scale(0.96); }
+    @view-transition { navigation: none; }
+    ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
 `;
 document.head.appendChild(globalStyles);
+
 const App = {
     token: localStorage.getItem('token'),
     user: JSON.parse(localStorage.getItem('user') || 'null'),

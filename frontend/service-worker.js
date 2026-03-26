@@ -1,5 +1,5 @@
 // St. GNG School Attendance — Service Worker
-const CACHE_NAME = 'stgng-attendance-v1';
+const CACHE_NAME = 'stgng-attendance-v2';
 
 // All static files to pre-cache
 const STATIC_FILES = [
