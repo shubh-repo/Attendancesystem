@@ -102,9 +102,10 @@
             class="filter-tab flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">Blocked</button>
     </div>
 
-    <!-- Teacher Cards List -->
     <main class="flex-1 p-4 pb-28 space-y-3" id="teachersList">
-        <div class="text-center py-8 text-slate-400">Loading teachers...</div>
+        <div class="h-24 animate-shimmer rounded-xl bg-slate-100 dark:bg-slate-800"></div>
+        <div class="h-24 animate-shimmer rounded-xl bg-slate-100 dark:bg-slate-800"></div>
+        <div class="h-24 animate-shimmer rounded-xl bg-slate-100 dark:bg-slate-800"></div>
     </main>
 
     <!-- Bottom Nav -->
@@ -354,12 +355,19 @@
             };
 
             async function loadTeachers() {
+                const list = document.getElementById('teachersList');
+                list.innerHTML = [
+                    '<div class="h-24 animate-shimmer rounded-xl bg-slate-100 dark:bg-slate-800"></div>',
+                    '<div class="h-24 animate-shimmer rounded-xl bg-slate-100 dark:bg-slate-800"></div>',
+                    '<div class="h-24 animate-shimmer rounded-xl bg-slate-100 dark:bg-slate-800"></div>',
+                    '<div class="h-24 animate-shimmer rounded-xl bg-slate-100 dark:bg-slate-800"></div>',
+                ].join('');
                 try {
                     const teachers = await App.fetchAPI('/admin/teachers');
                     allTeachers = teachers;
                     filterTeachers();
                 } catch (err) {
-                    document.getElementById('teachersList').innerHTML = `<div class="text-center py-8 text-red-500">Error: ${err.message}</div>`;
+                    list.innerHTML = `<div class="text-center py-8 text-red-500">Error: ${err.message}</div>`;
                 }
             }
 
