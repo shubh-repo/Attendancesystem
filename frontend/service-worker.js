@@ -1,5 +1,5 @@
 // St. GNG School Attendance — Service Worker
-const CACHE_NAME = 'stgng-attendance-v2';
+const CACHE_NAME = 'stgng-attendance-v3';
 
 // All static files to pre-cache
 const STATIC_FILES = [
@@ -10,6 +10,7 @@ const STATIC_FILES = [
     '/manifest.json',
     '/icon-192.png',
     '/icon-512.png',
+    '/icon-maskable-512.png',
     '/school-building.jpg',
     '/camera-screen.html',
     '/dashboard.html',
