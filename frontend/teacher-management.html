@@ -48,6 +48,16 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+
+        @keyframes shimmer {
+            0% { background-position: -468px 0; }
+            100% { background-position: 468px 0; }
+        }
+        .animate-shimmer {
+            animation: shimmer 1s linear infinite;
+            background: linear-gradient(to right, #f6f7f8 8%, #edeef1 18%, #f6f7f8 33%);
+            background-size: 800px 104px;
+        }
     </style>
 </head>
 
@@ -97,11 +107,9 @@
         <div class="text-center py-8 text-slate-400">Loading teachers...</div>
     </main>
 
-    <!-- Admin Bottom Navigation -->
-    <nav
-        class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-3 pb-8 pt-2 flex justify-around items-center max-w-[480px] mx-auto w-full">
-        <a class="flex flex-col items-center flex-1 gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors"
-            href="./admin-dashboard.html">
+    <!-- Bottom Nav -->
+    <nav class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-3 pb-8 pt-2 flex justify-around items-center max-w-[480px] mx-auto w-full">
+        <a class="flex flex-col items-center flex-1 gap-1 text-slate-400 hover:text-primary transition-colors" href="./admin-dashboard.html">
             <span class="material-symbols-outlined">home</span>
             <p class="text-[10px] font-bold uppercase">Home</p>
         </a>
@@ -109,23 +117,22 @@
             <span class="material-symbols-outlined">group</span>
             <p class="text-[10px] font-bold uppercase">Teachers</p>
         </a>
-        <a class="flex flex-col items-center flex-1 gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors"
-            href="./attendance-monitoring.html">
+        <a class="flex flex-col items-center flex-1 gap-1 text-slate-400 hover:text-primary transition-colors" href="./attendance-monitoring.html">
             <span class="material-symbols-outlined">analytics</span>
             <p class="text-[10px] font-bold uppercase">Monitor</p>
         </a>
-        <a class="flex flex-col items-center flex-1 gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors"
-            href="./admin-settings.html">
+        <a class="flex flex-col items-center flex-1 gap-1 text-slate-400 hover:text-primary transition-colors" href="./admin-settings.html">
             <span class="material-symbols-outlined">tune</span>
             <p class="text-[10px] font-bold uppercase">Settings</p>
         </a>
-        <a class="flex flex-col items-center flex-1 gap-1 text-slate-400 dark:text-slate-500 hover:text-primary transition-colors"
-            href="./admin-profile.html">
+        <a class="flex flex-col items-center flex-1 gap-1 text-slate-400 hover:text-primary transition-colors" href="./admin-profile.html">
             <span class="material-symbols-outlined">person</span>
             <p class="text-[10px] font-bold uppercase">Profile</p>
         </a>
+    </nav>
 
-        <!-- ADD TEACHER MODAL -->
+
+    <!-- ADD TEACHER MODAL -->
         <div id="addTeacherModal"
             class="hidden fixed inset-0 z-[100] flex items-end justify-center bg-black/50 backdrop-blur-sm">
             <div
@@ -359,29 +366,6 @@
             document.addEventListener('DOMContentLoaded', loadTeachers);
         </script>
 
-        <!-- Bottom Nav -->
-        <nav
-            class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-3 pb-8 pt-2 flex justify-around items-center max-w-[480px] mx-auto w-full">
-            <a class="flex flex-col items-center flex-1 gap-1 text-slate-400 hover:text-primary transition-colors"
-                href="./admin-dashboard.html">
-                <span class="material-symbols-outlined">home</span>
-                <p class="text-[10px] font-bold uppercase">Home</p>
-            </a>
-            <a class="flex flex-col items-center flex-1 gap-1 text-primary" href="./teacher-management.html">
-                <span class="material-symbols-outlined fill-[1]">group</span>
-                <p class="text-[10px] font-bold uppercase">Teachers</p>
-            </a>
-            <a class="flex flex-col items-center flex-1 gap-1 text-slate-400 hover:text-primary transition-colors"
-                href="./attendance-monitoring.html">
-                <span class="material-symbols-outlined">analytics</span>
-                <p class="text-[10px] font-bold uppercase">Monitor</p>
-            </a>
-            <a class="flex flex-col items-center flex-1 gap-1 text-slate-400 hover:text-primary transition-colors"
-                href="./admin-settings.html">
-                <span class="material-symbols-outlined">tune</span>
-                <p class="text-[10px] font-bold uppercase">Settings</p>
-            </a>
-        </nav>
 
         <script>
             if ('serviceWorker' in navigator) {
