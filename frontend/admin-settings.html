@@ -105,6 +105,16 @@
                     </div>
                 </div>
 
+                <!-- Half Day Threshold -->
+                <div>
+                    <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Half Day Threshold Time</label>
+                    <p class="text-xs text-slate-400 mb-2">Iss time se pehle checkout = "Half Day", baad mein = "Early Leave"</p>
+                    <div class="relative">
+                        <input type="time" id="half_day_time" value="11:00"
+                            class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-base font-bold focus:border-primary outline-none transition-all" />
+                    </div>
+                </div>
+
                 <!-- Grace Period -->
                 <div>
                     <label class="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">Grace Period
@@ -316,6 +326,7 @@
                     document.getElementById('radiusLabel').innerText = s.allowed_radius_meters + 'm';
                 }
                 if (s.gps_enabled !== undefined) document.getElementById('gpsEnabled').checked = s.gps_enabled;
+                if (s.half_day_time) document.getElementById('half_day_time').value = s.half_day_time.substring(0, 5);
                 updateLatePreview();
             } catch (e) {
                 console.warn('Could not load settings', e.message);
@@ -331,7 +342,8 @@
             status.classList.add('hidden');
 
             const startTime = document.getElementById('schoolStartTime').value; // "HH:MM"
-            const endTime = document.getElementById('schoolEndTime').value || '13:00'; // "HH:MM"
+            const endTime = document.getElementById('schoolEndTime').value || '13:00';
+            const halfDayTime = document.getElementById('half_day_time').value || '11:00';
             const grace = parseInt(document.getElementById('gracePeriod').value) || 0;
             const lat = parseFloat(document.getElementById('schoolLat').value) || null;
             const lng = parseFloat(document.getElementById('schoolLng').value) || null;
@@ -342,8 +354,9 @@
                 await App.fetchAPI('/admin/settings', {
                     method: 'PUT',
                     body: JSON.stringify({
-                        school_start_time: startTime + ':00', // store as "HH:MM:SS"
+                        school_start_time: startTime + ':00',
                         school_end_time: endTime + ':00',
+                        half_day_time: halfDayTime + ':00',
                         grace_period_minutes: grace,
                         gps_latitude: lat,
                         gps_longitude: lng,

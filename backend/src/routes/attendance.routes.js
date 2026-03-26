@@ -169,7 +169,8 @@ router.post('/checkout', verifyToken, upload.single('photo'), async (req, res) =
         const { data: settings } = await supabase.from('system_settings').select('*').eq('id', 1).maybeSingle();
         const cfg = settings || {};
         const schoolEndTime = cfg.school_end_time || '13:00:00';
-        const gpsEnabled = cfg.gps_enabled !== false; // default: enabled
+        const halfDayTime = cfg.half_day_time || '11:00:00';
+        const gpsEnabled = cfg.gps_enabled !== false;
         const schoolLat = parseFloat(cfg.gps_latitude) || null;
         const schoolLng = parseFloat(cfg.gps_longitude) || null;
         const allowedRadius = parseInt(cfg.allowed_radius_meters) || 1000;
@@ -208,15 +209,19 @@ router.post('/checkout', verifyToken, upload.single('photo'), async (req, res) =
         const { data: publicUrlData } = supabase.storage.from('attendance-images').getPublicUrl(fileName);
         const out_photo_url = publicUrlData.publicUrl;
 
-        // 3. Update Record
+        // 5. Determine Final Status
         let finalStatus = existing.status;
-        const endParts = schoolEndTime.split(':');
-        const schoolEndMin = parseInt(endParts[0]) * 60 + parseInt(endParts[1]);
-        const curParts = currentTime.split(':');
-        const currentMin = parseInt(curParts[0]) * 60 + parseInt(curParts[1]);
-        if (currentMin < schoolEndMin) {
+        const toMins = t => { const p = t.split(':'); return parseInt(p[0]) * 60 + parseInt(p[1]); };
+        const curMins = toMins(currentTime);
+        const halfDayMins = toMins(halfDayTime);
+        const endMins = toMins(schoolEndTime);
+
+        if (curMins < halfDayMins) {
+            finalStatus = 'Half Day';
+            console.log(`Checked out at ${currentTime} before half-day threshold ${halfDayTime} → Half Day`);
+        } else if (curMins < endMins) {
             finalStatus = 'Early Leave';
-            console.log(`User checked out at ${currentTime} before ${schoolEndTime}, marked as Early Leave`);
+            console.log(`Checked out at ${currentTime} before school end ${schoolEndTime} → Early Leave`);
         }
 
         const { data, error: updateError } = await supabase
