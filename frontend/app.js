@@ -67,7 +67,10 @@ const App = {
                 return text;
             }
         }
-        if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+        if (!res.ok) {
+            if (res.status === 401 || res.status === 403) App.logout();
+            throw new Error(data.error || `Request failed (${res.status})`);
+        }
         return data;
     },
 

@@ -7,15 +7,13 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <link rel="manifest" href="./manifest.json" />
     <script src="./app.js"></script>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="./dist/output.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
         rel="stylesheet" />
     <link
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
         rel="stylesheet" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
-        rel="stylesheet" />
+
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -41,27 +39,12 @@
         }
     </style>
 
-    <style>
-        body {
-            max-width: 480px !important;
-            margin: 0 auto !important;
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.1) !important;
-            position: relative;
-            background-color: #f8fafc;
-            /* To make the container stand out on PC */
-        }
 
-        @media (prefers-color-scheme: dark) {
-            body {
-                background-color: #0f172a;
-                box-shadow: 0 0 40px rgba(0, 0, 0, 0.4) !important;
-            }
-        }
-    </style>
 </head>
 
 <body
-    class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+    class="bg-slate-100 dark:bg-slate-950 font-display text-slate-900 dark:text-slate-100 min-h-screen">
+    <div class="max-w-md mx-auto relative min-h-screen bg-background-light dark:bg-background-dark shadow-xl flex flex-col">
     <!-- Header / Top Bar -->
     <header
         class="flex items-center bg-white dark:bg-slate-900 p-4 sticky top-0 z-10 border-b border-slate-200 dark:border-slate-800 max-w-[480px] mx-auto w-full">
@@ -205,9 +188,9 @@
         async function loadDashboard() {
             if (!App.user) return;
 
-            document.getElementById('teacherName').innerText = App.user.name || 'Teacher';
-            document.getElementById('teacherDesignation').innerText = App.user.designation || 'Staff';
-            document.getElementById('profilePic').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(App.user.name)}&background=random`;
+            document.getElementById('teacherName').innerText = App.user?.name || 'Teacher';
+            document.getElementById('teacherDesignation').innerText = App.user?.designation || 'Staff';
+            document.getElementById('profilePic').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(App.user?.name || 'Teacher')}&background=random`;
 
             try {
                 const response = await App.fetchAPI('/attendance/my/today');
@@ -253,15 +236,7 @@
 
         document.addEventListener('DOMContentLoaded', loadDashboard);
     </script>
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/service-worker.js')
-        .then(r => console.log('[SW] Registered:', r.scope))
-        .catch(e => console.warn('[SW] Registration failed:', e));
-    });
-  }
-</script>
+    </div>
 </body>
 
 </html>

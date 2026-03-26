@@ -81,7 +81,7 @@ router.post('/checkin', verifyToken, upload.single('photo'), async (req, res) =>
             .jpeg({ quality: 80 })
             .toBuffer();
 
-        const fileName = `${teacher_id} / ${today} -in.jpg`;
+        const fileName = `${teacher_id}/${today}-in.jpg`;
         const { error: uploadError } = await supabase.storage
             .from('attendance-images')
             .upload(fileName, compressedImageBuffer, {
@@ -196,7 +196,7 @@ router.post('/checkout', verifyToken, upload.single('photo'), async (req, res) =
             .jpeg({ quality: 80 })
             .toBuffer();
 
-        const fileName = `${teacher_id} / ${today} - out.jpg`;
+        const fileName = `${teacher_id}/${today}-out.jpg`;
         const { error: uploadError } = await supabase.storage
             .from('attendance-images')
             .upload(fileName, compressedImageBuffer, {
@@ -210,7 +210,11 @@ router.post('/checkout', verifyToken, upload.single('photo'), async (req, res) =
 
         // 3. Update Record
         let finalStatus = existing.status;
-        if (currentTime < schoolEndTime) {
+        const endParts = schoolEndTime.split(':');
+        const schoolEndMin = parseInt(endParts[0]) * 60 + parseInt(endParts[1]);
+        const curParts = currentTime.split(':');
+        const currentMin = parseInt(curParts[0]) * 60 + parseInt(curParts[1]);
+        if (currentMin < schoolEndMin) {
             finalStatus = 'Early Leave';
             console.log(`User checked out at ${currentTime} before ${schoolEndTime}, marked as Early Leave`);
         }
@@ -305,22 +309,7 @@ router.get('/my/weekly-stats', verifyToken, async (req, res) => {
     }
 });
 
-// Teacher: Get today's own attendance record
-router.get('/my/today', verifyToken, async (req, res) => {
-    try {
-        const today = new Date().toISOString().split('T')[0];
-        const { data, error } = await supabase
-            .from('attendance')
-            .select('*')
-            .eq('teacher_id', req.user.id)
-            .eq('date', today)
-            .maybeSingle();
-        if (error) throw error;
-        res.json({ attendance: data });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
+
 
 // Teacher: Get own profile from DB (fresh data)
 router.get('/me', verifyToken, async (req, res) => {
