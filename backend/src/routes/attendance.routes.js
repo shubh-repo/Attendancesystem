@@ -261,20 +261,26 @@ router.get('/my/today', verifyToken, async (req, res) => {
 // Teacher History
 router.get('/my/history', verifyToken, async (req, res) => {
     try {
-        const month = req.query.month; // e.g., "03"
+        const month = req.query.month;
         const year = req.query.year || new Date().getFullYear();
+        const limit = parseInt(req.query.limit) || 15;
+        const page  = parseInt(req.query.page)  || 0;
+        const offset = page * limit;
 
-        let query = supabase.from('attendance').select('*').eq('teacher_id', req.user.id).order('date', { ascending: false });
+        let query = supabase.from('attendance').select('*', { count: 'exact' })
+            .eq('teacher_id', req.user.id)
+            .order('date', { ascending: false })
+            .range(offset, offset + limit - 1);
 
         if (month) {
-            const startDate = `${year} - ${month.padStart(2, '0')}-01`;
+            const startDate = `${year}-${month.padStart(2, '0')}-01`;
             const endDate = new Date(year, parseInt(month), 0).toISOString().split('T')[0];
             query = query.gte('date', startDate).lte('date', endDate);
         }
 
-        const { data, error } = await query;
+        const { data, error, count } = await query;
         if (error) throw error;
-        res.json(data);
+        res.json({ records: data, total: count, page, limit });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

@@ -93,19 +93,24 @@
     }
 
     @media (prefers-color-scheme: dark) {
-      .cal-present {
-        background: #16a34a;
-        color: #fff;
-      }
+      .cal-present { background: #16a34a; color: #fff; }
+      .cal-late    { background: #d97706; color: #fff; }
+      .cal-absent  { background: #dc2626; color: #fff; }
+    }
 
-      .cal-late {
-        background: #d97706;
-        color: #fff;
-      }
-
-      .cal-absent {
-        background: #dc2626;
-        color: #fff;
+    @keyframes shimmer {
+      0%   { background-position: -468px 0; }
+      100% { background-position: 468px 0; }
+    }
+    .animate-shimmer {
+      animation: shimmer 1.2s linear infinite;
+      background: linear-gradient(to right, #f1f5f9 8%, #e2e8f0 18%, #f1f5f9 33%);
+      background-size: 800px 104px;
+    }
+    @media (prefers-color-scheme: dark) {
+      .animate-shimmer {
+        background: linear-gradient(to right, #1e293b 8%, #334155 18%, #1e293b 33%);
+        background-size: 800px 104px;
       }
     }
   </style>
@@ -232,6 +237,11 @@
         <p id="tablePagination" class="text-xs text-slate-500">Showing 0 records</p>
       </div>
     </div>
+    <!-- Load More -->
+    <button id="loadMoreBtn" onclick="loadMore()"
+      class="hidden w-full py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold text-primary bg-white dark:bg-slate-900 hover:bg-primary/5 transition-colors">
+      Load More
+    </button>
   </main>
 
   <!-- Bottom Navigation Bar -->
@@ -253,12 +263,24 @@
     </a>
   </nav>
 
+  <!-- shimmer placeholders injected by JS -->
+  <div id="shimmerList" class="space-y-2 px-4 mt-4">
+    <div class="h-14 animate-shimmer rounded-xl"></div>
+    <div class="h-14 animate-shimmer rounded-xl"></div>
+    <div class="h-14 animate-shimmer rounded-xl"></div>
+    <div class="h-14 animate-shimmer rounded-xl"></div>
+    <div class="h-14 animate-shimmer rounded-xl"></div>
+  </div>
+
   <script>
     let allRecords = [];
     let activeFilter = 'All';
     let calendarMonth = new Date().getMonth();
     let calendarYear = new Date().getFullYear();
     let currentView = 'calendar';
+    let currentPage = 0;
+    let totalRecords = 0;
+    const PAGE_LIMIT = 15;
 
     function toggleView(view) {
       currentView = view;
@@ -361,31 +383,58 @@
       document.getElementById('tablePagination').innerText = `Showing ${monthFiltered.length} records`;
     }
 
-    async function loadHistory() {
+    async function loadHistory(page = 0) {
+      if (page === 0) {
+        allRecords = [];
+        document.getElementById('shimmerList').classList.remove('hidden');
+        document.getElementById('loadMoreBtn').classList.add('hidden');
+      }
       try {
-        const records = await App.fetchAPI('/attendance/my/history');
-        allRecords = records;
+        const res = await App.fetchAPI(`/attendance/my/history?page=${page}&limit=${PAGE_LIMIT}`);
+        const records = res.records || [];
+        totalRecords = res.total || 0;
+        currentPage = page;
 
+        allRecords = allRecords.concat(records);
+        document.getElementById('shimmerList').classList.add('hidden');
+
+        // Update summary stats (only on first page load — cumulative)
         let present = 0, late = 0, absent = 0;
-        records.forEach(r => {
+        allRecords.forEach(r => {
           if (r.status === 'Present') present++;
           else if (r.status === 'Late') late++;
           else absent++;
         });
-
         document.getElementById('presentDays').innerText = present;
         document.getElementById('lateDays').innerText = late;
         document.getElementById('absentDays').innerText = absent;
 
         renderCalendar();
         renderList();
+
+        // Show Load More if there are more records
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        if (allRecords.length < totalRecords) {
+          loadMoreBtn.classList.remove('hidden');
+          loadMoreBtn.innerText = `Load More (${totalRecords - allRecords.length} remaining)`;
+        } else {
+          loadMoreBtn.classList.add('hidden');
+        }
       } catch (err) {
+        document.getElementById('shimmerList').classList.add('hidden');
         document.getElementById('historyTableBody').innerHTML = `<tr><td colspan="4" class="text-red-500 text-center py-4 text-sm">Error: ${err.message}</td></tr>`;
         document.getElementById('calendarGrid').innerHTML = '';
       }
     }
 
-    document.addEventListener('DOMContentLoaded', loadHistory);
+    function loadMore() {
+      const btn = document.getElementById('loadMoreBtn');
+      btn.innerText = 'Loading...';
+      btn.disabled = true;
+      loadHistory(currentPage + 1).finally(() => { btn.disabled = false; });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => loadHistory(0));
   </script>
 <script>
   if ('serviceWorker' in navigator) {
