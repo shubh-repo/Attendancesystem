@@ -83,7 +83,7 @@
                 class="w-full max-w-md aspect-[3/4] rounded-xl bg-slate-200 dark:bg-slate-800 relative flex items-center justify-center border-4 border-primary/20 shadow-xl overflow-hidden">
                 <!-- Camera Feed -->
                 <div class="absolute inset-0 bg-slate-300 dark:bg-slate-700">
-                    <video id="videoFeed" class="w-full h-full object-cover transform -scale-x-100" autoplay
+                    <video id="videoFeed" class="w-full h-full object-cover transform -scale-x-100" style="filter: brightness(1.05) contrast(1.05);" autoplay
                         playsinline></video>
                     <canvas id="photoCanvas" class="hidden"></canvas>
                 </div>
@@ -161,7 +161,7 @@
             if (stream) stream.getTracks().forEach(t => t.stop());
             try {
                 stream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: currentFacingMode, width: { ideal: 720 } }
+                    video: { facingMode: currentFacingMode, width: { ideal: 1280 }, height: { ideal: 720 } }
                 });
                 video.srcObject = stream;
 

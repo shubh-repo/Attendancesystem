@@ -94,19 +94,17 @@ router.post('/checkin', verifyToken, upload.single('photo'), async (req, res) =>
         const in_photo_url = publicUrlData.publicUrl;
 
         // 5. Late Calculation
-        const startParts = schoolStartTime.split(':');
-        const schoolStartMin = parseInt(startParts[0]) * 60 + parseInt(startParts[1]);
-        const thresholdMin = schoolStartMin + gracePeriodMins;
-
-        const currentParts = currentTime.split(':');
-        const currentMin = parseInt(currentParts[0]) * 60 + parseInt(currentParts[1]);
+        const toMins = t => { const p = t.split(':'); return parseInt(p[0]) * 60 + parseInt(p[1]); };
+        const startMinutes = toMins(schoolStartTime);
+        const thresholdMin = startMinutes + gracePeriodMins;
+        const currentMin = toMins(currentTime);
 
         let status = 'Present';
         let late_minutes = 0;
 
         if (currentMin > thresholdMin) {
             status = 'Late';
-            late_minutes = currentMin - schoolStartMin;
+            late_minutes = currentMin - startMinutes; // minutes after school start (not threshold)
         }
 
         // 6. Save Record
