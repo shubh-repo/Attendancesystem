@@ -242,7 +242,8 @@ router.post('/checkout', verifyToken, upload.single('photo'), async (req, res) =
 // Teacher Dashboard
 router.get('/my/today', verifyToken, async (req, res) => {
     try {
-        const today = new Date().toISOString().split('T')[0];
+        const kolkataTimeStr = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Kolkata" });
+        const today = kolkataTimeStr.split(' ')[0];
         const { data, error } = await supabase
             .from('attendance')
             .select('*')
@@ -273,8 +274,10 @@ router.get('/my/history', verifyToken, async (req, res) => {
             .range(offset, offset + limit - 1);
 
         if (month) {
-            const startDate = `${year}-${month.padStart(2, '0')}-01`;
-            const endDate = new Date(year, parseInt(month), 0).toISOString().split('T')[0];
+            const m = String(month).padStart(2, '0');
+            const startDate = `${year}-${m}-01`;
+            const lastDay = new Date(year, parseInt(month), 0).getDate();
+            const endDate = `${year}-${m}-${String(lastDay).padStart(2, '0')}`;
             query = query.gte('date', startDate).lte('date', endDate);
         }
 
@@ -289,12 +292,11 @@ router.get('/my/history', verifyToken, async (req, res) => {
 // Teacher Weekly Stats (for dashboard)
 router.get('/my/weekly-stats', verifyToken, async (req, res) => {
     try {
-        const today = new Date();
+        const nowKolkata = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+        const endStr = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Kolkata" }).split(' ')[0];
         // Last 7 days
-        const startDate = new Date(today);
-        startDate.setDate(today.getDate() - 6);
-        const startStr = startDate.toISOString().split('T')[0];
-        const endStr = today.toISOString().split('T')[0];
+        nowKolkata.setDate(nowKolkata.getDate() - 6);
+        const startStr = nowKolkata.toLocaleString("sv-SE").split(' ')[0];
 
         const { data, error } = await supabase
             .from('attendance')

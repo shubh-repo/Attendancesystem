@@ -179,8 +179,10 @@ router.get('/attendance/export', async (req, res) => {
     const { teacher_id, month, year } = req.query;
     if (!month || !year) return res.status(400).json({ error: 'Month and year required' });
 
-    const startDate = `${year}-${month.padStart(2, '0')}-01`;
-    const endDate = new Date(year, parseInt(month), 0).toISOString().split('T')[0];
+    const m = String(month).padStart(2, '0');
+    const startDate = `${year}-${m}-01`;
+    const lastDay = new Date(year, parseInt(month), 0).getDate();
+    const endDate = `${year}-${m}-${String(lastDay).padStart(2, '0')}`;
 
     let query = supabase.from('attendance').select('date, in_time, out_time, status, late_minutes, teachers!inner(name, designation)').gte('date', startDate).lte('date', endDate).order('date');
     if (teacher_id) query = query.eq('teacher_id', teacher_id);
@@ -197,8 +199,10 @@ router.get('/teachers/:id/monthly', async (req, res) => {
         const { month, year } = req.query;
         if (!month || !year) return res.status(400).json({ error: 'month and year are required' });
 
-        const startDate = `${year}-${month.padStart(2, '0')}-01`;
-        const endDate = new Date(parseInt(year), parseInt(month), 0).toISOString().split('T')[0];
+        const m = String(month).padStart(2, '0');
+        const startDate = `${year}-${m}-01`;
+        const lastDay = new Date(parseInt(year), parseInt(month), 0).getDate();
+        const endDate = `${year}-${m}-${String(lastDay).padStart(2, '0')}`;
 
         const [teacherRes, attRes] = await Promise.all([
             supabase.from('teachers').select('id, name, designation, mobile, email, joining_date').eq('id', id).single(),
