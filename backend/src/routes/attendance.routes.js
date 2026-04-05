@@ -232,13 +232,17 @@ router.post('/checkout', verifyToken, upload.single('photo'), async (req, res) =
                 .eq('id', existing.id)
                 .select()
                 .single();
+
             if (updateResult.error) throw updateResult.error;
             
             if (finalStatus === 'Half Day') finalMessage += ' (Half Day recorded)';
             else if (finalStatus === 'Early Leave') finalMessage += ' (Early Leave recorded)';
+
         } catch (dbError) {
             // Check if it's an ENUM mismatch error (22P02) or Check constraint violation (23514)
-            if (dbError.code === '22P02' || dbError.code === '23514') {
+            const isConstraintError = dbError.code === '22P02' || dbError.code === '23514';
+            
+            if (isConstraintError) {
                 console.warn('DB Enum/Check missing Half Day/Early Leave. Falling back to existing status.');
                 updateResult = await supabase
                     .from('attendance')
@@ -248,9 +252,9 @@ router.post('/checkout', verifyToken, upload.single('photo'), async (req, res) =
                     .single();
                 
                 if (updateResult.error) throw updateResult.error;
-                finalMessage += ` - Note: Checked out early, but DB enum missing '${finalStatus}' so kept as '${existing.status}'.`;
+                finalMessage += ` - Note: Checked out early, but DB constraints missing '${finalStatus}' so kept as '${existing.status}'.`;
             } else {
-                throw dbError; // rethrow other errors
+                throw dbError; // Rethrow RLS or other unexpected errors to the main catch block
             }
         }
 
@@ -258,7 +262,8 @@ router.post('/checkout', verifyToken, upload.single('photo'), async (req, res) =
 
     } catch (error) {
         console.error('Checkout Error:', error);
-        res.status(500).json({ error: error.message || JSON.stringify(error) });
+        const errorMsg = error.message || 'An unexpected database error occurred during checkout.';
+        res.status(500).json({ error: errorMsg });
     }
 });
 
