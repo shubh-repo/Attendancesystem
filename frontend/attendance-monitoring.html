@@ -446,30 +446,28 @@
       const el = document.getElementById('rangeResult');
       el.innerHTML = '<p class="text-center text-slate-400 text-sm py-8">Loading report...</p>';
       try {
-        // Generate date list
-        const dates = [];
+        // Single API call for entire range (replaces 30+ parallel calls)
+        const allRecords = await App.fetchAPI(`/admin/attendance/range?from=${from}&to=${to}`);
+
+        // Calculate total days in range
+        let totalDays = 0;
         let cur = new Date(from + 'T00:00:00');
         const end = new Date(to + 'T00:00:00');
-        while (cur <= end) {
-          dates.push(cur.toISOString().split('T')[0]);
-          cur.setDate(cur.getDate() + 1);
-        }
-        // Fetch all days in parallel
-        const results = await Promise.all(dates.map(d => App.fetchAPI(`/admin/attendance/daily?date=${d}`).catch(() => [])));
+        while (cur <= end) { totalDays++; cur.setDate(cur.getDate() + 1); }
 
         // Aggregate per teacher
         const teacherMap = {};
-        results.forEach((day, i) => {
-          day.forEach(r => {
-            const id = r.teacher_id || r.id;
-            const name = r.teacher_name || r.teachers?.name || 'Unknown';
-            const desig = r.designation || r.teachers?.designation || '';
-            if (!teacherMap[id]) teacherMap[id] = { id, name, desig, present: 0, late: 0, absent: 0, total: 0 };
-            teacherMap[id].total++;
-            if (r.status === 'Present') teacherMap[id].present++;
-            else if (r.status === 'Late') teacherMap[id].late++;
-            else if (r.status === 'Absent') teacherMap[id].absent++;
-          });
+        allRecords.forEach(r => {
+          const id = r.teacher_id || r.id;
+          const name = r.teacher_name || r.teachers?.name || 'Unknown';
+          const desig = r.designation || r.teachers?.designation || '';
+          if (!teacherMap[id]) teacherMap[id] = { id, name, desig, present: 0, late: 0, absent: 0, halfDay: 0, earlyLeave: 0, total: 0 };
+          teacherMap[id].total++;
+          if (r.status === 'Present') teacherMap[id].present++;
+          else if (r.status === 'Late') teacherMap[id].late++;
+          else if (r.status === 'Absent') teacherMap[id].absent++;
+          else if (r.status === 'Half Day') teacherMap[id].halfDay++;
+          else if (r.status === 'Early Leave') teacherMap[id].earlyLeave++;
         });
 
         const teachers = Object.values(teacherMap).sort((a, b) => a.name.localeCompare(b.name));
@@ -478,7 +476,6 @@
           return;
         }
 
-        const totalDays = dates.length;
         el.innerHTML = `
           <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
             <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-700">
@@ -487,7 +484,8 @@
             </div>
             <div class="divide-y divide-slate-100 dark:divide-slate-700">
               ${teachers.map(t => {
-          const pct = t.total ? Math.round(((t.present + t.late) / t.total) * 100) : 0;
+          const attended = t.present + t.late + t.halfDay + t.earlyLeave;
+          const pct = t.total ? Math.round((attended / t.total) * 100) : 0;
           const barColor = pct >= 90 ? '#22c55e' : pct >= 75 ? '#f59e0b' : '#ef4444';
           return `<div class="p-3">
                   <div class="flex items-center gap-2 mb-2">
@@ -500,10 +498,12 @@
                     </div>
                     <span class="text-xs font-bold" style="color:${barColor}">${pct}%</span>
                   </div>
-                  <div class="flex gap-2 text-xs">
+                  <div class="flex gap-2 text-xs flex-wrap">
                     <span class="status-pill-present px-2 py-0.5 rounded-full font-semibold">✓ ${t.present} Present</span>
                     <span class="status-pill-late px-2 py-0.5 rounded-full font-semibold">⏱ ${t.late} Late</span>
                     <span class="status-pill-absent px-2 py-0.5 rounded-full font-semibold">✗ ${t.absent} Absent</span>
+                    ${t.halfDay ? `<span class="bg-violet-100 text-violet-800 px-2 py-0.5 rounded-full font-semibold">½ ${t.halfDay} Half</span>` : ''}
+                    ${t.earlyLeave ? `<span class="bg-orange-100 text-orange-800 px-2 py-0.5 rounded-full font-semibold">↗ ${t.earlyLeave} Early</span>` : ''}
                   </div>
                   <div class="mt-2 bg-slate-100 dark:bg-slate-700 rounded-full h-1.5">
                     <div class="h-1.5 rounded-full transition-all duration-700" style="width:${pct}%;background:${barColor}"></div>
@@ -542,35 +542,38 @@
       const teacher = allTeachers.find(t => String(t.id) === String(tid));
       const monthNames = ['', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-      // Generate all days of the month
+      // Calculate date range for the month
+      const m = month;
       const daysInMonth = new Date(parseInt(year), parseInt(month), 0).getDate();
-      const dates = [];
-      for (let d = 1; d <= daysInMonth; d++) {
-        dates.push(`${year}-${month}-${String(d).padStart(2, '0')}`);
-      }
+      const from = `${year}-${m}-01`;
+      const to = `${year}-${m}-${String(daysInMonth).padStart(2, '0')}`;
 
       const el = document.getElementById('teacherDayList');
       el.innerHTML = '<p class="text-center text-slate-400 text-sm py-4">Loading...</p>';
       document.getElementById('teacherDetail').classList.remove('hidden');
 
       try {
-        // Fetch all days in parallel
-        const results = await Promise.all(dates.map(d =>
-          App.fetchAPI(`/admin/attendance/daily?date=${d}`).then(recs => {
-            const r = recs.find(x => String(x.teacher_id || x.id) === String(tid));
-            return { date: d, record: r || null };
-          }).catch(() => ({ date: d, record: null }))
-        ));
+        // Single API call for entire month (replaces 30+ parallel calls)
+        const allRecords = await App.fetchAPI(`/admin/attendance/range?from=${from}&to=${to}`);
+        
+        // Filter for selected teacher
+        const teacherRecords = allRecords.filter(r => String(r.teacher_id) === String(tid));
 
-        let present = 0, late = 0, absent = 0;
-        results.forEach(({ record }) => {
-          if (!record) return;
-          if (record.status === 'Present') present++;
-          else if (record.status === 'Late') late++;
-          else if (record.status === 'Absent') absent++;
+        // Build a map of date -> record for easy lookup
+        const recordsByDate = {};
+        teacherRecords.forEach(r => { recordsByDate[r.date] = r; });
+
+        let present = 0, late = 0, absent = 0, halfDay = 0, earlyLeave = 0;
+        teacherRecords.forEach(r => {
+          if (r.status === 'Present') present++;
+          else if (r.status === 'Late') late++;
+          else if (r.status === 'Absent') absent++;
+          else if (r.status === 'Half Day') halfDay++;
+          else if (r.status === 'Early Leave') earlyLeave++;
         });
-        const total = present + late + absent;
-        const pct = total ? Math.round(((present + late) / total) * 100) : 0;
+        const total = present + late + absent + halfDay + earlyLeave;
+        const attended = present + late + halfDay + earlyLeave;
+        const pct = total ? Math.round((attended / total) * 100) : 0;
 
         // Update stat cards
         document.getElementById('tPresent').innerText = present;
@@ -583,8 +586,10 @@
         const initials = (teacher?.name || 'T').split(' ').map(n => n[0] || '').slice(0, 2).join('');
         document.getElementById('tAvatar').innerText = initials;
 
-        // Day list
-        el.innerHTML = results.filter(({ record }) => record !== null).map(({ date, record }) => {
+        // Day list — show all days that have records
+        const sortedDates = Object.keys(recordsByDate).sort();
+        el.innerHTML = sortedDates.map(date => {
+          const record = recordsByDate[date];
           const d = new Date(date + 'T00:00:00');
           const dayName = d.toLocaleDateString(undefined, { weekday: 'short' });
           const dayNum = d.getDate();

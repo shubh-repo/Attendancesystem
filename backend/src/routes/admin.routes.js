@@ -190,6 +190,36 @@ router.get('/attendance/daily', async (req, res) => {
     res.json(formatted);
 });
 
+// Bulk: Get attendance for a date range (single query — replaces N+1 daily calls)
+router.get('/attendance/range', async (req, res) => {
+    const { from, to } = req.query;
+    if (!from || !to) return res.status(400).json({ error: 'from and to dates are required' });
+
+    try {
+        const { data, error } = await supabase
+            .from('attendance')
+            .select(`
+                *,
+                teachers ( name, designation )
+            `)
+            .gte('date', from)
+            .lte('date', to)
+            .order('date')
+            .order('in_time');
+
+        if (error) throw error;
+
+        const formatted = data.map(item => ({
+            ...item,
+            teacher_name: item.teachers?.name,
+            designation: item.teachers?.designation
+        }));
+        res.json(formatted);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Export Monthly Report (all teachers or specific teacher)
 router.get('/attendance/export', async (req, res) => {
     const { teacher_id, month, year } = req.query;
