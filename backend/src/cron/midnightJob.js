@@ -10,8 +10,9 @@ cron.schedule('59 23 * * *', async () => {
         const todayDateStr = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Kolkata" });
         const [today] = todayDateStr.split(' ');
 
-        // Exclude Sundays (getDay() === 0 means Sunday)
-        if (new Date(todayDateStr).getDay() === 0) {
+        // Exclude Sundays — use Intl to get correct IST weekday (avoids UTC/IST mismatch)
+        const istDayName = new Intl.DateTimeFormat('en-US', { weekday: 'short', timeZone: 'Asia/Kolkata' }).format(new Date());
+        if (istDayName === 'Sun') {
             console.log('Today is Sunday. No automated absent marks will be placed.');
             return;
         }

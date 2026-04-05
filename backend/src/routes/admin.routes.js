@@ -138,6 +138,9 @@ router.get('/dashboard/stats', async (req, res) => {
         const present = attendance.filter(a => a.status === 'Present').length;
         const late = attendance.filter(a => a.status === 'Late').length;
         const absent = attendance.filter(a => a.status === 'Absent').length;
+        const halfDay = attendance.filter(a => a.status === 'Half Day').length;
+        const earlyLeave = attendance.filter(a => a.status === 'Early Leave').length;
+        const totalMarked = present + late + absent + halfDay + earlyLeave;
 
         res.json({
             date: today,
@@ -145,7 +148,9 @@ router.get('/dashboard/stats', async (req, res) => {
             present_today: present,
             late_today: late,
             absent_today: absent,
-            unmarked_today: total - (present + late + absent)
+            half_day_today: halfDay,
+            early_leave_today: earlyLeave,
+            unmarked_today: total - totalMarked
         });
     } catch (err) {
         res.status(500).json({ error: err.message });

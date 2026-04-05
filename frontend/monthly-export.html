@@ -294,15 +294,7 @@
             }
         }
     </script>
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/service-worker.js')
-        .then(r => console.log('[SW] Registered:', r.scope))
-        .catch(e => console.warn('[SW] Registration failed:', e));
-    });
-  }
-</script>
+<!-- SW registration handled by app.js -->
 </body>
 
 </html>

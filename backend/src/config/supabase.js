@@ -5,15 +5,21 @@ dotenv.config();
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-// Backend uses the Service Role Key to bypass RLS.
-// Authentication is already handled by our own JWT middleware (verifyToken),
-// so we don't need Supabase's RLS to gate access — the backend IS the trusted authority.
-if (!supabaseServiceKey) {
-    console.error(
-        '⚠️  SUPABASE_SERVICE_ROLE_KEY is missing from your .env file!\n' +
-        '   The backend will NOT work correctly without it.\n' +
-        '   Find it in: Supabase Dashboard → Settings → API → service_role (secret)'
-    );
+// ─── Validate required env vars ───────────────────────────────────────
+if (!supabaseUrl || !supabaseServiceKey) {
+    const errorMsg = `
+╔══════════════════════════════════════════════════════════════╗
+║  ⚠️  CRITICAL: Missing Supabase environment variables!      ║
+╚══════════════════════════════════════════════════════════════╝
+   ❌ SUPABASE_URL: ${supabaseUrl ? 'OK' : 'MISSING'}
+   ❌ SUPABASE_SERVICE_ROLE_KEY: ${supabaseServiceKey ? 'OK' : 'MISSING'}
+
+   → Add them to your Render/Vercel Environment Variables dashboard.
+   → Locally, add them to your backend/.env file.
+    `;
+    console.error(errorMsg);
+    // Gracefully exit or throw a clear error to stop the server
+    throw new Error('Backend failed to start: Missing Supabase Credentials');
 }
 
 export const supabase = createClient(supabaseUrl, supabaseServiceKey, {

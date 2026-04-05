@@ -163,13 +163,14 @@
         const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
         async function loadAdminDashboard() {
+            App.checkAuth();
             document.getElementById('currentDate').innerText = new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 
             // Load stats
             try {
                 const stats = await App.fetchAPI('/admin/dashboard/stats');
                 document.getElementById('statTeachers').innerText = stats.total_teachers ?? 0;
-                document.getElementById('statPresent').innerText = ((stats.present_today ?? 0) + (stats.late_today ?? 0));
+                document.getElementById('statPresent').innerText = stats.present_today ?? 0;
                 document.getElementById('statAbsent').innerText = stats.absent_today ?? 0;
                 document.getElementById('statLate').innerText = stats.late_today ?? 0;
             } catch (err) { console.error('Failed stats', err); }
@@ -184,11 +185,12 @@
                     days.push(d.toISOString().split('T')[0]);
                 }
 
-                const [statsData, ...results] = await Promise.all([
-                    App.fetchAPI('/admin/dashboard/stats'),
-                    ...days.map(date => App.fetchAPI(`/admin/attendance/daily?date=${date}`).catch(() => []))
-                ]);
-                const totalTeachers = statsData.total_teachers || 1;
+                const results = await Promise.all(
+                    days.map(date => App.fetchAPI(`/admin/attendance/daily?date=${date}`).catch(() => []))
+                );
+                // Reuse stats from above; fallback count teachers from results
+                const statTeachersEl = document.getElementById('statTeachers');
+                const totalTeachers = parseInt(statTeachersEl?.innerText) || 1;
 
                 document.getElementById('weeklyChart').innerHTML = results.map((records, i) => {
                     const d = new Date(days[i] + 'T00:00:00');
@@ -244,15 +246,7 @@
 
         document.addEventListener('DOMContentLoaded', loadAdminDashboard);
     </script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(r => console.log('[SW] Registered:', r.scope))
-                    .catch(e => console.warn('[SW] Registration failed:', e));
-            });
-        }
-    </script>
+    <!-- SW registration handled by app.js -->
 </body>
 
 </html>

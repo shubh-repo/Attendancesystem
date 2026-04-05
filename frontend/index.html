@@ -70,10 +70,9 @@
         <!-- Top Navigation -->
         <div
             class="flex items-center p-4 pb-2 justify-between bg-transparent border-b border-white/20 dark:border-white/5">
-            <a href="./dashboard.html"
-                class="text-slate-900 dark:text-slate-100 flex size-12 shrink-0 items-center justify-start">
-                <span class="material-symbols-outlined">arrow_back</span>
-            </a>
+            <div class="flex size-12 shrink-0 items-center justify-start">
+                <span class="material-symbols-outlined text-primary">school</span>
+            </div>
             <h2
                 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-12">
                 St GNG School</h2>
@@ -204,15 +203,7 @@
             if (e.key === 'Enter') document.getElementById('loginBtn').click();
         });
     </script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(r => console.log('[SW] Registered:', r.scope))
-                    .catch(e => console.warn('[SW] Registration failed:', e));
-            });
-        }
-    </script>
+    <!-- SW registration handled by app.js -->
 </body>
 
 </html>

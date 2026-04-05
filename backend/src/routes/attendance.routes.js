@@ -127,6 +127,16 @@ router.post('/checkin', verifyToken, upload.single('photo'), async (req, res) =>
             result = await supabase.from('attendance').insert([insertData]).select().single();
         }
 
+        if (result.error) {
+            console.error('Supabase checkin save failed:', {
+                message: result.error.message,
+                code: result.error.code,
+                details: result.error.details,
+                hint: result.error.hint,
+            });
+            throw result.error;
+        }
+
         res.json({ message: 'Check-In successful', attendance: result.data });
 
     } catch (error) {

@@ -336,13 +336,17 @@
     const STATUS_COLORS = {
       'Present': 'status-pill-present',
       'Late': 'status-pill-late',
-      'Absent': 'status-pill-absent'
+      'Absent': 'status-pill-absent',
+      'Half Day': 'bg-violet-100 text-violet-800',
+      'Early Leave': 'bg-orange-100 text-orange-800'
     };
-    const STATUS_ICONS = { 'Present': 'check_circle', 'Late': 'schedule', 'Absent': 'event_busy' };
+    const STATUS_ICONS = { 'Present': 'check_circle', 'Late': 'schedule', 'Absent': 'event_busy', 'Half Day': 'timelapse', 'Early Leave': 'logout' };
     const STATUS_ROW_BG = {
       'Present': 'border-l-4 border-l-emerald-500 bg-emerald-50/40 dark:bg-emerald-900/10',
       'Late': 'border-l-4 border-l-amber-400 bg-amber-50/40 dark:bg-amber-900/10',
-      'Absent': 'border-l-4 border-l-red-500 bg-red-50/40 dark:bg-red-900/10'
+      'Absent': 'border-l-4 border-l-red-500 bg-red-50/40 dark:bg-red-900/10',
+      'Half Day': 'border-l-4 border-l-violet-500 bg-violet-50/40 dark:bg-violet-900/10',
+      'Early Leave': 'border-l-4 border-l-orange-400 bg-orange-50/40 dark:bg-orange-900/10'
     };
 
     // ── Tab Switching ──
@@ -634,15 +638,7 @@
       loadDailyView();
     });
   </script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js')
-          .then(r => console.log('[SW] Registered:', r.scope))
-          .catch(e => console.warn('[SW] Registration failed:', e));
-      });
-    }
-  </script>
+  <!-- SW registration handled by app.js -->
 </body>
 
 </html>

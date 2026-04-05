@@ -228,6 +228,10 @@
                         document.getElementById('displayOutTime').innerHTML = `${hr12}:${m} ${ampm} <span class="text-xs text-orange-600 dark:text-orange-400 font-bold bg-orange-100 dark:bg-orange-900/30 px-2 py-0.5 rounded-md ml-2 relative -top-0.5">Early Leave</span>`;
                         document.getElementById('displayOutTime').classList.remove('text-slate-400', 'italic');
                         document.getElementById('displayOutTime').classList.add('text-slate-900', 'dark:text-white');
+                    } else if (r.status === 'Half Day') {
+                        document.getElementById('displayOutTime').innerHTML = `${hr12}:${m} ${ampm} <span class="text-xs text-violet-600 dark:text-violet-400 font-bold bg-violet-100 dark:bg-violet-900/30 px-2 py-0.5 rounded-md ml-2 relative -top-0.5">Half Day</span>`;
+                        document.getElementById('displayOutTime').classList.remove('text-slate-400', 'italic');
+                        document.getElementById('displayOutTime').classList.add('text-slate-900', 'dark:text-white');
                     } else {
                         document.getElementById('displayOutTime').innerText = `${hr12}:${m} ${ampm}`;
                         document.getElementById('displayOutTime').classList.remove('text-slate-400', 'italic');
@@ -244,15 +248,7 @@
 
         document.addEventListener('DOMContentLoaded', loadTodaySession);
     </script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(r => console.log('[SW] Registered:', r.scope))
-                    .catch(e => console.warn('[SW] Registration failed:', e));
-            });
-        }
-    </script>
+    <!-- SW registration handled by app.js -->
 </body>
 
 </html>
