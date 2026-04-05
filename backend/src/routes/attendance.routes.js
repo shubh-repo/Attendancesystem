@@ -237,9 +237,9 @@ router.post('/checkout', verifyToken, upload.single('photo'), async (req, res) =
             if (finalStatus === 'Half Day') finalMessage += ' (Half Day recorded)';
             else if (finalStatus === 'Early Leave') finalMessage += ' (Early Leave recorded)';
         } catch (dbError) {
-            // Check if it's an ENUM mismatch error (22P02: invalid input value for enum)
-            if (dbError.code === '22P02') {
-                console.warn('DB Enum missing Half Day/Early Leave. Falling back to existing status.');
+            // Check if it's an ENUM mismatch error (22P02) or Check constraint violation (23514)
+            if (dbError.code === '22P02' || dbError.code === '23514') {
+                console.warn('DB Enum/Check missing Half Day/Early Leave. Falling back to existing status.');
                 updateResult = await supabase
                     .from('attendance')
                     .update({ out_time: currentTime, out_photo_url, status: existing.status })
@@ -258,7 +258,7 @@ router.post('/checkout', verifyToken, upload.single('photo'), async (req, res) =
 
     } catch (error) {
         console.error('Checkout Error:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: error.message || JSON.stringify(error) });
     }
 });
 
