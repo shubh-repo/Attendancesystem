@@ -1,6 +1,7 @@
 import express from 'express';
 import { supabase } from '../config/supabase.js';
 import { verifyToken } from './auth.routes.js';
+import { cachedSettings } from './attendance.routes.js';
 
 const router = express.Router();
 
@@ -62,6 +63,7 @@ router.put('/settings', async (req, res) => {
         .single();
 
     if (error) return res.status(500).json({ error: error.message });
+    cachedSettings.expires = 0; // manual invalidation of worker cache
     res.json({ message: 'Settings updated successfully', settings: data });
 });
 

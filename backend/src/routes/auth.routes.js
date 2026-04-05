@@ -3,12 +3,15 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { supabase } from '../config/supabase.js';
 import dotenv from 'dotenv';
+import rateLimit from 'express-rate-limit';
 dotenv.config();
+
+const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10, message: { error: 'Too many login attempts. Please try again after 15 minutes.' } });
 
 const router = express.Router();
 
 // Teacher Login
-router.post('/login', async (req, res) => {
+router.post('/login', loginLimiter, async (req, res) => {
     try {
         const { mobile, passcode, password } = req.body;
         const enteredPassword = passcode || password;
@@ -64,7 +67,7 @@ router.post('/login', async (req, res) => {
 
 
 // Admin Login — checks DB admin_credentials first, then falls back to .env
-router.post('/admin/login', async (req, res) => {
+router.post('/admin/login', loginLimiter, async (req, res) => {
     try {
         const { username, password } = req.body;
         const adminUser = process.env.ADMIN_USERNAME || 'admin';
@@ -129,28 +132,12 @@ router.post('/admin/change-password', async (req, res) => {
         // 1. Update in-memory immediately
         process.env.ADMIN_PASSWORD = new_password;
 
-        // 2. Write to .env file for persistence across restarts
-        try {
-            const fs = await import('fs');
-            const path = await import('path');
-            const { fileURLToPath } = await import('url');
-            const __dir = path.default.dirname(fileURLToPath(import.meta.url));
-            const envPath = path.default.resolve(__dir, '../../../.env');
-            let envContent = fs.default.readFileSync(envPath, 'utf8');
-            if (/^ADMIN_PASSWORD=.*/m.test(envContent)) {
-                envContent = envContent.replace(/^ADMIN_PASSWORD=.*/m, `ADMIN_PASSWORD=${new_password}`);
-            } else {
-                envContent += `\nADMIN_PASSWORD=${new_password}`;
-            }
-            fs.default.writeFileSync(envPath, envContent, 'utf8');
-        } catch (fsErr) {
-            console.warn('Could not write to .env:', fsErr.message);
-        }
-
-        // 3. Also try DB (bonus persistence)
+        // 2. Save to DB for persistence
         try {
             await supabase.from('admin_credentials').upsert({ id: 1, password: new_password, updated_at: new Date() }, { onConflict: 'id' });
-        } catch (e) { }
+        } catch (e) {
+            console.warn('Could not write to DB:', e.message);
+        }
 
         res.json({ message: 'Admin password changed successfully' });
     } catch (err) {

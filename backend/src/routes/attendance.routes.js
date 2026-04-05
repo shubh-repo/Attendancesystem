@@ -3,8 +3,37 @@ import { supabase } from '../config/supabase.js';
 import { verifyToken } from './auth.routes.js';
 import multer from 'multer';
 import sharp from 'sharp';
+import rateLimit from 'express-rate-limit';
 
 const router = express.Router();
+
+export let cachedSettings = { data: null, expires: 0 };
+
+const withRetry = async (fn, retries = 2, delay = 500) => {
+    for (let i = 0; i <= retries; i++) {
+        try {
+            return await fn();
+        } catch (e) {
+            if (i === retries) throw e;
+            await new Promise(r => setTimeout(r, delay));
+        }
+    }
+};
+
+const checkinLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 15, message: { error: 'Too many check-in attempts. Please try again after 15 minutes.' } });
+const checkoutLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 15, message: { error: 'Too many check-out attempts. Please try again after 15 minutes.' } });
+
+async function getSystemSettings() {
+    if (Date.now() > cachedSettings.expires) {
+        return await withRetry(async () => {
+            const { data: settings, error } = await supabase.from('system_settings').select('*').eq('id', 1).maybeSingle();
+            if (error) throw error;
+            cachedSettings = { data: settings || {}, expires: Date.now() + 5 * 60 * 1000 };
+            return cachedSettings.data;
+        });
+    }
+    return cachedSettings.data;
+}
 
 // Setup Multer for memory storage
 const upload = multer({
@@ -26,7 +55,7 @@ const getDistanceFromLatLonInMeters = (lat1, lon1, lat2, lon2) => {
 };
 
 // Check-In Route
-router.post('/checkin', verifyToken, upload.single('photo'), async (req, res) => {
+router.post('/checkin', verifyToken, checkinLimiter, upload.single('photo'), async (req, res) => {
     try {
         const teacher_id = req.user.id;
         const { lat, lng, device } = req.body;
@@ -49,9 +78,8 @@ router.post('/checkin', verifyToken, upload.single('photo'), async (req, res) =>
             return res.status(400).json({ error: 'Check-In already recorded for today' });
         }
 
-        // 2. Load System Settings (graceful fallback if table/row missing)
-        const { data: settings } = await supabase.from('system_settings').select('*').eq('id', 1).maybeSingle();
-        const cfg = settings || {};
+        // 2. Load System Settings (Cached)
+        const cfg = await getSystemSettings();
         const gpsEnabled = cfg.gps_enabled !== false; // default: enabled
         const schoolLat = parseFloat(cfg.gps_latitude) || null;
         const schoolLng = parseFloat(cfg.gps_longitude) || null;
@@ -107,7 +135,7 @@ router.post('/checkin', verifyToken, upload.single('photo'), async (req, res) =>
             late_minutes = currentMin - startMinutes; // minutes after school start (not threshold)
         }
 
-        // 6. Save Record
+        // 6. Save Record (with Retry Logic for DB resilience)
         let insertData = {
             teacher_id,
             date: today,
@@ -120,22 +148,17 @@ router.post('/checkin', verifyToken, upload.single('photo'), async (req, res) =>
             device
         };
 
-        let result;
-        if (existing) {
-            result = await supabase.from('attendance').update(insertData).eq('id', existing.id).select().single();
-        } else {
-            result = await supabase.from('attendance').insert([insertData]).select().single();
-        }
-
-        if (result.error) {
-            console.error('Supabase checkin save failed:', {
-                message: result.error.message,
-                code: result.error.code,
-                details: result.error.details,
-                hint: result.error.hint,
-            });
-            throw result.error;
-        }
+        let result = await withRetry(async () => {
+            if (existing) {
+                let res = await supabase.from('attendance').update(insertData).eq('id', existing.id).select().single();
+                if (res.error) throw res.error;
+                return res;
+            } else {
+                let res = await supabase.from('attendance').insert([insertData]).select().single();
+                if (res.error) throw res.error;
+                return res;
+            }
+        });
 
         res.json({ message: 'Check-In successful', attendance: result.data });
 
@@ -147,7 +170,7 @@ router.post('/checkin', verifyToken, upload.single('photo'), async (req, res) =>
 
 
 // Check-Out Route
-router.post('/checkout', verifyToken, upload.single('photo'), async (req, res) => {
+router.post('/checkout', verifyToken, checkoutLimiter, upload.single('photo'), async (req, res) => {
     try {
         const teacher_id = req.user.id;
         const photo = req.file;
@@ -173,9 +196,8 @@ router.post('/checkout', verifyToken, upload.single('photo'), async (req, res) =
             return res.status(400).json({ error: 'Check-Out already recorded for today' });
         }
 
-        // 2. Load System Settings for GPS Validation & Early Leave
-        const { data: settings } = await supabase.from('system_settings').select('*').eq('id', 1).maybeSingle();
-        const cfg = settings || {};
+        // 2. Load System Settings for GPS Validation & Early Leave (Cached)
+        const cfg = await getSystemSettings();
         const schoolEndTime = cfg.school_end_time || '13:00:00';
         const halfDayTime = cfg.half_day_time || '11:00:00';
         const gpsEnabled = cfg.gps_enabled !== false;
@@ -232,27 +254,21 @@ router.post('/checkout', verifyToken, upload.single('photo'), async (req, res) =
             console.log(`Checked out at ${currentTime} before school end ${schoolEndTime} → Early Leave`);
         }
 
-        // 6. Update attendance record with checkout data
-        const { data: updatedRecord, error: updateError } = await supabase
-            .from('attendance')
-            .update({
-                out_time: currentTime,
-                out_photo_url,
-                status: finalStatus,
-            })
-            .eq('id', existing.id)
-            .select()
-            .single();
-
-        if (updateError) {
-            console.error('Supabase checkout update failed:', {
-                message: updateError.message,
-                code: updateError.code,
-                details: updateError.details,
-                hint: updateError.hint,
-            });
-            throw updateError;
-        }
+        // 6. Update attendance record with checkout data (with Retry)
+        const updatedRecord = await withRetry(async () => {
+            const res = await supabase
+                .from('attendance')
+                .update({
+                    out_time: currentTime,
+                    out_photo_url,
+                    status: finalStatus,
+                })
+                .eq('id', existing.id)
+                .select()
+                .single();
+            if (res.error) throw res.error;
+            return res.data;
+        });
 
         let finalMessage = 'Check-Out successful';
         if (finalStatus === 'Half Day') finalMessage += ' (Half Day recorded)';
@@ -325,7 +341,7 @@ router.get('/my/weekly-stats', verifyToken, async (req, res) => {
         const endStr = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Kolkata" }).split(' ')[0];
         // Last 7 days
         nowKolkata.setDate(nowKolkata.getDate() - 6);
-        const startStr = nowKolkata.toLocaleString("sv-SE").split(' ')[0];
+        const startStr = nowKolkata.toLocaleString("sv-SE", { timeZone: "Asia/Kolkata" }).split(' ')[0];
 
         const { data, error } = await supabase
             .from('attendance')
@@ -344,7 +360,8 @@ router.get('/my/weekly-stats', verifyToken, async (req, res) => {
         const earlyLeave = data.filter(r => r.status === 'Early Leave').length;
         const totalDays = data.length;
         // Punctuality = on-time arrivals vs total working days tracked
-        const punctuality = totalDays > 0 ? Math.round((present / totalDays) * 100) : null;
+        const onTime = present + halfDay + earlyLeave;
+        const punctuality = totalDays > 0 ? Math.round((onTime / totalDays) * 100) : null;
 
         res.json({ records: data, present, late, absent, halfDay, earlyLeave, punctuality, totalDays });
     } catch (error) {
