@@ -222,6 +222,63 @@
             </div>
         </section>
 
+        <!-- ─── SECTION 3: Holiday Management ─── -->
+        <section>
+            <div class="flex items-center gap-2 mb-3">
+                <span class="material-symbols-outlined text-primary">celebration</span>
+                <h2 class="text-base font-bold">🎉 Holiday Management</h2>
+            </div>
+            <div
+                class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 space-y-4 shadow-sm">
+
+                <p class="text-xs text-slate-400">Holidays par midnight cron job teachers ko Absent mark nahi karega.
+                </p>
+
+                <!-- Add Holiday Form -->
+                <div class="flex gap-2">
+                    <input type="date" id="holidayDate"
+                        class="flex-1 px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-sm focus:border-primary outline-none" />
+                    <input type="text" id="holidayName" placeholder="e.g. Diwali"
+                        class="flex-1 px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-sm focus:border-primary outline-none" />
+                </div>
+                <button onclick="addHoliday()"
+                    class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl text-sm transition-colors flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-base">add_circle</span>
+                    Add Holiday
+                </button>
+
+                <!-- Month Selector -->
+                <div class="flex items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-700">
+                    <select id="holidayMonth"
+                        class="flex-1 px-3 py-2 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-sm focus:border-primary outline-none"
+                        onchange="loadHolidays()">
+                        <option value="01">January</option>
+                        <option value="02">February</option>
+                        <option value="03">March</option>
+                        <option value="04">April</option>
+                        <option value="05">May</option>
+                        <option value="06">June</option>
+                        <option value="07">July</option>
+                        <option value="08">August</option>
+                        <option value="09">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                    </select>
+                    <select id="holidayYear"
+                        class="w-24 px-3 py-2 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-sm focus:border-primary outline-none"
+                        onchange="loadHolidays()">
+                    </select>
+                </div>
+
+                <!-- Holiday List -->
+                <div id="holidayList" class="space-y-2">
+                    <p class="text-center text-slate-400 text-xs py-2">Loading holidays...</p>
+                </div>
+
+            </div>
+        </section>
+
         <!-- ─── Save Button ─── -->
         <button onclick="saveSettings()" id="saveBtn"
             class="w-full py-4 bg-primary text-white font-bold rounded-2xl shadow-lg shadow-primary/30 transition-all active:scale-95 flex items-center justify-center gap-2 text-base">
@@ -379,10 +436,86 @@
             btn.innerHTML = '<span class="material-symbols-outlined">save</span> Save All Settings';
         }
 
+        // ── Holiday Management ──
+        async function loadHolidays() {
+            const month = document.getElementById('holidayMonth').value;
+            const year = document.getElementById('holidayYear').value;
+            const el = document.getElementById('holidayList');
+            el.innerHTML = '<p class="text-center text-slate-400 text-xs py-2">Loading...</p>';
+
+            try {
+                const holidays = await App.fetchAPI(`/admin/holidays?month=${month}&year=${year}`);
+                if (!holidays.length) {
+                    el.innerHTML = '<p class="text-center text-slate-400 text-xs py-3">Iss mahine koi holiday nahi hai</p>';
+                    return;
+                }
+                el.innerHTML = holidays.map(h => {
+                    const d = new Date(h.date + 'T00:00:00');
+                    const dayName = d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
+                    return `<div class="flex items-center gap-3 bg-slate-50 dark:bg-slate-900 p-3 rounded-xl border border-slate-100 dark:border-slate-700">
+                        <span class="material-symbols-outlined text-primary text-lg">event</span>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-semibold truncate">${h.name || 'Holiday'}</p>
+                            <p class="text-xs text-slate-400">${dayName}</p>
+                        </div>
+                        <button onclick="deleteHoliday('${h.id}')" class="p-1.5 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 text-red-500 transition-colors">
+                            <span class="material-symbols-outlined text-sm">delete</span>
+                        </button>
+                    </div>`;
+                }).join('');
+            } catch (e) {
+                el.innerHTML = `<p class="text-center text-red-500 text-xs py-2">${e.message}</p>`;
+            }
+        }
+
+        async function addHoliday() {
+            const date = document.getElementById('holidayDate').value;
+            const name = document.getElementById('holidayName').value.trim();
+            if (!date) { alert('Please select a date'); return; }
+
+            try {
+                await App.fetchAPI('/admin/holidays', {
+                    method: 'POST',
+                    body: JSON.stringify({ date, name: name || 'Holiday' })
+                });
+                document.getElementById('holidayDate').value = '';
+                document.getElementById('holidayName').value = '';
+                // Switch the month selector to match the added holiday's month
+                const [y, m] = date.split('-');
+                document.getElementById('holidayMonth').value = m;
+                document.getElementById('holidayYear').value = y;
+                loadHolidays();
+            } catch (e) {
+                alert('Failed to add holiday: ' + e.message);
+            }
+        }
+
+        async function deleteHoliday(id) {
+            if (!confirm('Remove this holiday?')) return;
+            try {
+                await App.fetchAPI(`/admin/holidays/${id}`, { method: 'DELETE' });
+                loadHolidays();
+            } catch (e) {
+                alert('Failed to remove: ' + e.message);
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             App.checkAuth();
             loadSettings();
             updateLatePreview();
+
+            // Init holiday selectors
+            const now = new Date();
+            document.getElementById('holidayMonth').value = String(now.getMonth() + 1).padStart(2, '0');
+            const yearSel = document.getElementById('holidayYear');
+            for (let y = now.getFullYear() + 1; y >= 2024; y--) {
+                const opt = document.createElement('option');
+                opt.value = y; opt.textContent = y;
+                if (y === now.getFullYear()) opt.selected = true;
+                yearSel.appendChild(opt);
+            }
+            loadHolidays();
         });
     </script>
     <!-- SW registration handled by app.js -->

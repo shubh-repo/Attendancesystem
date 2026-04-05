@@ -17,6 +17,13 @@ cron.schedule('59 23 * * *', async () => {
             return;
         }
 
+        // Exclude declared holidays
+        const { data: holiday } = await supabase.from('holidays').select('id, name').eq('date', today).maybeSingle();
+        if (holiday) {
+            console.log(`Today (${today}) is a holiday: "${holiday.name}". Skipping absent marks.`);
+            return;
+        }
+
         // Get all teachers
         const { data: teachers, error: teacherError } = await supabase
             .from('teachers')

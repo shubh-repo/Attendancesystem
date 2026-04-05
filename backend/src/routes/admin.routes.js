@@ -286,4 +286,59 @@ router.get('/teacher-profile', async (req, res) => {
     res.json(data);
 });
 
+// ─── Holiday Management ─────────────────────────────────────────────────
+
+// List holidays for a given month/year
+router.get('/holidays', async (req, res) => {
+    try {
+        const { month, year } = req.query;
+        let query = supabase.from('holidays').select('*').order('date');
+
+        if (month && year) {
+            const m = String(month).padStart(2, '0');
+            const startDate = `${year}-${m}-01`;
+            const lastDay = new Date(parseInt(year), parseInt(month), 0).getDate();
+            const endDate = `${year}-${m}-${String(lastDay).padStart(2, '0')}`;
+            query = query.gte('date', startDate).lte('date', endDate);
+        }
+
+        const { data, error } = await query;
+        if (error) throw error;
+        res.json(data || []);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Add a holiday
+router.post('/holidays', async (req, res) => {
+    try {
+        const { date, name } = req.body;
+        if (!date) return res.status(400).json({ error: 'Date is required' });
+
+        const { data, error } = await supabase
+            .from('holidays')
+            .upsert({ date, name: name || 'Holiday' }, { onConflict: 'date' })
+            .select()
+            .single();
+
+        if (error) throw error;
+        res.status(201).json({ message: 'Holiday added', holiday: data });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Delete a holiday
+router.delete('/holidays/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { error } = await supabase.from('holidays').delete().eq('id', id);
+        if (error) throw error;
+        res.json({ message: 'Holiday removed' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 export default router;
