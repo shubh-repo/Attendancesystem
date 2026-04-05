@@ -222,15 +222,39 @@ router.post('/checkout', verifyToken, upload.single('photo'), async (req, res) =
             console.log(`Checked out at ${currentTime} before school end ${schoolEndTime} → Early Leave`);
         }
 
-        const { data, error: updateError } = await supabase
-            .from('attendance')
-            .update({ out_time: currentTime, out_photo_url, status: finalStatus })
-            .eq('id', existing.id)
-            .select()
-            .single();
+        let updateResult;
+        let finalMessage = 'Check-Out successful';
 
-        if (updateError) throw updateError;
-        res.json({ message: 'Check-Out successful', attendance: data });
+        try {
+            updateResult = await supabase
+                .from('attendance')
+                .update({ out_time: currentTime, out_photo_url, status: finalStatus })
+                .eq('id', existing.id)
+                .select()
+                .single();
+            if (updateResult.error) throw updateResult.error;
+            
+            if (finalStatus === 'Half Day') finalMessage += ' (Half Day recorded)';
+            else if (finalStatus === 'Early Leave') finalMessage += ' (Early Leave recorded)';
+        } catch (dbError) {
+            // Check if it's an ENUM mismatch error (22P02: invalid input value for enum)
+            if (dbError.code === '22P02') {
+                console.warn('DB Enum missing Half Day/Early Leave. Falling back to existing status.');
+                updateResult = await supabase
+                    .from('attendance')
+                    .update({ out_time: currentTime, out_photo_url, status: existing.status })
+                    .eq('id', existing.id)
+                    .select()
+                    .single();
+                
+                if (updateResult.error) throw updateResult.error;
+                finalMessage += ` - Note: Checked out early, but DB enum missing '${finalStatus}' so kept as '${existing.status}'.`;
+            } else {
+                throw dbError; // rethrow other errors
+            }
+        }
+
+        res.json({ message: finalMessage, attendance: updateResult.data });
 
     } catch (error) {
         console.error('Checkout Error:', error);
