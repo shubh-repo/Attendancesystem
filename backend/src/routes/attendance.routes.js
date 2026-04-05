@@ -222,43 +222,33 @@ router.post('/checkout', verifyToken, upload.single('photo'), async (req, res) =
             console.log(`Checked out at ${currentTime} before school end ${schoolEndTime} → Early Leave`);
         }
 
-        let updateResult;
-        let finalMessage = 'Check-Out successful';
+        // 6. Update attendance record with checkout data
+        const { data: updatedRecord, error: updateError } = await supabase
+            .from('attendance')
+            .update({
+                out_time: currentTime,
+                out_photo_url,
+                status: finalStatus,
+            })
+            .eq('id', existing.id)
+            .select()
+            .single();
 
-        try {
-            updateResult = await supabase
-                .from('attendance')
-                .update({ out_time: currentTime, out_photo_url, status: finalStatus })
-                .eq('id', existing.id)
-                .select()
-                .single();
-
-            if (updateResult.error) throw updateResult.error;
-            
-            if (finalStatus === 'Half Day') finalMessage += ' (Half Day recorded)';
-            else if (finalStatus === 'Early Leave') finalMessage += ' (Early Leave recorded)';
-
-        } catch (dbError) {
-            // Check if it's an ENUM mismatch error (22P02) or Check constraint violation (23514)
-            const isConstraintError = dbError.code === '22P02' || dbError.code === '23514';
-            
-            if (isConstraintError) {
-                console.warn('DB Enum/Check missing Half Day/Early Leave. Falling back to existing status.');
-                updateResult = await supabase
-                    .from('attendance')
-                    .update({ out_time: currentTime, out_photo_url, status: existing.status })
-                    .eq('id', existing.id)
-                    .select()
-                    .single();
-                
-                if (updateResult.error) throw updateResult.error;
-                finalMessage += ` - Note: Checked out early, but DB constraints missing '${finalStatus}' so kept as '${existing.status}'.`;
-            } else {
-                throw dbError; // Rethrow RLS or other unexpected errors to the main catch block
-            }
+        if (updateError) {
+            console.error('Supabase checkout update failed:', {
+                message: updateError.message,
+                code: updateError.code,
+                details: updateError.details,
+                hint: updateError.hint,
+            });
+            throw updateError;
         }
 
-        res.json({ message: finalMessage, attendance: updateResult.data });
+        let finalMessage = 'Check-Out successful';
+        if (finalStatus === 'Half Day') finalMessage += ' (Half Day recorded)';
+        else if (finalStatus === 'Early Leave') finalMessage += ' (Early Leave recorded)';
+
+        res.json({ message: finalMessage, attendance: updatedRecord });
 
     } catch (error) {
         console.error('Checkout Error:', error);
