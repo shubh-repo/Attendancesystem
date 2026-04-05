@@ -340,10 +340,13 @@ router.get('/my/weekly-stats', verifyToken, async (req, res) => {
         const present = data.filter(r => r.status === 'Present').length;
         const late = data.filter(r => r.status === 'Late').length;
         const absent = data.filter(r => r.status === 'Absent').length;
+        const halfDay = data.filter(r => r.status === 'Half Day').length;
+        const earlyLeave = data.filter(r => r.status === 'Early Leave').length;
         const totalDays = data.length;
+        // Punctuality = on-time arrivals vs total working days tracked
         const punctuality = totalDays > 0 ? Math.round((present / totalDays) * 100) : null;
 
-        res.json({ records: data, present, late, absent, punctuality, totalDays });
+        res.json({ records: data, present, late, absent, halfDay, earlyLeave, punctuality, totalDays });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

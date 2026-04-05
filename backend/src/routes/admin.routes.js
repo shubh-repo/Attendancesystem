@@ -124,6 +124,11 @@ router.delete('/teachers/:id', async (req, res) => {
 // Get Dashboard Stats (Today)
 router.get('/dashboard/stats', async (req, res) => {
     const today = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Kolkata" }).split(' ')[0];
+
+    // Detect if today is Sunday (weekend) using IST
+    const istDayName = new Intl.DateTimeFormat('en-US', { weekday: 'short', timeZone: 'Asia/Kolkata' }).format(new Date());
+    const isSunday = istDayName === 'Sun';
+
     try {
         const { data: teachers, error: tError } = await supabase.from('teachers').select('id', { count: 'exact' });
         if (tError) throw tError;
@@ -142,15 +147,21 @@ router.get('/dashboard/stats', async (req, res) => {
         const earlyLeave = attendance.filter(a => a.status === 'Early Leave').length;
         const totalMarked = present + late + absent + halfDay + earlyLeave;
 
+        // "Present Total" = everyone who physically showed up (Present + Late + Half Day + Early Leave)
+        const presentTotal = present + late + halfDay + earlyLeave;
+
         res.json({
             date: today,
+            is_sunday: isSunday,
             total_teachers: total,
             present_today: present,
+            present_total: presentTotal,
             late_today: late,
             absent_today: absent,
             half_day_today: halfDay,
             early_leave_today: earlyLeave,
-            unmarked_today: total - totalMarked
+            // On Sunday, no one is expected — so unmarked = 0
+            unmarked_today: isSunday ? 0 : total - totalMarked
         });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -222,6 +233,8 @@ router.get('/teachers/:id/monthly', async (req, res) => {
             present: records.filter(r => r.status === 'Present').length,
             late: records.filter(r => r.status === 'Late').length,
             absent: records.filter(r => r.status === 'Absent').length,
+            halfDay: records.filter(r => r.status === 'Half Day').length,
+            earlyLeave: records.filter(r => r.status === 'Early Leave').length,
             total_days: records.length,
             avg_late_minutes: records.filter(r => r.late_minutes > 0).reduce((a, b) => a + (b.late_minutes || 0), 0) / (records.filter(r => r.late_minutes > 0).length || 1)
         };

@@ -170,7 +170,8 @@
             try {
                 const stats = await App.fetchAPI('/admin/dashboard/stats');
                 document.getElementById('statTeachers').innerText = stats.total_teachers ?? 0;
-                document.getElementById('statPresent').innerText = stats.present_today ?? 0;
+                // Show combined "who showed up" count (Present + Late + Half Day + Early Leave)
+                document.getElementById('statPresent').innerText = stats.present_total ?? stats.present_today ?? 0;
                 document.getElementById('statAbsent').innerText = stats.absent_today ?? 0;
                 document.getElementById('statLate').innerText = stats.late_today ?? 0;
             } catch (err) { console.error('Failed stats', err); }
@@ -198,7 +199,7 @@
                     const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
                     // Safely check if records is an array, defaults to [] on API failure
                     const validRecords = Array.isArray(records) ? records : [];
-                    const present = validRecords.filter(r => r.status === 'Present' || r.status === 'Late' || r.status === 'Early Leave').length;
+                    const present = validRecords.filter(r => r.status === 'Present' || r.status === 'Late' || r.status === 'Early Leave' || r.status === 'Half Day').length;
                     const pct = Math.round((present / totalTeachers) * 100);
                     const isToday = i === 6;
                     return `<div class="flex flex-col items-center flex-1 gap-1.5">
@@ -216,8 +217,8 @@
             try {
                 const records = await App.fetchAPI('/admin/attendance/daily');
                 const alertsEl = document.getElementById('alertsList');
-                // Sort to show latest checked-in flagged users first
-                const flagged = records.filter(r => r.status === 'Late' || r.status === 'Absent').reverse();
+                // Show Late, Absent, Half Day, and Early Leave in alerts
+                const flagged = records.filter(r => ['Late', 'Absent', 'Half Day', 'Early Leave'].includes(r.status)).reverse();
                 if (flagged.length === 0) {
                     alertsEl.innerHTML = `<div class="flex items-center gap-3 bg-green-50 dark:bg-green-900/20 p-4 rounded-xl border border-green-100 dark:border-green-800">
                         <span class="material-symbols-outlined text-green-500">check_circle</span>
@@ -226,14 +227,18 @@
                     return;
                 }
                 alertsEl.innerHTML = flagged.slice(0, 6).map(r => {
-                    const isLate = r.status === 'Late';
-                    const bg = isLate ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-100 dark:border-amber-800' : 'bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-800';
-                    const iconColor = isLate ? 'text-amber-500' : 'text-red-500';
-                    const icon = isLate ? 'schedule' : 'event_busy';
-                    const detail = isLate ? `Late by ${r.late_minutes || '?'} min` : 'Absent';
+                    const colorMap = {
+                        'Late': { bg: 'bg-amber-50 dark:bg-amber-900/20 border-amber-100 dark:border-amber-800', icon: 'schedule', iconColor: 'text-amber-500' },
+                        'Absent': { bg: 'bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-800', icon: 'event_busy', iconColor: 'text-red-500' },
+                        'Half Day': { bg: 'bg-orange-50 dark:bg-orange-900/20 border-orange-100 dark:border-orange-800', icon: 'timelapse', iconColor: 'text-orange-500' },
+                        'Early Leave': { bg: 'bg-purple-50 dark:bg-purple-900/20 border-purple-100 dark:border-purple-800', icon: 'directions_walk', iconColor: 'text-purple-500' },
+                    };
+                    const style = colorMap[r.status] || colorMap['Absent'];
+                    let detail = r.status;
+                    if (r.status === 'Late') detail = `Late by ${r.late_minutes || '?'} min`;
                     const time = r.in_time ? r.in_time.substring(0, 5) : '—';
-                    return `<div class="flex items-center gap-3 bg-white dark:bg-slate-800 p-3 rounded-xl border ${bg}">
-                        <span class="material-symbols-outlined ${iconColor} text-2xl">${icon}</span>
+                    return `<div class="flex items-center gap-3 bg-white dark:bg-slate-800 p-3 rounded-xl border ${style.bg}">
+                        <span class="material-symbols-outlined ${style.iconColor} text-2xl">${style.icon}</span>
                         <div class="flex-1">
                             <p class="text-sm font-bold">${r.teacher_name || 'Unknown'}</p>
                             <p class="text-xs text-slate-500">${detail} • ${r.designation || ''}</p>
