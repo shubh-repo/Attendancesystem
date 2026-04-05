@@ -341,4 +341,45 @@ router.delete('/holidays/:id', async (req, res) => {
     }
 });
 
+// ─── Manual Cron Trigger (catch-up for missed midnight jobs) ────────────────
+router.post('/cron/run', async (req, res) => {
+    try {
+        const { date } = req.body;
+        if (!date) return res.status(400).json({ error: 'Date (YYYY-MM-DD) is required' });
+
+        // Validate date format
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return res.status(400).json({ error: 'Invalid date format. Use YYYY-MM-DD' });
+
+        // Skip Sundays
+        const d = new Date(date + 'T00:00:00+05:30');
+        if (d.getDay() === 0) return res.json({ message: `${date} is a Sunday. No absent marks placed.`, marked: 0 });
+
+        // Skip holidays
+        const { data: holiday } = await supabase.from('holidays').select('id, name').eq('date', date).maybeSingle();
+        if (holiday) return res.json({ message: `${date} is a holiday (${holiday.name}). No absent marks placed.`, marked: 0 });
+
+        // Get all active teachers
+        const { data: teachers, error: tErr } = await supabase.from('teachers').select('id').eq('status', 'active');
+        if (tErr) throw tErr;
+
+        // Get who already has attendance
+        const { data: existing, error: aErr } = await supabase.from('attendance').select('teacher_id').eq('date', date);
+        if (aErr) throw aErr;
+
+        const attendedIds = new Set(existing.map(a => a.teacher_id));
+        const absentRecords = teachers
+            .filter(t => !attendedIds.has(t.id))
+            .map(t => ({ teacher_id: t.id, date, status: 'Absent' }));
+
+        if (absentRecords.length > 0) {
+            const { error: insErr } = await supabase.from('attendance').insert(absentRecords);
+            if (insErr) throw insErr;
+        }
+
+        res.json({ message: `Marked ${absentRecords.length} teachers absent for ${date}`, marked: absentRecords.length });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 export default router;

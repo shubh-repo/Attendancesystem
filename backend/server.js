@@ -10,6 +10,26 @@ import authRoutes from './src/routes/auth.routes.js';
 import adminRoutes from './src/routes/admin.routes.js';
 import attendanceRoutes from './src/routes/attendance.routes.js';
 import './src/cron/midnightJob.js';
+import { supabase } from './src/config/supabase.js';
+
+// Auto-init: ensure system_settings row exists with defaults
+(async () => {
+    try {
+        const { data } = await supabase.from('system_settings').select('id').eq('id', 1).maybeSingle();
+        if (!data) {
+            await supabase.from('system_settings').insert({
+                id: 1,
+                school_start_time: '08:00:00',
+                school_end_time: '13:00:00',
+                half_day_time: '11:00:00',
+                grace_period_minutes: 15,
+                gps_enabled: true,
+                allowed_radius_meters: 1000
+            });
+            console.log('✅ system_settings initialized with defaults');
+        }
+    } catch (e) { console.warn('system_settings init skipped:', e.message); }
+})();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

@@ -24,10 +24,11 @@ cron.schedule('59 23 * * *', async () => {
             return;
         }
 
-        // Get all teachers
+        // Get all active teachers (skip blocked)
         const { data: teachers, error: teacherError } = await supabase
             .from('teachers')
-            .select('id');
+            .select('id')
+            .eq('status', 'active');
 
         if (teacherError) throw teacherError;
         if (!teachers || teachers.length === 0) return;

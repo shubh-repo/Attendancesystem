@@ -222,8 +222,23 @@ export const verifyToken = (req, res, next) => {
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) return res.status(403).json({ error: 'No token provided' });
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
         if (err) return res.status(401).json({ error: 'Unauthorized' });
+
+        // Real-time block check for teacher tokens
+        if (decoded.role === 'teacher' && decoded.id) {
+            try {
+                const { data: teacher } = await supabase
+                    .from('teachers')
+                    .select('status')
+                    .eq('id', decoded.id)
+                    .single();
+                if (teacher?.status === 'blocked') {
+                    return res.status(403).json({ error: 'Your account has been blocked. Please contact the administrator.' });
+                }
+            } catch (_) { /* DB hiccup — allow through, don't break flow */ }
+        }
+
         req.user = decoded;
         next();
     });
