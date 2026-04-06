@@ -65,92 +65,90 @@
 </head>
 
 <body class="font-display text-slate-900 dark:text-slate-100 antialiased bg-slate-50 dark:bg-slate-950">
-    <div class="relative flex h-auto min-h-screen w-full max-w-[480px] mx-auto shadow-2xl flex-col bg-[#0B1120] overflow-hidden isolate selection:bg-violet-500/30">
-        
-        <!-- Decorative Background Elements (Admin uses Violet/Fuchsia) -->
-        <div class="absolute top-0 inset-x-0 h-64 bg-gradient-to-b from-violet-500/10 to-transparent pointer-events-none"></div>
-        <div class="absolute -top-24 -left-20 w-72 h-72 bg-violet-600/20 rounded-full mix-blend-screen blur-[80px] animate-pulse opacity-60"></div>
-        <div class="absolute top-40 -right-20 w-72 h-72 bg-fuchsia-500/20 rounded-full mix-blend-screen blur-[80px] animate-pulse opacity-60" style="animation-delay: 2s;"></div>
-        
+    <div class="relative flex min-h-screen w-full max-w-[480px] mx-auto flex-col overflow-x-hidden selection:bg-violet-500/20 bg-slate-50 shadow-2xl">
+
+        <!-- Decorative Top Element -->
+        <div class="absolute top-0 inset-x-0 h-40 bg-gradient-to-br from-violet-500/10 to-fuchsia-500/5 z-0 rounded-b-3xl"></div>
+
         <!-- Top Navigation Area -->
-        <div class="flex items-center p-6 justify-between relative z-10 w-full pt-14 pb-6">
-            <a href="./index.html" class="flex size-10 items-center justify-center rounded-full bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 text-slate-300 hover:text-white transition-all backdrop-blur-md">
+        <div class="flex items-center p-6 justify-between relative z-10 w-full pt-12 pb-6">
+            <a href="./index.html" class="flex size-10 items-center justify-center rounded-full bg-white hover:bg-slate-50 border border-slate-200 text-slate-500 hover:text-slate-800 transition-all shadow-sm">
                 <span class="material-symbols-outlined text-[20px]">arrow_back</span>
             </a>
             <div class="flex flex-col items-center justify-center absolute left-1/2 -translate-x-1/2 space-y-2">
-                <div class="flex size-14 items-center justify-center bg-gradient-to-tr from-violet-600 to-fuchsia-600 rounded-2xl shadow-lg shadow-violet-500/30 transform transition-transform hover:scale-105 border border-white/10">
-                    <span class="material-symbols-outlined text-white text-2xl">admin_panel_settings</span>
+                <div class="flex size-14 items-center justify-center bg-white rounded-2xl shadow-sm border border-slate-100 text-violet-600">
+                    <span class="material-symbols-outlined text-3xl">admin_panel_settings</span>
                 </div>
             </div>
             <div class="size-10"></div> <!-- Placeholder for centering -->
         </div>
 
         <!-- Content Area -->
-        <div class="flex flex-col px-6 pt-8 pb-10 flex-1 relative z-10">
-            <div class="text-center mb-8">
-                <h1 class="text-white tracking-tight text-3xl font-extrabold leading-tight mb-2">
+        <div class="flex flex-col px-5 pt-6 pb-10 flex-1 relative z-10">
+            <div class="text-center mb-6">
+                <h1 class="text-slate-900 tracking-tight text-3xl font-extrabold leading-tight mb-1">
                     Admin Portal
                 </h1>
-                <p class="text-slate-400 text-sm font-medium">St GNG School Management</p>
+                <p class="text-slate-500 text-sm font-medium">St GNG School Management</p>
             </div>
 
-            <!-- Glassy Card Form container -->
-            <div class="space-y-5 max-w-[480px] mx-auto w-full bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 p-6 sm:p-8 rounded-3xl shadow-2xl">
+            <!-- Clean White Card -->
+            <div class="space-y-4 max-w-[480px] mx-auto w-full bg-white p-6 sm:p-7 rounded-[28px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100/60">
                 <!-- Input Field -->
                 <div class="flex flex-col w-full relative group">
-                    <p class="text-slate-300 text-sm font-semibold mb-2 ml-1">Admin Username</p>
+                    <p class="text-slate-700 text-sm font-bold mb-1.5 ml-1">Admin Username</p>
                     <div class="relative flex items-center">
-                        <span class="material-symbols-outlined absolute left-4 text-slate-400 group-focus-within:text-violet-400 transition-colors z-10 text-[20px]">shield_person</span>
+                        <span class="material-symbols-outlined absolute left-4 text-slate-400 group-focus-within:text-violet-600 transition-colors z-10 text-[20px]">shield_person</span>
                         <input id="mobileInput"
-                            class="form-input w-full rounded-2xl text-white outline-none focus:ring-2 focus:ring-violet-500/50 border border-slate-600/50 focus:border-violet-500/50 bg-slate-900/50 hover:bg-slate-900/80 h-14 placeholder:text-slate-500 pl-[44px] pr-4 text-[15px] font-medium transition-all shadow-inner"
+                            class="form-input w-full rounded-[18px] text-slate-900 outline-none focus:ring-2 focus:ring-violet-500/20 border border-slate-200 focus:border-violet-500 bg-slate-50/50 hover:bg-slate-50 h-[54px] placeholder:text-slate-400 pl-[44px] pr-4 text-[15px] font-medium transition-all"
                             placeholder="Enter admin username" type="text" value="" autocomplete="username" />
                     </div>
                 </div>
 
                 <!-- Password -->
                 <div class="flex flex-col w-full relative group">
-                    <p class="text-slate-300 text-sm font-semibold mb-2 ml-1">Passcode</p>
+                    <p class="text-slate-700 text-sm font-bold mb-1.5 ml-1">Passcode</p>
                     <div class="relative flex items-center">
-                        <span class="material-symbols-outlined absolute left-4 text-slate-400 group-focus-within:text-violet-400 transition-colors z-10 text-[20px]">lock_person</span>
+                        <span class="material-symbols-outlined absolute left-4 text-slate-400 group-focus-within:text-violet-600 transition-colors z-10 text-[20px]">lock_person</span>
                         <input id="passwordInput"
-                            class="form-input w-full rounded-2xl text-white outline-none focus:ring-2 focus:ring-violet-500/50 border border-slate-600/50 focus:border-violet-500/50 bg-slate-900/50 hover:bg-slate-900/80 h-14 placeholder:text-slate-500 pl-[44px] pr-4 text-[15px] font-medium transition-all shadow-inner"
+                            class="form-input w-full rounded-[18px] text-slate-900 outline-none focus:ring-2 focus:ring-violet-500/20 border border-slate-200 focus:border-violet-500 bg-slate-50/50 hover:bg-slate-50 h-[54px] placeholder:text-slate-400 pl-[44px] pr-4 text-[15px] font-medium transition-all"
                             placeholder="••••••••" type="password" value="" autocomplete="current-password" />
                     </div>
                 </div>
 
-                <div class="flex items-center justify-between pt-1 pb-2 px-1">
+                <div class="flex items-center justify-between pt-1 pb-1 px-1">
                      <label class="flex items-center gap-2.5 cursor-pointer group">
                         <div class="relative flex items-center justify-center">
                             <input class="peer sr-only" type="checkbox" id="rememberMe" />
-                            <div class="w-5 h-5 rounded-[6px] border-[1.5px] border-slate-500/50 bg-slate-900/50 peer-checked:bg-violet-500 peer-checked:border-violet-500 flex items-center justify-center transition-all">
+                            <div class="w-5 h-5 rounded-md border-2 border-slate-300 bg-white peer-checked:bg-violet-600 peer-checked:border-violet-600 flex items-center justify-center transition-all">
                                 <span class="material-symbols-outlined text-[14px] text-white opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
                             </div>
                         </div>
-                        <span class="text-sm text-slate-400 group-hover:text-slate-300 transition-colors font-medium select-none">Remember me</span>
+                        <span class="text-[13px] text-slate-600 font-semibold select-none group-hover:text-slate-900 transition-colors">Remember me</span>
                     </label>
-                    <a class="text-sm font-semibold text-violet-400 hover:text-violet-300 transition-colors"
+                    <a class="text-[13px] font-bold text-violet-600 hover:text-violet-500 transition-colors"
                         href="https://wa.me/918423926608?text=Teacher%20Attendance%20App%20-%20Admin%20Support%20Required"
                         target="_blank">Need help?</a>
                 </div>
 
                 <!-- Login Button -->
-                <div class="pt-2">
+                <div class="pt-3">
                     <button id="loginBtn"
-                        class="w-full h-14 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-bold text-[15px] rounded-2xl shadow-[0_0_20px_rgba(139,92,246,0.3)] flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-slate-900">
+                        class="w-full h-[54px] bg-violet-600 hover:bg-violet-700 text-white font-bold text-[15px] rounded-[18px] shadow-lg shadow-violet-500/25 flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
                         <span>Authorize Access</span>
                         <span class="material-symbols-outlined text-[20px]">admin_panel_settings</span>
                     </button>
-                    <p id="errorMsg" class="mt-4 p-3.5 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm font-semibold text-center hidden shadow-sm"></p>
+                    <p id="errorMsg" class="mt-4 p-3.5 bg-red-50 border border-red-100 rounded-xl text-red-500 text-sm font-semibold text-center hidden shadow-sm"></p>
                 </div>
             </div>
 
             <!-- Support Footer -->
             <div class="mt-auto pt-16 text-center">
-                <div class="flex justify-center items-center gap-1.5 text-slate-500 mb-4 bg-slate-800/40 w-fit mx-auto px-4 py-1.5 rounded-full border border-slate-700/50 shadow-inner">
-                    <span class="material-symbols-outlined text-[14px] text-violet-400">admin_meds</span>
-                    <span class="text-[10px] uppercase tracking-[0.2em] font-bold text-slate-300">Restricted Area</span>
+                <div class="flex justify-center items-center gap-1.5 text-slate-500 mb-3 bg-white w-fit mx-auto px-4 py-1.5 rounded-full border border-slate-200 shadow-sm">
+                    <span class="material-symbols-outlined text-[14px] text-violet-500">admin_meds</span>
+                    <span class="text-[10px] uppercase tracking-[0.2em] font-bold text-slate-600">Restricted Area</span>
                 </div>
-                <p class="text-[13px] text-slate-500 font-medium">
+                <p class="text-[12px] text-slate-500 font-medium">
                     System Administration Panel
                 </p>
             </div>

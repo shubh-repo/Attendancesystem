@@ -334,14 +334,15 @@ router.get('/my/history', verifyToken, async (req, res) => {
     }
 });
 
-// Teacher Weekly Stats (for dashboard)
-router.get('/my/weekly-stats', verifyToken, async (req, res) => {
+// Teacher Monthly Stats (for dashboard)
+router.get('/my/monthly-stats', verifyToken, async (req, res) => {
     try {
         const nowKolkata = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
-        const endStr = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Kolkata" }).split(' ')[0];
-        // Last 7 days
-        nowKolkata.setDate(nowKolkata.getDate() - 6);
-        const startStr = nowKolkata.toLocaleString("sv-SE", { timeZone: "Asia/Kolkata" }).split(' ')[0];
+        const y = nowKolkata.getFullYear();
+        const m = String(nowKolkata.getMonth() + 1).padStart(2, '0');
+        
+        const startStr = `${y}-${m}-01`;
+        const endStr = nowKolkata.toLocaleString("sv-SE", { timeZone: "Asia/Kolkata" }).split(' ')[0];
 
         const { data, error } = await supabase
             .from('attendance')

@@ -130,37 +130,32 @@
                 <span class="material-symbols-outlined text-slate-400">chevron_right</span>
             </button>
         </section>
-        <!-- Quick Stats / Weekly Summary -->
-        <section class="px-6">
+        <!-- Quick Stats / Monthly Summary -->
+        <section class="px-6 relative z-10 pb-8">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="font-bold text-slate-800 dark:text-white">This Week</h3>
+                <h3 class="font-bold text-slate-800 dark:text-white">This Month</h3>
                 <a class="text-primary text-sm font-semibold" href="./attendance-history.html">View All</a>
             </div>
-            <div class="grid grid-cols-5 gap-2">
+            <div class="grid grid-cols-4 gap-2">
                 <div
-                    class="bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-100 dark:border-slate-700 text-center">
-                    <p class="text-slate-400 text-[10px] font-bold uppercase mb-1">Present</p>
-                    <p id="weekPresent" class="text-lg font-bold text-green-600">—</p>
+                    class="bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-slate-100 dark:border-slate-700 text-center shadow-sm">
+                    <p class="text-slate-400 text-[10px] font-bold uppercase mb-1 truncate">Present</p>
+                    <p id="monthPresent" class="text-lg font-bold text-green-600">—</p>
                 </div>
                 <div
-                    class="bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-100 dark:border-slate-700 text-center">
-                    <p class="text-slate-400 text-[10px] font-bold uppercase mb-1">Late</p>
-                    <p id="weekLate" class="text-lg font-bold text-amber-500">—</p>
+                    class="bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-slate-100 dark:border-slate-700 text-center shadow-sm">
+                    <p class="text-slate-400 text-[10px] font-bold uppercase mb-1 truncate">Late</p>
+                    <p id="monthLate" class="text-lg font-bold text-amber-500">—</p>
                 </div>
                 <div
-                    class="bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-100 dark:border-slate-700 text-center">
-                    <p class="text-slate-400 text-[10px] font-bold uppercase mb-1">Half Day</p>
-                    <p id="weekHalfDay" class="text-lg font-bold text-orange-500">—</p>
+                    class="bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-slate-100 dark:border-slate-700 text-center shadow-sm">
+                    <p class="text-slate-400 text-[10px] font-bold uppercase mb-1 truncate">Half Day</p>
+                    <p id="monthHalfDay" class="text-lg font-bold text-orange-500">—</p>
                 </div>
                 <div
-                    class="bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-100 dark:border-slate-700 text-center">
-                    <p class="text-slate-400 text-[10px] font-bold uppercase mb-1">Early</p>
-                    <p id="weekEarlyLeave" class="text-lg font-bold text-amber-400">—</p>
-                </div>
-                <div
-                    class="bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-100 dark:border-slate-700 text-center">
-                    <p class="text-slate-400 text-[10px] font-bold uppercase mb-1">Absent</p>
-                    <p id="weekAbsent" class="text-lg font-bold text-red-500">—</p>
+                    class="bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-slate-100 dark:border-slate-700 text-center shadow-sm">
+                    <p class="text-slate-400 text-[10px] font-bold uppercase mb-1 truncate">Absent</p>
+                    <p id="monthAbsent" class="text-lg font-bold text-red-500">—</p>
                 </div>
             </div>
         </section>
@@ -231,20 +226,18 @@
                 console.error('Error loading attendance', err);
             }
 
-            // Load weekly stats (real data)
+            // Load monthly stats
             try {
-                const stats = await App.fetchAPI('/attendance/my/weekly-stats');
-                document.getElementById('weekPresent').innerText = stats.present ?? 0;
-                document.getElementById('weekLate').innerText = stats.late ?? 0;
-                document.getElementById('weekHalfDay').innerText = stats.halfDay ?? 0;
-                document.getElementById('weekEarlyLeave').innerText = stats.earlyLeave ?? 0;
-                document.getElementById('weekAbsent').innerText = stats.absent ?? 0;
+                const stats = await App.fetchAPI('/attendance/my/monthly-stats');
+                document.getElementById('monthPresent').innerText = stats.present ?? 0;
+                document.getElementById('monthLate').innerText = stats.late ?? 0;
+                document.getElementById('monthHalfDay').innerText = stats.halfDay ?? 0;
+                document.getElementById('monthAbsent').innerText = stats.absent ?? 0;
             } catch (e) {
-                document.getElementById('weekPresent').innerText = '0';
-                document.getElementById('weekLate').innerText = '0';
-                document.getElementById('weekHalfDay').innerText = '0';
-                document.getElementById('weekEarlyLeave').innerText = '0';
-                document.getElementById('weekAbsent').innerText = '0';
+                document.getElementById('monthPresent').innerText = '0';
+                document.getElementById('monthLate').innerText = '0';
+                document.getElementById('monthHalfDay').innerText = '0';
+                document.getElementById('monthAbsent').innerText = '0';
             }
         }
 

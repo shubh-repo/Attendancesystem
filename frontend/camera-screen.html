@@ -260,8 +260,13 @@
         }
 
         captureBtn.onclick = async () => {
-            captureBtn.innerText = "Processing...";
-            captureBtn.classList.add('opacity-50', 'pointer-events-none');
+            // Immediate feedback
+            captureBtn.innerHTML = '<span class="animate-spin material-symbols-outlined align-middle mr-1">sync</span> Processing...';
+            captureBtn.classList.add('opacity-80', 'pointer-events-none');
+            // Freeze the video frame instantly to signify capture
+            video.pause();
+            document.getElementById('faceFrame').style.borderColor = 'rgba(255,255,255,0.8)';
+            document.getElementById('faceStatus').classList.add('hidden');
 
             // Take Photo
             canvas.width = video.videoWidth;
@@ -273,6 +278,9 @@
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
             canvas.toBlob(async (blob) => {
+                // We can stop the camera stream now since we have the blob
+                if (stream) stream.getTracks().forEach(t => t.stop());
+
                 const formData = new FormData();
                 formData.append('photo', blob, 'capture.jpg');
                 if (gpsCoords) {
@@ -285,18 +293,17 @@
                     const endpoint = type === 'out' ? '/attendance/checkout' : '/attendance/checkin';
                     const res = await App.fetchAPI(endpoint, {
                         method: 'POST',
-                        body: formData // DO NOT ADD Content-Type header on FormData via App.fetchAPI
+                        body: formData
                     });
 
-                    // Stop camera
-                    if (stream) stream.getTracks().forEach(t => t.stop());
-
                     // Redirect on success
-                    window.location.href = `/status-screen.html?status=success&msg=${encodeURIComponent(res.message)}`;
+                    window.location.replace(`/status-screen.html?status=success&msg=${encodeURIComponent(res.message)}`);
 
                 } catch (err) {
+                    // Resume video if it failed
+                    try { video.play(); } catch(e){}
                     captureBtn.innerText = "Try Again";
-                    captureBtn.classList.remove('opacity-50', 'pointer-events-none');
+                    captureBtn.classList.remove('opacity-80', 'pointer-events-none', 'opacity-50');
                     errorMsg.innerText = err.message || 'Verification Failed';
                     errorMsg.classList.remove('hidden');
                 }
