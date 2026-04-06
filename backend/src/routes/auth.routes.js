@@ -16,14 +16,11 @@ router.post('/login', loginLimiter, async (req, res) => {
         const { mobile, passcode, password } = req.body;
         const enteredPassword = passcode || password;
 
-        if (!mobile) {
-            return res.status(400).json({ error: 'Mobile number is required' });
-        }
-
+        const trimmedMobile = String(mobile || '').trim();
         const { data, error } = await supabase
             .from('teachers')
             .select('*')
-            .eq('mobile', mobile)
+            .eq('mobile', trimmedMobile)
             .single();
 
         if (error || !data) {
@@ -45,7 +42,7 @@ router.post('/login', loginLimiter, async (req, res) => {
             }
         }
 
-        const token = jwt.sign({ id: data.id, role: 'teacher' }, process.env.JWT_SECRET, { expiresIn: '7d' });
+        const token = jwt.sign({ id: data.id, role: 'teacher' }, process.env.JWT_SECRET, { expiresIn: '365d' });
 
         res.json({
             message: 'Login successful',
@@ -90,7 +87,7 @@ router.post('/admin/login', loginLimiter, async (req, res) => {
 
         if (!validPassword) return res.status(401).json({ error: 'Invalid admin credentials' });
 
-        const token = jwt.sign({ role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '7d' });
+        const token = jwt.sign({ role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '365d' });
         return res.json({ message: 'Admin login successful', token, user: { role: 'admin' } });
     } catch (err) {
         console.error('Admin login error:', err);

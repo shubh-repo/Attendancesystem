@@ -73,11 +73,12 @@ router.post('/teachers', async (req, res) => {
         const { name, mobile, designation, joining_date, email, password } = req.body;
         if (!name || !mobile) return res.status(400).json({ error: 'Name and mobile are required' });
 
-        const insertObj = { name, mobile, designation, joining_date: joining_date || null, email: email || null, status: 'active' };
+        const trimmedMobile = String(mobile).trim();
+        const insertObj = { name: name?.trim(), mobile: trimmedMobile, designation: designation?.trim(), joining_date: joining_date || null, email: email?.trim() || null, status: 'active' };
 
-        if (password && password.length >= 4) {
+        if (password) {
             const bcrypt = await import('bcrypt');
-            insertObj.password = await bcrypt.default.hash(password, 10);
+            insertObj.password = await bcrypt.default.hash(String(password).trim(), 10);
         }
 
         const { data, error } = await supabase.from('teachers').insert([insertObj]).select().single();

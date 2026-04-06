@@ -337,11 +337,11 @@
                     await App.fetchAPI('/admin/teachers', {
                         method: 'POST',
                         body: JSON.stringify({
-                            name: document.getElementById('nameInput').value,
-                            mobile: document.getElementById('mobileInput').value,
-                            designation: document.getElementById('designationInput').value,
-                            password: document.getElementById('initialPwdInput').value || null,
-                            email: document.getElementById('emailInput').value || null,
+                            name: document.getElementById('nameInput').value.trim(),
+                            mobile: document.getElementById('mobileInput').value.trim(),
+                            designation: document.getElementById('designationInput').value.trim(),
+                            password: document.getElementById('initialPwdInput').value.trim() || null,
+                            email: document.getElementById('emailInput').value.trim() || null,
                             joining_date: document.getElementById('joiningInput').value || null,
                         })
                     });
