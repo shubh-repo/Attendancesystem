@@ -261,7 +261,8 @@
 
         captureBtn.onclick = async () => {
             // Immediate feedback
-            captureBtn.innerHTML = '<span class="animate-spin material-symbols-outlined align-middle mr-1">sync</span> Processing...';
+            const actionText = type === 'out' ? 'Checking Out...' : 'Checking In...';
+            captureBtn.innerHTML = `<span class="animate-spin material-symbols-outlined align-middle mr-1">sync</span> ${actionText}`;
             captureBtn.classList.add('opacity-80', 'pointer-events-none');
             // Freeze the video frame instantly to signify capture
             video.pause();

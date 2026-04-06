@@ -249,9 +249,8 @@ router.post('/checkout', verifyToken, checkoutLimiter, upload.single('photo'), a
         if (curMins < halfDayMins) {
             finalStatus = 'Half Day';
             console.log(`Checked out at ${currentTime} before half-day threshold ${halfDayTime} → Half Day`);
-        } else if (curMins < endMins) {
-            finalStatus = 'Early Leave';
-            console.log(`Checked out at ${currentTime} before school end ${schoolEndTime} → Early Leave`);
+        } else {
+            console.log(`Checked out at ${currentTime} after half-day threshold → kept as ${finalStatus}`);
         }
 
         // 6. Update attendance record with checkout data (with Retry)
@@ -272,7 +271,6 @@ router.post('/checkout', verifyToken, checkoutLimiter, upload.single('photo'), a
 
         let finalMessage = 'Check-Out successful';
         if (finalStatus === 'Half Day') finalMessage += ' (Half Day recorded)';
-        else if (finalStatus === 'Early Leave') finalMessage += ' (Early Leave recorded)';
 
         res.json({ message: finalMessage, attendance: updatedRecord });
 

@@ -81,12 +81,6 @@
       color: #fff;
     }
 
-    .cal-earlyleave {
-      background: #fbbf24;
-      /* amber-400 */
-      color: #fff;
-    }
-
     .cal-absent {
       background: #ef4444;
       /* red-500 */
@@ -99,7 +93,7 @@
     }
 
     /* Today with no attendance */
-    .cal-today:not(.cal-present):not(.cal-late):not(.cal-absent):not(.cal-halfday):not(.cal-earlyleave) {
+    .cal-today:not(.cal-present):not(.cal-late):not(.cal-absent):not(.cal-halfday) {
       background: #1c74e9;
       color: white;
     }
@@ -108,7 +102,6 @@
       .cal-present    { background: #16a34a; color: #fff; }
       .cal-late       { background: #d97706; color: #fff; }
       .cal-halfday    { background: #ea580c; color: #fff; }
-      .cal-earlyleave { background: #d97706; color: #fff; }
       .cal-absent     { background: #dc2626; color: #fff; }
     }
 
@@ -186,8 +179,6 @@
         class="filter-btn flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">Late</button>
       <button onclick="applyFilter('Half Day')" id="filter-Half Day"
         class="filter-btn flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">Half Day</button>
-      <button onclick="applyFilter('Early Leave')" id="filter-Early Leave"
-        class="filter-btn flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">Early Leave</button>
       <button onclick="applyFilter('Absent')" id="filter-Absent"
         class="filter-btn flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">Absent</button>
     </div>
@@ -227,8 +218,6 @@
             class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>Late</span>
         <span class="flex items-center gap-1"><span
             class="w-2.5 h-2.5 rounded-full bg-orange-500 inline-block"></span>Half Day</span>
-        <span class="flex items-center gap-1"><span
-            class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span>Early</span>
         <span class="flex items-center gap-1"><span
             class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span>Absent</span>
       </div>
@@ -358,8 +347,8 @@
         if (status === 'Present') cls += ' cal-present';
         else if (status === 'Late') cls += ' cal-late';
         else if (status === 'Half Day') cls += ' cal-halfday';
-        else if (status === 'Early Leave') cls += ' cal-earlyleave';
         else if (status === 'Absent') cls += ' cal-absent';
+        else if (status === 'Early Leave') cls += ' cal-halfday'; // Fallback for old data
         else cls += ' text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
         if (isToday) cls += ' cal-today';
         html += `<div class="${cls}" title="${status ? status : ''}">${d}</div>`;
@@ -386,7 +375,7 @@
         'Present': 'bg-green-100 text-green-800',
         'Late': 'bg-amber-100 text-amber-800',
         'Half Day': 'bg-orange-100 text-orange-800',
-        'Early Leave': 'bg-amber-50 text-amber-700',
+        'Early Leave': 'bg-orange-100 text-orange-800',
         'Absent': 'bg-red-100 text-red-800'
       };
 
