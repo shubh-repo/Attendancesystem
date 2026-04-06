@@ -28,7 +28,7 @@ router.get('/settings', async (req, res) => {
         gps_enabled: true,
         gps_latitude: null,
         gps_longitude: null,
-        allowed_radius_meters: 1000
+        allowed_radius_meters: 100
     });
 });
 

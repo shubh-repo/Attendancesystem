@@ -180,29 +180,35 @@
                         <label
                             class="block text-xs font-semibold mb-1 text-slate-500 uppercase tracking-wider">Latitude</label>
                         <input type="text" id="schoolLat" placeholder="25.347732"
-                            class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-sm focus:border-primary outline-none" />
+                            class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-sm focus:border-primary outline-none transition-colors" />
                     </div>
                     <div>
                         <label
                             class="block text-xs font-semibold mb-1 text-slate-500 uppercase tracking-wider">Longitude</label>
                         <input type="text" id="schoolLng" placeholder="83.033857"
-                            class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-sm focus:border-primary outline-none" />
+                            class="w-full px-3 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-sm focus:border-primary outline-none transition-colors" />
                     </div>
                 </div>
+                
+                <button onclick="detectLocation()" id="detectLocBtn"
+                    class="w-full py-2.5 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 border border-blue-200 dark:border-blue-800 text-primary font-bold rounded-xl text-sm transition-colors flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-base">my_location</span>
+                    Detect Current Location
+                </button>
 
                 <div>
                     <label class="block text-xs font-semibold mb-1 text-slate-500 uppercase tracking-wider">Allowed
                         Radius</label>
                     <div class="flex items-center gap-3">
-                        <input type="range" id="radiusRange" min="50" max="1000" value="200" step="50"
+                        <input type="range" id="radiusRange" min="50" max="1000" value="100" step="10"
                             class="flex-1 accent-primary" oninput="syncRadius('range')" />
-                        <input type="number" id="allowedRadius" min="50" max="1000" value="200"
-                            class="w-24 px-3 py-2 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-center text-sm font-bold focus:border-primary outline-none"
+                        <input type="number" id="allowedRadius" min="50" max="1000" value="100"
+                            class="w-24 px-3 py-2 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-center text-sm font-bold focus:border-primary outline-none transition-colors"
                             oninput="syncRadius('number')" />
                         <span class="text-sm text-slate-500">m</span>
                     </div>
                     <p class="text-xs text-slate-400 mt-1">Teachers must be within <span id="radiusLabel"
-                            class="font-bold text-primary">200m</span> of school</p>
+                            class="font-bold text-primary">100m</span> of school</p>
                 </div>
 
                 <!-- GPS Toggle -->
@@ -360,6 +366,52 @@
             document.getElementById('radiusLabel').innerText = num.value + 'm';
         }
 
+        async function detectLocation() {
+            const btn = document.getElementById('detectLocBtn');
+            const originalHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-base">sync</span> Detecting...';
+
+            if (!navigator.geolocation) {
+                alert("Geolocation is not supported by your browser.");
+                btn.disabled = false;
+                btn.innerHTML = originalHTML;
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const latId = document.getElementById('schoolLat');
+                    const lngId = document.getElementById('schoolLng');
+                    
+                    latId.value = pos.coords.latitude.toFixed(6);
+                    lngId.value = pos.coords.longitude.toFixed(6);
+                    
+                    // Flash success effect
+                    latId.classList.add('bg-green-50', 'dark:bg-green-900/20');
+                    lngId.classList.add('bg-green-50', 'dark:bg-green-900/20');
+                    setTimeout(() => {
+                        latId.classList.remove('bg-green-50', 'dark:bg-green-900/20');
+                        lngId.classList.remove('bg-green-50', 'dark:bg-green-900/20');
+                    }, 1500);
+
+                    if (pos.coords.accuracy > 50) {
+                        alert(`Location detected but accuracy is low (${Math.round(pos.coords.accuracy)}m). Consider going outside for a better GPS lock or verify coordinates on a map.`);
+                    }
+
+                    btn.disabled = false;
+                    btn.innerHTML = '<span class="material-symbols-outlined text-base">check</span> Detected';
+                    setTimeout(() => { btn.innerHTML = originalHTML; }, 2000);
+                },
+                (err) => {
+                    alert(`Error detecting location: ${err.message}. Please ensure GPS is active and permissions are granted.`);
+                    btn.disabled = false;
+                    btn.innerHTML = originalHTML;
+                },
+                { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+            );
+        }
+
         // ── Load settings from backend ──
         async function loadSettings() {
             try {
@@ -404,7 +456,7 @@
             const grace = parseInt(document.getElementById('gracePeriod').value) || 0;
             const lat = parseFloat(document.getElementById('schoolLat').value) || null;
             const lng = parseFloat(document.getElementById('schoolLng').value) || null;
-            const radius = parseInt(document.getElementById('allowedRadius').value) || 200;
+            const radius = parseInt(document.getElementById('allowedRadius').value) || 100;
             const gps = document.getElementById('gpsEnabled').checked;
 
             try {

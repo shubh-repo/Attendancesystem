@@ -239,14 +239,29 @@
                 faceDetectTimer = setInterval(checkFacePresence, 400);
 
 
-                // Fetch GPS coordinates
+                // Fetch GPS coordinates continuously for best accuracy
                 if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
+                    navigator.geolocation.watchPosition(
                         pos => {
-                            gpsCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                            gpsCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy };
+                            const accWarning = document.getElementById('gpsAccuracyWarning');
+                            if (!accWarning) {
+                                const w = document.createElement('div');
+                                w.id = 'gpsAccuracyWarning';
+                                w.className = 'absolute top-2 left-1/2 transform -translate-x-1/2 px-3 py-1 bg-red-500/90 text-white text-[10px] font-bold rounded-full hidden z-50';
+                                document.body.appendChild(w);
+                            }
+                            
+                            const warnEl = document.getElementById('gpsAccuracyWarning');
+                            if (pos.coords.accuracy > 60) {
+                                warnEl.innerText = `Weak GPS (Accuracy: ±${Math.round(pos.coords.accuracy)}m)`;
+                                warnEl.classList.remove('hidden');
+                            } else {
+                                warnEl.classList.add('hidden');
+                            }
                         },
                         err => console.warn('GPS Error', err),
-                        { enableHighAccuracy: true }
+                        { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
                     );
                 }
 
