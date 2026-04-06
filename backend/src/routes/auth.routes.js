@@ -220,7 +220,10 @@ export const verifyToken = (req, res, next) => {
                 if (teacher?.status === 'blocked') {
                     return res.status(403).json({ error: 'Your account has been blocked. Please contact the administrator.' });
                 }
-            } catch (_) { /* DB hiccup — allow through, don't break flow */ }
+            } catch (err) {
+                // DB hiccup - fail-closed security
+                return res.status(503).json({ error: 'Service Unavailable. Could not verify account status.' });
+            }
         }
 
         req.user = decoded;

@@ -126,7 +126,8 @@ router.delete('/teachers/:id', async (req, res) => {
 
 // Get Dashboard Stats (Today)
 router.get('/dashboard/stats', async (req, res) => {
-    const today = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Kolkata" }).split(' ')[0];
+    const kolkataTime = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Kolkata" });
+    const today = kolkataTime.split(' ')[0];
 
     // Detect if today is Sunday (weekend) using IST
     const istDayName = new Intl.DateTimeFormat('en-US', { weekday: 'short', timeZone: 'Asia/Kolkata' }).format(new Date());

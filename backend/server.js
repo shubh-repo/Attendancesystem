@@ -40,7 +40,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Routes
+// Security Headers (CSP, X-Frame, X-Content-Type)
+app.use((req, res, next) => {
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Content-Security-Policy', "default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data:; frame-ancestors 'none';");
+    res.setHeader('Permissions-Policy', 'camera=self, geolocation=self');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    next();
+});
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/attendance', attendanceRoutes);

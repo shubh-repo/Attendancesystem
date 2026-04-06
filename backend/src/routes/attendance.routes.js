@@ -4,6 +4,7 @@ import { verifyToken } from './auth.routes.js';
 import multer from 'multer';
 import sharp from 'sharp';
 import rateLimit from 'express-rate-limit';
+import { getKolkataDateTime, toMins } from '../utils.js';
 
 const router = express.Router();
 
@@ -63,8 +64,7 @@ router.post('/checkin', verifyToken, checkinLimiter, upload.single('photo'), asy
 
         if (!photo) return res.status(400).json({ error: 'Photo is required' });
 
-        const kolkataTimeStr = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Kolkata" });
-        const [today, currentTime] = kolkataTimeStr.split(' ');
+        const { today, currentTime } = getKolkataDateTime();
 
         // 1. Check if already checked-in
         const { data: existing, error: existError } = await supabase
@@ -122,7 +122,6 @@ router.post('/checkin', verifyToken, checkinLimiter, upload.single('photo'), asy
         const in_photo_url = publicUrlData.publicUrl;
 
         // 5. Late Calculation
-        const toMins = t => { const p = t.split(':'); return parseInt(p[0]) * 60 + parseInt(p[1]); };
         const startMinutes = toMins(schoolStartTime);
         const thresholdMin = startMinutes + gracePeriodMins;
         const currentMin = toMins(currentTime);
@@ -178,8 +177,7 @@ router.post('/checkout', verifyToken, checkoutLimiter, upload.single('photo'), a
 
         if (!photo) return res.status(400).json({ error: 'Photo is required' });
 
-        const kolkataTimeStr = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Kolkata" });
-        const [today, currentTime] = kolkataTimeStr.split(' ');
+        const { today, currentTime } = getKolkataDateTime();
 
         // 1. Ensure Check-In exists
         const { data: existing, error: existError } = await supabase
@@ -241,7 +239,6 @@ router.post('/checkout', verifyToken, checkoutLimiter, upload.single('photo'), a
 
         // 5. Determine Final Status
         let finalStatus = existing.status;
-        const toMins = t => { const p = t.split(':'); return parseInt(p[0]) * 60 + parseInt(p[1]); };
         const curMins = toMins(currentTime);
         const halfDayMins = toMins(halfDayTime);
         const endMins = toMins(schoolEndTime);
@@ -249,8 +246,11 @@ router.post('/checkout', verifyToken, checkoutLimiter, upload.single('photo'), a
         if (curMins < halfDayMins) {
             finalStatus = 'Half Day';
             console.log(`Checked out at ${currentTime} before half-day threshold ${halfDayTime} → Half Day`);
+        } else if (curMins < endMins && finalStatus === 'Present') {
+            finalStatus = 'Early Leave';
+            console.log(`Checked out at ${currentTime} before end threshold ${schoolEndTime} → Early Leave`);
         } else {
-            console.log(`Checked out at ${currentTime} after half-day threshold → kept as ${finalStatus}`);
+            console.log(`Checked out at ${currentTime} after early leave threshold → kept as ${finalStatus}`);
         }
 
         // 6. Update attendance record with checkout data (with Retry)
@@ -285,8 +285,7 @@ router.post('/checkout', verifyToken, checkoutLimiter, upload.single('photo'), a
 // Teacher Dashboard
 router.get('/my/today', verifyToken, async (req, res) => {
     try {
-        const kolkataTimeStr = new Date().toLocaleString("sv-SE", { timeZone: "Asia/Kolkata" });
-        const today = kolkataTimeStr.split(' ')[0];
+        const { today } = getKolkataDateTime();
         const { data, error } = await supabase
             .from('attendance')
             .select('*')
@@ -340,7 +339,7 @@ router.get('/my/monthly-stats', verifyToken, async (req, res) => {
         const m = String(nowKolkata.getMonth() + 1).padStart(2, '0');
         
         const startStr = `${y}-${m}-01`;
-        const endStr = nowKolkata.toLocaleString("sv-SE", { timeZone: "Asia/Kolkata" }).split(' ')[0];
+        const { today: endStr } = getKolkataDateTime();
 
         const { data, error } = await supabase
             .from('attendance')
